@@ -25,12 +25,15 @@ export async function POST(req: NextRequest) {
 
   const {
     brandSlug,
-    categorySlug,
-    search = "",
+    categoryId,
     saleOnly = false,
     inStockOnly = false,
     sort = "name_asc",
   } = body;
+
+  const cleanSearch = String(body.search ?? "")
+    .trim()
+    .replace(/[,%()]/g, "");
 
   const page = Math.max(1, Number(body.page) || 1);
   const limit = Math.min(100, Math.max(1, Number(body.limit) || 24));
@@ -45,13 +48,13 @@ export async function POST(req: NextRequest) {
 
   if (brandError || !brand) return err("Brand not found", 404);
 
-  // Resolve category filter to product IDs, expanding through descendants
+  // Resolve category filter to product IDs, expanding through all descendants
   let productIdFilter: string[] | null = null;
-  if (categorySlug) {
+  if (categoryId) {
     const { data: category, error: categoryError } = await supabase
       .from("categories")
       .select("id")
-      .eq("slug", categorySlug)
+      .eq("id", categoryId)
       .eq("brand_id", brand.id)
       .single();
 
@@ -69,11 +72,16 @@ export async function POST(req: NextRequest) {
       .select("product_id")
       .in("category_id", categoryIds);
 
-    const uniqueIds = [...new Set(productCats?.map((r) => r.product_id) ?? [])];
-    productIdFilter = uniqueIds;
+    productIdFilter = [...new Set(productCats?.map((r) => r.product_id) ?? [])];
 
     if (productIdFilter.length === 0) {
-      return ok({ products: [], page, totalPages: 0, totalProducts: 0 });
+      return ok({
+        products: [],
+        page,
+        totalPages: 0,
+        totalProducts: 0,
+        filters: { brandSlug, categoryId, search: cleanSearch || null, saleOnly, inStockOnly, sort },
+      });
     }
   }
 
@@ -85,7 +93,7 @@ export async function POST(req: NextRequest) {
     .eq("brand_id", brand.id);
 
   if (productIdFilter !== null) query = query.in("id", productIdFilter);
-  if (search) query = query.or(`name.ilike.%${search}%,sku.ilike.%${search}%`);
+  if (cleanSearch) query = query.or(`name.ilike.%${cleanSearch}%,sku.ilike.%${cleanSearch}%`);
   if (saleOnly) query = query.eq("sale", true);
   if (inStockOnly) query = query.gt("stock", 0);
 
@@ -136,5 +144,13 @@ export async function POST(req: NextRequest) {
     page,
     totalPages: Math.ceil(totalProducts / limit),
     totalProducts,
+    filters: {
+      brandSlug,
+      categoryId: categoryId ?? null,
+      search: cleanSearch || null,
+      saleOnly,
+      inStockOnly,
+      sort,
+    },
   });
 }

@@ -2,6 +2,10 @@ import { NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ok, err } from "@/lib/api";
 
+const PRODUCT_FIELDS = "id,brand_id,name,slug,sku,description,summary,attributes,sale,min_price_cents,max_price_cents,sale_price_cents,stock,weight,weight_unit,length,width,height,dimension_unit" as const;
+
+const VARIATION_FIELDS = "id,product_id,slug,sku,attribute,description,sale,regular_price_cents,sale_price_cents,stock,weight,weight_unit,length,width,height,dimension_unit" as const;
+
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body?.brandSlug || !body?.productSlug)
@@ -19,7 +23,7 @@ export async function POST(req: NextRequest) {
 
   const { data: product, error: productError } = await supabase
     .from("products")
-    .select("*")
+    .select(PRODUCT_FIELDS)
     .eq("slug", body.productSlug)
     .eq("brand_id", brand.id)
     .single();
@@ -32,7 +36,7 @@ export async function POST(req: NextRequest) {
     { data: productImages },
     { data: descriptionImages },
   ] = await Promise.all([
-    supabase.from("variations").select("*").eq("product_id", product.id),
+    supabase.from("variations").select(VARIATION_FIELDS).eq("product_id", product.id),
     supabase
       .from("product_categories")
       .select("categories(id, name, slug, parent_id)")
@@ -49,7 +53,6 @@ export async function POST(req: NextRequest) {
       .order("sort_order"),
   ]);
 
-  // Fetch variation images and attach to each variation
   const variationIds = variations?.map((v) => v.id) ?? [];
   const { data: variationImages } =
     variationIds.length > 0
@@ -60,23 +63,12 @@ export async function POST(req: NextRequest) {
           .order("sort_order", { ascending: true })
       : { data: [] };
 
-  type VariationImage = { id: string; variation_id: string; src: string; name: string; sort_order: number };
-  const variationImageMap: Record<string, VariationImage[]> = {};
-  for (const img of variationImages ?? []) {
-    variationImageMap[img.variation_id] = variationImageMap[img.variation_id] ?? [];
-    variationImageMap[img.variation_id]!.push(img);
-  }
-
-  const variationsWithImages = (variations ?? []).map((v) => ({
-    ...v,
-    images: variationImageMap[v.id] ?? [],
-  }));
-
   const categories = productCats?.map((r) => r.categories).filter(Boolean) ?? [];
 
   return ok({
     product,
-    variations: variationsWithImages,
+    variations: variations ?? [],
+    variationImages: variationImages ?? [],
     categories,
     productImages: productImages ?? [],
     descriptionImages: descriptionImages ?? [],
