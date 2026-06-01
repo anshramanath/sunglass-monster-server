@@ -78,14 +78,23 @@ export async function POST(req: NextRequest) {
     sortOrder: img.sort_order,
   });
 
+  type AttrTerm = { name: string; slug: string };
+  type AttrDef  = { name: string; terms: AttrTerm[] };
+  const attrDefs = Array.isArray(product.attributes)
+    ? (product.attributes as unknown as AttrDef[])
+    : [];
+
   const mappedVariations = (variations ?? []).map((v) => ({
     id: v.id,
     productId: v.product_id,
     slug: v.slug,
     sku: v.sku,
-    attributes: v.attribute.map((a: string) => {
-      const colon = a.indexOf(":");
-      return { name: a.slice(0, colon).trim(), value: a.slice(colon + 1).trim() };
+    attributes: v.attribute.map((slug: string, index: number) => {
+      const def = attrDefs[index];
+      if (!def) return { name: slug, value: slug };
+      const term = def.terms?.find((t: AttrTerm) => t.slug === slug);
+      const name = def.name.charAt(0).toUpperCase() + def.name.slice(1);
+      return { name, value: term?.name ?? slug };
     }),
     description: v.description,
     sale: v.sale,
@@ -122,7 +131,6 @@ export async function POST(req: NextRequest) {
       sku: product.sku,
       description: product.description,
       summary: product.summary,
-      attributes: product.attributes,
       sale: product.sale,
       minPriceCents: product.min_price_cents,
       maxPriceCents: product.max_price_cents,
