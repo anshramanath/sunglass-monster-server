@@ -8,8 +8,8 @@ const VARIATION_FIELDS = "id,product_id,slug,sku,attribute,description,sale,regu
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
-  if (!body?.brandSlug || !body?.productSlug)
-    return err("brandSlug and productSlug are required");
+  if (!body?.brandSlug || !body?.productId)
+    return err("brandSlug and productId are required");
 
   const supabase = createAdminClient();
 
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   const { data: product, error: productError } = await supabase
     .from("products")
     .select(PRODUCT_FIELDS)
-    .eq("slug", body.productSlug)
+    .eq("id", body.productId)
     .eq("brand_id", brand.id)
     .single();
 
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     { data: productImages },
     { data: descriptionImages },
   ] = await Promise.all([
-    supabase.from("variations").select(VARIATION_FIELDS).eq("product_id", product.id),
+    supabase.from("variations").select(VARIATION_FIELDS).eq("product_id", product.id).order("sku", { ascending: true }),
     supabase
       .from("product_categories")
       .select("categories(id, name, slug, parent_id)")
