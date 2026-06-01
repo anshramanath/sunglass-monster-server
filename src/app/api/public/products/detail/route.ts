@@ -71,18 +71,73 @@ export async function POST(req: NextRequest) {
     imagesByVariationId[image.variation_id].push(image);
   }
 
-  const variationsWithImages = (variations ?? []).map((v) => ({
-    ...v,
-    images: imagesByVariationId[v.id] ?? [],
+  const mapImage = (img: { id: string; src: string; name: string; sort_order: number }) => ({
+    id: img.id,
+    src: img.src,
+    name: img.name,
+    sortOrder: img.sort_order,
+  });
+
+  const mappedVariations = (variations ?? []).map((v) => ({
+    id: v.id,
+    productId: v.product_id,
+    slug: v.slug,
+    sku: v.sku,
+    attributes: v.attribute.map((a: string) => {
+      const colon = a.indexOf(":");
+      return { name: a.slice(0, colon).trim(), value: a.slice(colon + 1).trim() };
+    }),
+    description: v.description,
+    sale: v.sale,
+    regularPriceCents: v.regular_price_cents,
+    salePriceCents: v.sale_price_cents,
+    stock: v.stock,
+    weight: v.weight,
+    weightUnit: v.weight_unit,
+    length: v.length,
+    width: v.width,
+    height: v.height,
+    dimensionUnit: v.dimension_unit,
+    images: (imagesByVariationId[v.id] ?? []).map((img) => ({
+      id: img.id,
+      variationId: img.variation_id,
+      src: img.src,
+      name: img.name,
+      sortOrder: img.sort_order,
+    })),
   }));
 
-  const categories = productCats?.map((r) => r.categories).filter(Boolean) ?? [];
+  type RawCategory = { id: string; name: string; slug: string; parent_id: string | null };
+  const categories = (productCats ?? [])
+    .map((r) => r.categories as unknown as RawCategory | null)
+    .filter((c): c is RawCategory => c !== null)
+    .map((c) => ({ id: c.id, name: c.name, slug: c.slug, parentId: c.parent_id }));
 
   return ok({
-    product,
-    variations: variationsWithImages,
+    product: {
+      id: product.id,
+      brandId: product.brand_id,
+      name: product.name,
+      slug: product.slug,
+      sku: product.sku,
+      description: product.description,
+      summary: product.summary,
+      attributes: product.attributes,
+      sale: product.sale,
+      minPriceCents: product.min_price_cents,
+      maxPriceCents: product.max_price_cents,
+      salePriceCents: product.sale_price_cents,
+      stock: product.stock,
+      weight: product.weight,
+      weightUnit: product.weight_unit,
+      length: product.length,
+      width: product.width,
+      height: product.height,
+      dimensionUnit: product.dimension_unit,
+    },
+    variations: mappedVariations,
     categories,
-    productImages: productImages ?? [],
-    descriptionImages: descriptionImages ?? [],
+    productImages: (productImages ?? []).map(mapImage),
+    descriptionImages: (descriptionImages ?? []).map(mapImage),
   });
 }

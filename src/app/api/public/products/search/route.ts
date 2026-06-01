@@ -78,8 +78,11 @@ export async function POST(req: NextRequest) {
       return ok({
         products: [],
         page,
+        limit,
         totalPages: 0,
         totalProducts: 0,
+        hasNextPage: false,
+        hasPreviousPage: page > 1,
         filters: { brandSlug, categoryId, search: cleanSearch || null, saleOnly, inStockOnly, sort },
       });
     }
@@ -87,7 +90,7 @@ export async function POST(req: NextRequest) {
 
   let query = supabase
     .from("products")
-    .select("id, name, slug, min_price_cents, max_price_cents, sale, stock", {
+    .select("id, name, slug, min_price_cents, max_price_cents, sale_price_cents, sale, stock", {
       count: "exact",
     })
     .eq("brand_id", brand.id);
@@ -130,20 +133,26 @@ export async function POST(req: NextRequest) {
 
   const totalProducts = count ?? 0;
 
+  const totalPages = Math.ceil(totalProducts / limit);
+
   return ok({
     products: (products ?? []).map((p) => ({
       id: p.id,
       name: p.name,
       slug: p.slug,
-      priceMin: p.min_price_cents,
-      priceMax: p.max_price_cents,
+      minPriceCents: p.min_price_cents,
+      maxPriceCents: p.max_price_cents,
+      salePriceCents: p.sale_price_cents,
       sale: p.sale,
       stock: p.stock,
       thumbnail: thumbnailMap[p.id] ?? null,
     })),
     page,
-    totalPages: Math.ceil(totalProducts / limit),
+    limit,
+    totalPages,
     totalProducts,
+    hasNextPage: page < totalPages,
+    hasPreviousPage: page > 1,
     filters: {
       brandSlug,
       categoryId: categoryId ?? null,
