@@ -2,20 +2,22 @@ import { NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ok, err } from "@/lib/api";
 
-export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => null);
-  if (!body?.brandSlug) return err("Brand slug is required!", 400);
-  if (!body?.categoryId) return err("Category id is required!", 400);
+export async function GET(req: NextRequest) {
+  const params = req.nextUrl.searchParams;
+  const brandSlug = params.get("brandSlug");
+  const categoryId = params.get("categoryId");
+  if (!brandSlug) return err("Brand slug is required!", 400);
+  if (!categoryId) return err("Category id is required!", 400);
 
-  const page = Math.max(1, Number(body.page) || 1);
-  const size = Math.min(100, Math.max(1, Number(body.size) || 24));
+  const page = Math.max(1, Number(params.get("page")) || 1);
+  const size = Math.min(100, Math.max(1, Number(params.get("size")) || 24));
 
   const supabase = createAdminClient();
 
   const { data: brand, error: brandError } = await supabase
     .from("brands")
     .select("id")
-    .eq("slug", body.brandSlug)
+    .eq("slug", brandSlug)
     .single();
 
   if (brandError || !brand) return err("Brand not found!", 404);
@@ -26,7 +28,7 @@ export async function POST(req: NextRequest) {
     .from("products")
     .select("id, name, slug, attributes, featured, sale, min_price_cents, max_price_cents, sale_price_cents, product_categories!inner(category_id), product_images!inner(src, name, sort_order)", { count: "exact" })
     .eq("brand_id", brand.id)
-    .eq("product_categories.category_id", body.categoryId)
+    .eq("product_categories.category_id", categoryId)
     .eq("in_stock", true)
     .order("name", { ascending: true })
     .range(from, to);

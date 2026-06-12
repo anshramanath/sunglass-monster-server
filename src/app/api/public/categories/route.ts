@@ -10,16 +10,16 @@ type CategoryNode = {
   children?: CategoryNode[];
 };
 
-export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => null);
-  if (!body?.brandSlug) return err("Brand slug is required!", 400);
+export async function GET(req: NextRequest) {
+  const brandSlug = req.nextUrl.searchParams.get("brandSlug");
+  if (!brandSlug) return err("Brand slug is required!", 400);
 
   const supabase = createAdminClient();
 
   const { data: brand, error: brandError } = await supabase
     .from("brands")
     .select("id")
-    .eq("slug", body.brandSlug)
+    .eq("slug", brandSlug)
     .single();
 
   if (brandError || !brand) return err("Brand not found!", 404);
@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
     .from("categories")
     .select("id, parent_id, name, slug, sort_order")
     .eq("brand_id", brand.id);
+
 
   const nodeMap: Record<string, CategoryNode> = {};
   for (const cat of categories ?? []) {
