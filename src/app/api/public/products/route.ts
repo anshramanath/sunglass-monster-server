@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   const to = from + size - 1;
   const { data: products, count: total, error } = await supabase
     .from("products")
-    .select("id, name, slug, attributes, featured, sale, min_price_cents, max_price_cents, sale_price_cents, product_categories!inner(category_id), product_images!inner(src, name, sort_order)", { count: "exact" })
+    .select("id, name, slug, attributes, featured, sale, min_price_cents, max_price_cents, sale_price_cents, product_categories!inner(category_id), product_images!inner(src, name)", { count: "exact" })
     .eq("brand_id", brand.id)
     .eq("product_categories.category_id", categoryId)
     .eq("in_stock", true)
@@ -48,9 +48,7 @@ export async function GET(req: NextRequest) {
     attributes: p.attributes,
     featured: p.featured,
     sale: p.sale,
-    images: p.product_images
-      .sort((a, b) => a.sort_order - b.sort_order)
-      .map((img) => ({ src: img.src, name: img.name })),
+    images: p.product_images.map((img) => ({ src: img.src, name: img.name })),
   }));
 
   return ok({
