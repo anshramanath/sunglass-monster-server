@@ -4,9 +4,19 @@ import { ok, err } from "@/lib/api";
 
 export async function GET(req: NextRequest) {
   const productId = req.nextUrl.searchParams.get("productId");
+  const brandSlug = req.nextUrl.searchParams.get("brandSlug");
   if (!productId) return err("Product id is required!", 400);
+  if (!brandSlug) return err("Brand slug is required!", 400);
 
   const supabase = createAdminClient();
+
+  const { data: brand } = await supabase
+    .from("brands")
+    .select("id")
+    .eq("slug", brandSlug)
+    .single();
+
+  if (!brand) return err("Brand not found!", 404);
 
   const { data: product, error } = await supabase
     .from("products")
@@ -22,6 +32,7 @@ export async function GET(req: NextRequest) {
       )
     `)
     .eq("id", productId)
+    .eq("brand_id", brand.id)
     .single();
 
   if (error || !product) return err("Product not found!", 404);

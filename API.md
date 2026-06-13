@@ -97,6 +97,7 @@ Returns full product detail including variations, images, and description images
 | Param | Required | Description |
 |-------|----------|-------------|
 | productId | yes | Product id |
+| brandSlug | yes | Brand slug |
 
 **Response**
 ```json
