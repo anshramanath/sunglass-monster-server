@@ -119,6 +119,7 @@ export function ProductForm({
   const [uploading, setUploading] = useState(false);
   const [catDropdownOpen, setCatDropdownOpen] = useState(false);
   const [attrDropdown, setAttrDropdown] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<{ title: string; message: string; proceedLabel: string; proceedColor: string; onProceed: () => void } | null>(null);
 
   const productImgInput = useRef<HTMLInputElement>(null);
   const descImgInput = useRef<HTMLInputElement>(null);
@@ -322,7 +323,6 @@ export function ProductForm({
   }
 
   async function handleDelete() {
-    if (!confirm("Delete this product? This cannot be undone.")) return;
     setSaving(true);
     try {
       await deleteProduct(brandSlug, productId);
@@ -759,7 +759,13 @@ export function ProductForm({
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         {!isNew ? (
           <button
-            onClick={handleDelete}
+            onClick={() => setConfirm({
+              title: "Delete product?",
+              message: "This cannot be undone. The product and all its data will be permanently removed.",
+              proceedLabel: "Delete",
+              proceedColor: "#ef4444",
+              onProceed: handleDelete,
+            })}
             disabled={saving}
             style={{ height: 38, padding: "0 16px", border: "1px solid #e5e5e5", background: "#fff", fontSize: 13, cursor: saving ? "default" : "pointer", color: "#ef4444", fontFamily: "inherit" }}
           >
@@ -767,7 +773,13 @@ export function ProductForm({
           </button>
         ) : <div />}
         <button
-          onClick={handleSave}
+          onClick={() => setConfirm({
+            title: "Save product?",
+            message: "Review your changes before saving. This will update the product immediately.",
+            proceedLabel: "Save",
+            proceedColor: accent,
+            onProceed: handleSave,
+          })}
           disabled={saving || uploading}
           style={{
             height: 38,
@@ -790,6 +802,31 @@ export function ProductForm({
           </div>
         )}
       </div>
+
+      {/* Confirmation modal */}
+      {confirm && (
+        <>
+          <div onClick={() => setConfirm(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 100 }} />
+          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", background: "#fff", width: 380, maxWidth: "90vw", padding: 32, boxSizing: "border-box", zIndex: 101 }}>
+            <div style={{ fontSize: 18, fontWeight: 400, marginBottom: 10 }}>{confirm.title}</div>
+            <div style={{ fontSize: 14, color: "#737373", lineHeight: 1.55, marginBottom: 28 }}>{confirm.message}</div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <button
+                onClick={() => setConfirm(null)}
+                style={{ height: 38, padding: "0 16px", border: "1px solid #d4d4d4", background: "#fff", fontSize: 13, cursor: "pointer", fontFamily: "inherit", color: "#000" }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => { setConfirm(null); confirm.onProceed(); }}
+                style={{ height: 38, padding: "0 20px", border: "none", background: confirm.proceedColor, color: "#fff", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}
+              >
+                {confirm.proceedLabel}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

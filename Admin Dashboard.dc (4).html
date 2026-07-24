@@ -332,13 +332,13 @@
     <!-- ===================== PRODUCTS: DETAIL ===================== -->
     <sc-if value="{{ showProductDetail }}" hint-placeholder-val="{{ false }}">
       <div style="max-width:880px;">
-        <div onClick="{{ productDetail.back }}" style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--grey-500); cursor:pointer; margin-bottom:28px; width:fit-content;">
+        <div onClick="{{ productDetail.confirmBack }}" style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--grey-500); cursor:pointer; margin-bottom:28px; width:fit-content;">
           <span>←</span><span>Back to products</span>
         </div>
 
         <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px; margin-bottom:6px;">
           <input value="{{ productDetail.name }}" onChange="{{ productDetail.setName }}" style="flex:1; min-width:0; font-size:30px; font-weight:400; letter-spacing:-0.01em; border:1px solid var(--color-border-input); padding:10px 14px; font-family:var(--font-sans); color:var(--aritzia-black); background:transparent; box-sizing:border-box;" style-hover="border-color:var(--grey-400);" style-focus="border-color:var(--aritzia-black); outline:none;" />
-          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; margin-top:6px; min-height:60px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
             <div onClick="{{ productDetail.toggleFeatured }}" style="cursor:pointer;">
               <x-import component-from-global-scope="AritziaDesignSystem_fb1eba.Tag" tone="{{ productDetail.featuredTone }}" hint-size="auto,26px">{{ productDetail.featuredLabel }}</x-import>
             </div>
@@ -522,11 +522,28 @@
         </div>
 
         <div style="margin-top:56px; padding-top:24px; border-top:1px solid var(--color-border);">
-          <div onClick="{{ productDetail.deleteProduct }}" style="cursor:pointer;">
+          <div onClick="{{ productDetail.confirmDelete }}" style="cursor:pointer;">
             <x-import component-from-global-scope="AritziaDesignSystem_fb1eba.Button" variant="secondary" size="sm" dc-props="{{ deleteButtonProps }}" hint-size="auto,38px"><span style="color:var(--sale-red);">Delete product</span></x-import>
           </div>
         </div>
       </div>
+
+      <sc-if value="{{ productDetail.confirm }}" hint-placeholder-val="{{ false }}">
+        <div style="position:fixed; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:100;" onClick="{{ productDetail.confirm.cancel }}">
+          <div onClick="{{ productDetail.stopClickThrough }}" style="background:var(--aritzia-white); width:380px; max-width:90vw; padding:32px; box-sizing:border-box;">
+            <div style="font-size:18px; font-weight:400; margin-bottom:10px;">{{ productDetail.confirm.title }}</div>
+            <div style="font-size:14px; color:var(--grey-500); line-height:1.55; margin-bottom:28px;">{{ productDetail.confirm.message }}</div>
+            <div style="display:flex; gap:12px; justify-content:flex-end;">
+              <div onClick="{{ productDetail.confirm.cancel }}" style="cursor:pointer;">
+                <x-import component-from-global-scope="AritziaDesignSystem_fb1eba.Button" variant="secondary" size="sm" hint-size="auto,38px">Cancel</x-import>
+              </div>
+              <div onClick="{{ productDetail.confirm.proceed }}" style="cursor:pointer;">
+                <x-import component-from-global-scope="AritziaDesignSystem_fb1eba.Button" variant="primary" size="sm" style="{{ productDetail.confirm.proceedStyle }}" hint-size="auto,38px">{{ productDetail.confirm.proceedLabel }}</x-import>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
     </sc-if>
 
     <!-- ===================== CATEGORIES ===================== -->
@@ -884,6 +901,7 @@ class Component extends DCLogic {
     orderFulfillment: {},
     openCarrierDropdown: null,
     openAttributeDropdown: null,
+    pendingConfirm: null,
     collapsedCats: {},
     selectedProductId: null,
     products: JSON.parse(JSON.stringify(this.seedProducts))
@@ -970,6 +988,7 @@ class Component extends DCLogic {
   toggleCat(id) { this.setState(s => ({ collapsedCats: { ...s.collapsedCats, [id]: !s.collapsedCats[id] } })); }
   selectProduct(id) { this.setState({ selectedProductId: id }); }
   backToProducts() { this.setState({ selectedProductId: null }); }
+  closeConfirm() { this.setState({ pendingConfirm: null }); }
 
   updateProduct(pid, fn) {
     this.setState(s => {
@@ -1095,6 +1114,24 @@ class Component extends DCLogic {
 
     return {
       back: () => this.backToProducts(),
+      confirmBack: () => this.setState({ pendingConfirm: 'back' }),
+      confirmDelete: () => this.setState({ pendingConfirm: 'delete' }),
+      stopClickThrough: (e) => e.stopPropagation(),
+      confirm: this.state.pendingConfirm === 'back' ? {
+        title: 'Leave this product?',
+        message: 'Your changes are saved. You\u2019ll return to the product list.',
+        proceedLabel: 'Leave',
+        proceedStyle: '',
+        cancel: () => this.closeConfirm(),
+        proceed: () => { this.closeConfirm(); this.backToProducts(); }
+      } : this.state.pendingConfirm === 'delete' ? {
+        title: 'Delete this product?',
+        message: 'This permanently removes the product and all of its variations. This can\u2019t be undone.',
+        proceedLabel: 'Delete',
+        proceedStyle: `background:${accent}; border-color:${accent};`,
+        cancel: () => this.closeConfirm(),
+        proceed: () => { this.closeConfirm(); this.setState(s => ({ products: { ...s.products, [s.brand]: s.products[s.brand].filter(p => p.id !== pid) }, selectedProductId: null })); }
+      } : null,
       deleteProduct: () => this.setState(s => ({ products: { ...s.products, [s.brand]: s.products[s.brand].filter(p => p.id !== pid) }, selectedProductId: null })),
       deleteButtonProps: {
         onMouseEnter: (e) => {},
