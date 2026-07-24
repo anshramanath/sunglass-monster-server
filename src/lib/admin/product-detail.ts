@@ -62,7 +62,6 @@ type SaveInput = {
   productId: string;
   isNew: boolean;
   name: string;
-  slug: string;
   sku: string | null;
   description: string;
   summary: string[];
@@ -109,12 +108,13 @@ export async function saveProduct(input: SaveInput): Promise<void> {
 
   const { brandSlug, productId, isNew, variations } = input;
   const isSimple = variations.length === 0;
+  const slug = slugify(input.name.trim());
 
   const { data: slugConflict, error: slugError } = await supabase
     .from("products")
     .select("id")
     .eq("brand_slug", brandSlug)
-    .eq("slug", input.slug)
+    .eq("slug", slug)
     .neq("id", productId)
     .limit(1);
   if (slugError) throw new Error("Failed to check slug uniqueness.");
@@ -137,7 +137,7 @@ export async function saveProduct(input: SaveInput): Promise<void> {
     id: productId,
     brand_slug: brandSlug,
     name: input.name,
-    slug: input.slug,
+    slug,
     sku: isSimple ? input.sku : null,
     description: input.description,
     summary: input.summary,

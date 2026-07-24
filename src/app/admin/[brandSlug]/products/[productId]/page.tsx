@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import { getBrandBySlug } from "@/lib/brand";
 import { getCategoryOptions } from "@/lib/admin/products";
 import { getProductDetail } from "@/lib/admin/product-detail";
@@ -12,8 +11,7 @@ export default async function ProductDetailPage({
   const { brandSlug, productId } = await params;
   const isNew = productId === "new";
 
-  const brand = getBrandBySlug(brandSlug);
-  if (!brand) notFound();
+  const brand = getBrandBySlug(brandSlug)!;
 
   const [categories, product] = await Promise.all([
     getCategoryOptions(brandSlug),

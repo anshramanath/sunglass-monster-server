@@ -84,6 +84,7 @@ export function ProductForm({
   const router = useRouter();
   const [productId] = useState(() => initialProductId ?? crypto.randomUUID());
 
+  const slugMismatch = product ? product.slug !== slugify(product.name) : false;
   const existingVariations = product?.variations ?? [];
 
   const [name, setName] = useState(product?.name ?? "");
@@ -294,7 +295,6 @@ export function ProductForm({
         productId,
         isNew,
         name: name.trim(),
-        slug,
         sku: isSimple ? sku.trim() : null,
         description: description.trim(),
         summary: bullets.filter((b) => b.trim()),
@@ -350,6 +350,13 @@ export function ProductForm({
         </button>
       </div>
 
+
+      {/* Slug mismatch banner */}
+      {slugMismatch && (
+        <div style={{ marginBottom: 16, fontSize: 13, color: accent, padding: "10px 14px", border: `1px solid ${accent}`, background: `${accent}0d` }}>
+          This product's slug is out of sync with the database. Save to resolve.
+        </div>
+      )}
 
       {/* Name + tags */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 24, marginBottom: 8 }}>
