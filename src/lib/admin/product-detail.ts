@@ -272,7 +272,7 @@ export async function uploadImage(formData: FormData): Promise<string> {
   const path = formData.get("path") as string;
   const bucket = formData.get("bucket") as string;
 
-  const { data, error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
+  const { data, error } = await supabase.storage.from(bucket).upload(path, file);
   if (error) throw new Error(error.message);
 
   const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(data.path);

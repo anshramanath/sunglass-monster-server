@@ -215,14 +215,8 @@ export function ProductForm({
   async function handleImageUpload(file: File, target: "product" | string) {
     setUploading(true);
     try {
-      const timestamp = Date.now();
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const path =
-        target === "product"
-          ? `${productId}/${timestamp}-${safeName}`
-          : target === "description"
-          ? `description/${timestamp}-${safeName}`
-          : `${productId}/variations/${target}/${timestamp}-${safeName}`;
+      const path = `${safeName}-${crypto.randomUUID()}`;
 
       const fd = new FormData();
       fd.append("file", file);
