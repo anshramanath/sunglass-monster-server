@@ -684,27 +684,18 @@ export function ProductForm({
                             </>
                           )}
                         </div>
-                        {attr.name.toLowerCase() === "color" ? (
-                          <>
-                            <input
-                              value={attr.option}
-                              onChange={(e) => setAttrField(v.id, ai, "option", e.target.value)}
-                              placeholder="Value"
-                              style={{ ...inputStyle, width: 200, fontSize: 13 }}
-                            />
-                            <input
-                              type="color"
-                              value={/^#[0-9a-fA-F]{6}$/.test(attr.value ?? "") ? attr.value! : "#000000"}
-                              onChange={(e) => setAttrField(v.id, ai, "value", e.target.value)}
-                              style={{ width: 36, height: 34, padding: 0, border: "none", cursor: "pointer" }}
-                            />
-                          </>
-                        ) : (
+                        <input
+                          value={attr.option}
+                          onChange={(e) => setAttrField(v.id, ai, "option", e.target.value)}
+                          placeholder="Option"
+                          style={{ ...inputStyle, width: 200, fontSize: 13 }}
+                        />
+                        {attr.name === "color" && (
                           <input
-                            value={attr.option}
-                            onChange={(e) => setAttrField(v.id, ai, "option", e.target.value)}
-                            placeholder="Value"
-                            style={{ ...inputStyle, width: 200, fontSize: 13 }}
+                            type="color"
+                            value={attr.value!}
+                            onChange={(e) => setAttrField(v.id, ai, "value", e.target.value)}
+                            style={{ width: 36, height: 34, padding: 0, border: "none", cursor: "pointer" }}
                           />
                         )}
                         <span
@@ -774,8 +765,8 @@ export function ProductForm({
               proceedColor: "#ef4444",
               onProceed: handleDelete,
             })}
-            disabled={saving}
-            style={{ height: 38, padding: "0 16px", border: "1px solid #e5e5e5", background: "#fff", fontSize: 13, cursor: saving ? "default" : "pointer", color: "#ef4444", fontFamily: "inherit" }}
+            disabled={saving || uploading || navigating}
+            style={{ height: 38, padding: "0 16px", border: "1px solid #e5e5e5", background: "#fff", fontSize: 13, cursor: saving || uploading || navigating ? "default" : "pointer", color: "#ef4444", fontFamily: "inherit" }}
           >
             Delete product
           </button>
@@ -788,16 +779,16 @@ export function ProductForm({
             proceedColor: accent,
             onProceed: handleSave,
           })}
-          disabled={saving || uploading}
+          disabled={saving || uploading || navigating}
           style={{
             height: 38,
             padding: "0 24px",
-            background: saving || uploading ? "#d4d4d4" : accent,
+            background: saving || uploading || navigating ? "#d4d4d4" : accent,
             color: "#fff",
             border: "none",
             fontSize: 14,
             fontWeight: 500,
-            cursor: saving || uploading ? "default" : "pointer",
+            cursor: saving || uploading || navigating ? "default" : "pointer",
             fontFamily: "inherit",
           }}
         >
