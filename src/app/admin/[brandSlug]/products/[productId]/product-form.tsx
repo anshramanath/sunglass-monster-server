@@ -205,7 +205,10 @@ export function ProductForm({
       attrs: v.attrs.map((a, idx) => {
         if (idx !== i) return a;
         const updated = { ...a, [field]: val };
-        if (field === "name" && val === "color" && !updated.value) updated.value = "#000000";
+        if (field === "name") {
+          if (val === "color" && !updated.value) updated.value = "#000000";
+          else if (val !== "color") delete updated.value;
+        }
         return updated;
       }),
     }));
@@ -241,6 +244,10 @@ export function ProductForm({
     } finally {
       setUploading(false);
     }
+  }
+
+  function removeDescImage(i: number) {
+    setDescImages((p) => p.filter((_, idx) => idx !== i));
   }
 
   function removeImage(i: number) {
@@ -293,9 +300,9 @@ export function ProductForm({
         description: description.trim(),
         summary: bullets.filter((b) => b.trim()),
         featured,
-        sale: isSimple ? sale : false,
-        regularPriceCents: isSimple ? dollarsToCents(regularPrice) : 0,
-        salePriceCents: isSimple ? (dollarsToCents(salePrice) || null) : null,
+        sale: isSimple ? sale : null,
+        regularPriceCents: isSimple ? dollarsToCents(regularPrice) : null,
+        salePriceCents: isSimple ? (dollarsToCents(salePrice) > 0 && dollarsToCents(salePrice) < dollarsToCents(regularPrice) ? dollarsToCents(salePrice) : null) : null,
         categoryIds,
         images,
         descriptionImages: descImages,
@@ -303,7 +310,7 @@ export function ProductForm({
           id: v.id,
           sku: v.sku,
           regularPriceCents: dollarsToCents(v.regularPrice),
-          salePriceCents: dollarsToCents(v.salePrice) || null,
+          salePriceCents: dollarsToCents(v.salePrice) > 0 && dollarsToCents(v.salePrice) < dollarsToCents(v.regularPrice) ? dollarsToCents(v.salePrice) : null,
           sale: v.sale,
           attribute: v.attrs,
           images: v.images,
@@ -549,7 +556,7 @@ export function ProductForm({
                 <img src={img.src} alt={img.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
               </div>
               <div style={{ marginTop: 4 }}>
-                <span onClick={() => setDescImages((p) => p.filter((_, idx) => idx !== i))} style={{ cursor: "pointer", fontSize: 15, color: "#737373" }}>×</span>
+                <span onClick={() => removeDescImage(i)} style={{ cursor: "pointer", fontSize: 15, color: "#737373" }}>×</span>
               </div>
             </div>
           ))}
@@ -664,7 +671,7 @@ export function ProductForm({
                             <>
                               <div onClick={() => setAttrDropdown(null)} style={{ position: "fixed", inset: 0, zIndex: 9 }} />
                               <div style={{ position: "absolute", top: 36, left: 0, minWidth: "100%", background: "#ffffff", border: "1px solid #000000", zIndex: 10, boxSizing: "border-box" }}>
-                                {ATTR_SUGGESTIONS.map((s) => (
+                                {ATTR_SUGGESTIONS.filter((s) => !v.attrs.some((a, idx) => idx !== ai && a.name === s)).map((s) => (
                                   <div
                                     key={s}
                                     onClick={() => { setAttrField(v.id, ai, "name", s); setAttrDropdown(null); }}

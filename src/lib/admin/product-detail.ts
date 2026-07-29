@@ -66,8 +66,8 @@ type SaveInput = {
   description: string;
   summary: string[];
   featured: boolean;
-  sale: boolean;
-  regularPriceCents: number;
+  sale: boolean | null;
+  regularPriceCents: number | null;
   salePriceCents: number | null;
   categoryIds: string[];
   images: { src: string; name: string; sortOrder: number }[];
@@ -88,7 +88,6 @@ function deriveAttributes(variations: SaveInput["variations"]) {
   const map = new Map<string, Map<string, { option: string; slug: string; value?: string }>>();
   for (const v of variations) {
     for (const attr of v.attribute) {
-      if (!attr.name || !attr.option) continue;
       if (!map.has(attr.name)) map.set(attr.name, new Map());
       const slug = slugify(attr.option);
       const attrMap = map.get(attr.name)!;
@@ -122,11 +121,11 @@ export async function saveProduct(input: SaveInput): Promise<void> {
 
   let minPrice: number, maxPrice: number, sale: boolean, salePriceCents: number | null;
   if (isSimple) {
-    minPrice = maxPrice = input.regularPriceCents;
-    sale = input.sale;
+    minPrice = maxPrice = input.regularPriceCents!;
+    sale = input.sale!;
     salePriceCents = input.salePriceCents;
   } else {
-    const effectivePrices = variations.map((v) => v.sale && v.salePriceCents ? v.salePriceCents : v.regularPriceCents);
+    const effectivePrices = variations.map((v) => v.sale ? v.salePriceCents! : v.regularPriceCents);
     minPrice = Math.min(...effectivePrices);
     maxPrice = Math.max(...effectivePrices);
     sale = variations.some((v) => v.sale);
@@ -138,7 +137,7 @@ export async function saveProduct(input: SaveInput): Promise<void> {
     brand_slug: brandSlug,
     name: input.name,
     slug,
-    sku: isSimple ? input.sku : null,
+    sku: input.sku,
     description: input.description,
     summary: input.summary,
     attributes: isSimple ? [] : deriveAttributes(variations),
@@ -169,27 +168,25 @@ export async function saveProduct(input: SaveInput): Promise<void> {
 
   // Product images: replace all
   await supabase.from("product_images").delete().eq("product_id", productId);
-  if (input.images.length > 0) {
-    const { error } = await supabase.from("product_images").insert(
-      input.images.map((img) => ({
-        product_id: productId,
-        src: img.src,
-        name: img.name,
-        sort_order: img.sortOrder,
-      }))
-    );
-    if (error) throw new Error(error.message);
-  }
+  const { error: imgError } = await supabase.from("product_images").insert(
+    input.images.map((img) => ({
+      product_id: productId,
+      src: img.src,
+      name: img.name,
+      sort_order: img.sortOrder,
+    }))
+  );
+  if (imgError) throw new Error(imgError.message);
 
   // Description images: upsert into shared table, replace junction
   await supabase.from("product_description_images").delete().eq("product_id", productId);
   for (const img of input.descriptionImages) {
-    const { data: descImg, error: upsertErr } = await supabase
+    const { data: descImg, error: descErr } = await supabase
       .from("description_images")
       .upsert({ brand_slug: brandSlug, src: img.src, name: img.name }, { onConflict: "brand_slug,src" })
       .select("id")
       .single();
-    if (upsertErr) throw new Error(upsertErr.message);
+    if (descErr) throw new Error(descErr.message);
     const { error: linkErr } = await supabase
       .from("product_description_images")
       .insert({ product_id: productId, image_id: descImg.id });
