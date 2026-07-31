@@ -291,6 +291,35 @@ Returns `n` randomly shuffled products for a brand. Fetches `2n` from the DB and
 
 ---
 
+### GET /api/public/packages
+
+Returns all TBYB packages for a brand.
+
+**Query Params**
+| Param | Required | Description |
+|-------|----------|-------------|
+| brandSlug | yes | Brand slug |
+
+**Errors:** `400` missing brandSlug · `500` DB failure
+
+**Response `200`**
+```json
+[
+  {
+    "id": "uuid",
+    "name": "BikerArmour",
+    "slug": "biker-armour",
+    "priceCents": 22900,
+    "imageSrc": "https://<supabase>/bikershades/packages/biker-armour.png",
+    "pairsMin": 3,
+    "pairsMax": 5,
+    "brands": ["BikerArmour"]
+  }
+]
+```
+
+---
+
 ### POST /api/public/views
 
 Atomically increments the view count for a category or product. Pass exactly one of `categoryId` or `productSlug` alongside `brandSlug`.
@@ -523,6 +552,61 @@ Returns the user's order history for a brand, newest first.
 `attribute` is a display string (e.g. `"Gloss Black / Standard"`) for variation products, or `null` for simple products.
 
 Order status values: `processing`, `shipped`, `refunded`. Partial refunds do not change the status — detect them via `refundedCents > 0 && status !== "refunded"`. `refundedCents` is `null` if no refund has occurred, or a positive integer (cumulative cents refunded).
+
+---
+
+### POST /api/user/upload
+
+Uploads a file to the brand's Supabase Storage bucket under the `tbyb/` folder and returns the public URL. Used for prescription and headshot uploads before form submission.
+
+**Request:** `multipart/form-data` with a `file` field and a `brandSlug` field. Uploads to the brand's storage bucket.
+
+**Errors:** `400` missing file or brandSlug · `401` invalid token · `500` storage failure
+
+**Response `200`**
+```json
+{ "url": "https://..." }
+```
+
+---
+
+### POST /api/user/tbyb
+
+Submits a Try Before You Buy form. Requires authentication — `user_id` is always populated from the token.
+
+**Errors:** `400` missing required fields · `401` invalid token · `404` package not found · `500` DB failure
+
+**Body**
+```json
+{
+  "brandSlug": "bikershades",
+  "packageId": "uuid-of-selected-package",
+  "odSphere": "-1.25",
+  "odCylinder": "-0.50",
+  "odAxis": "90",
+  "osSphere": "plano",
+  "osCylinder": "plano",
+  "osAxis": null,
+  "lensType": "Single Vision",
+  "helmetSize": "Large",
+  "hatSize": "7¼",
+  "noseBridge": "It's thin and narrow",
+  "sunglassFit": "All styles and sizes fit me",
+  "frameType": "With Foam Cushion",
+  "comments": "optional free text",
+  "prescriptionUrl": "https://...",
+  "headshotUrl": "https://...",
+  "email": "customer@example.com",
+  "phone": "5555555555"
+}
+```
+
+All fields are nullable except `email`, `brandSlug`, and `packageId`. `prescriptionUrl` and `headshotUrl` are URLs returned from `POST /api/user/upload` — include them if the user uploaded files. `osAxis`/`odAxis` will be `null` when cylinder is `plano`. `packageId` is the UUID from `tbyb_packages.id` — the backend looks up the package details and stores a snapshot on the submission.
+
+**Response `200`**
+```json
+{ "id": "uuid" }
+```
 
 ---
 
