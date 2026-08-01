@@ -557,9 +557,9 @@ Order status values: `processing`, `shipped`, `refunded`. Partial refunds do not
 
 ### POST /api/user/upload
 
-Uploads a file to the brand's Supabase Storage bucket under the `tbyb/` folder and returns the public URL. Used for prescription and headshot uploads before form submission.
+Uploads a file to the brand's Supabase Storage bucket under the `tbyb/` folder and returns the public URL. Used for prescription and headshot uploads before TBYB form submission.
 
-**Request:** `multipart/form-data` with a `file` field and a `brandSlug` field. Uploads to the brand's storage bucket.
+**Request:** `multipart/form-data` with a `file` field and a `brandSlug` field.
 
 **Errors:** `400` missing file or brandSlug · `401` invalid token · `500` storage failure
 

@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   if (!brandSlug) return err("brandSlug is required", 400);
 
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const path = `packages/${safeName}-${crypto.randomUUID()}`;
+  const path = `tbyb/${safeName}-${crypto.randomUUID()}`;
 
   const adminSupabase = createAdminClient();
 
