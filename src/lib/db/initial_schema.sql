@@ -1,7 +1,7 @@
 -- ============================================================
--- 001_initial_schema.sql
+-- initial_schema.sql
 -- Full schema for sunglass monster multi-brand platform
--- Includes: core catalog, orders, cart, bookmarks
+-- Includes: core catalog, orders, cart, bookmarks, TBYB
 -- ============================================================
 
 create table brands (
@@ -271,3 +271,59 @@ returns void language sql as $$
   set view_count = view_count + 1
   where slug = p_slug and brand_slug = p_brand_slug;
 $$;
+
+
+create table tbyb_packages (
+  id          uuid primary key default gen_random_uuid(),
+  brand_slug  text not null references brands(slug) on delete cascade,
+  name        text not null,
+  slug        text not null unique,
+  price_cents int  not null,
+  image_src   text not null,
+  pairs_min   int  not null,
+  pairs_max   int  not null,
+  brands      text[] not null,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+
+create table tbyb_submissions (
+  id                  uuid        primary key default gen_random_uuid(),
+  brand_slug          text        not null references brands(slug) on delete cascade,
+  user_id             uuid        references auth.users(id) on delete set null,
+  package_name        text        not null,
+  package_slug        text        not null,
+  package_price_cents int         not null,
+  package_image_src   text        not null,
+  package_pairs_min   int         not null,
+  package_pairs_max   int         not null,
+  package_brands      text[]      not null,
+  od_sphere           text        not null,
+  od_cylinder         text        not null,
+  od_axis             text        not null,
+  os_sphere           text        not null,
+  os_cylinder         text        not null,
+  os_axis             text        not null,
+  lens_type           text        not null,
+  helmet_size         text        not null,
+  hat_size            text        not null,
+  nose_bridge         text        not null,
+  buying_preference   text        not null,
+  frame_type          text        not null,
+  special_requests    text        not null,
+  prescription_url    text        not null,
+  headshot_url        text        not null,
+  contact_email       text        not null,
+  contact_phone       text        not null,
+  status              text        not null,
+  created_at          timestamptz not null default now(),
+  updated_at          timestamptz not null default now()
+);
+
+alter table tbyb_packages   enable row level security;
+alter table tbyb_submissions enable row level security;
+
+grant select on tbyb_submissions to authenticated;
+
+create policy "tbyb_submissions: users read own"
+  on tbyb_submissions for select using (auth.uid() = user_id);
