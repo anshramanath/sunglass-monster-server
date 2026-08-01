@@ -18,12 +18,14 @@ export async function POST(req: NextRequest) {
   const packageId = body.packageId;
   if (!packageId) return err("packageId is required", 400);
 
-  const supabase = createAdminClient();
+  const adminSupabase = createAdminClient();
 
-  const { data: pkg } = await supabase.from("tbyb_packages").select("name, slug, image_src, brands, price_cents, pairs_min, pairs_max").eq("id", packageId).eq("brand_slug", brandSlug).single();
+  const { data: pkg } = await adminSupabase.from("tbyb_packages").select("name, slug, image_src, brands, price_cents, pairs_min, pairs_max").eq("id", packageId).eq("brand_slug", brandSlug).single();
   if (!pkg) return err("Package not found", 404);
 
-  const { data: submission, error } = await supabase.from("tbyb_submissions").insert({
+  const { supabase : userSupabase } = client;
+
+  const { data: submission, error } = await userSupabase.from("tbyb_submissions").insert({
     brand_slug: brandSlug,
     user_id: client.user.id,
     package_name: pkg.name,
@@ -33,23 +35,23 @@ export async function POST(req: NextRequest) {
     package_pairs_min: pkg.pairs_min,
     package_pairs_max: pkg.pairs_max,
     package_brands: pkg.brands,
-    od_sphere: body.odSphere ?? null,
-    od_cylinder: body.odCylinder ?? null,
-    od_axis: body.odAxis ?? null,
-    os_sphere: body.osSphere ?? null,
-    os_cylinder: body.osCylinder ?? null,
-    os_axis: body.osAxis ?? null,
-    lens_type: body.lensType ?? null,
-    helmet_size: body.helmetSize ?? null,
-    hat_size: body.hatSize ?? null,
-    nose_bridge: body.noseBridge ?? null,
-    buying_preference: body.sunglassFit ?? null,
-    frame_type: body.frameType ?? null,
-    special_requests: body.comments ?? null,
-    prescription_url: body.prescriptionUrl ?? null,
-    headshot_url: body.headshotUrl ?? null,
+    od_sphere: body.odSphere,
+    od_cylinder: body.odCylinder,
+    od_axis: body.odAxis,
+    os_sphere: body.osSphere,
+    os_cylinder: body.osCylinder,
+    os_axis: body.osAxis,
+    lens_type: body.lensType,
+    helmet_size: body.helmetSize,
+    hat_size: body.hatSize,
+    nose_bridge: body.noseBridge,
+    buying_preference: body.sunglassFit,
+    frame_type: body.frameType,
+    special_requests: body.comments,
+    prescription_url: body.prescriptionUrl,
+    headshot_url: body.headshotUrl,
     contact_email: email,
-    contact_phone: body.phone ?? null,
+    contact_phone: body.phone,
     status: "pending",
   }).select("id").single();
 
