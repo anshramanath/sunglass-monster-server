@@ -53,13 +53,10 @@ create table tbyb_submissions (
 alter table tbyb_packages   enable row level security;
 alter table tbyb_submissions enable row level security;
 
-grant select, insert on tbyb_submissions to authenticated;
+grant select on tbyb_submissions to authenticated;
 
 create policy "tbyb_submissions: users read own"
   on tbyb_submissions for select using (auth.uid() = user_id);
-
-create policy "tbyb_submissions: users insert own"
-  on tbyb_submissions for insert with check (auth.uid() = user_id);
 
 -- Seed packages (run after inserting the bikershades brand row)
 insert into tbyb_packages (brand_slug, name, slug, price_cents, image_src, pairs_min, pairs_max, brands) values

@@ -23,9 +23,7 @@ export async function POST(req: NextRequest) {
   const { data: pkg } = await adminSupabase.from("tbyb_packages").select("name, slug, image_src, brands, price_cents, pairs_min, pairs_max").eq("id", packageId).eq("brand_slug", brandSlug).single();
   if (!pkg) return err("Package not found", 404);
 
-  const { supabase : userSupabase } = client;
-
-  const { data: submission, error } = await userSupabase.from("tbyb_submissions").insert({
+  const { data: submission, error } = await adminSupabase.from("tbyb_submissions").insert({
     brand_slug: brandSlug,
     user_id: client.user.id,
     package_name: pkg.name,
