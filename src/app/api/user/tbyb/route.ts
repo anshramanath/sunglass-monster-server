@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     headshot_url: body.headshotUrl,
     contact_email: email,
     contact_phone: body.phone,
-    status: "pending",
+    status: "Pending",
   }).select("id").single();
 
   if (error) return err(error.message, 500);
