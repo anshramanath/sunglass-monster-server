@@ -596,6 +596,7 @@ Submits a Try Before You Buy form. Requires authentication — `user_id` is alwa
   "comments": "None",
   "prescriptionUrl": "None",
   "headshotUrl": "None",
+  "name": "John Smith",
   "email": "customer@example.com",
   "phone": "None"
 }

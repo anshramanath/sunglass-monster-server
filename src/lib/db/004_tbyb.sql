@@ -43,6 +43,7 @@ create table tbyb_submissions (
   special_requests    text        not null,
   prescription_url    text        not null,
   headshot_url        text        not null,
+  contact_name        text        not null,
   contact_email       text        not null,
   contact_phone       text        not null,
   status            text        not null,

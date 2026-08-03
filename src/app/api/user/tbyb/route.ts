@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
     special_requests: body.comments,
     prescription_url: body.prescriptionUrl,
     headshot_url: body.headshotUrl,
+    contact_name: body.name,
     contact_email: email,
     contact_phone: body.phone,
     status: "Pending",
