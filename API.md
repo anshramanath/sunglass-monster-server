@@ -308,9 +308,9 @@ Returns all TBYB packages for a brand.
   {
     "id": "uuid",
     "name": "BikerArmour",
-    "slug": "biker-armour",
+    "slug": "bikerarmour",
     "priceCents": 22900,
-    "imageSrc": "https://<supabase>/bikershades/packages/biker-armour.png",
+    "imageSrc": "https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/packages/bikerarmour.webp",
     "pairsMin": 3,
     "pairsMax": 5,
     "brands": ["BikerArmour"]
@@ -552,6 +552,56 @@ Returns the user's order history for a brand, newest first.
 `attribute` is a display string (e.g. `"Gloss Black / Standard"`) for variation products, or `null` for simple products.
 
 Order status values: `processing`, `shipped`, `refunded`. Partial refunds do not change the status — detect them via `refundedCents > 0 && status !== "refunded"`. `refundedCents` is `null` if no refund has occurred, or a positive integer (cumulative cents refunded).
+
+---
+
+### POST /api/user/submissions
+
+Returns the authenticated user's TBYB submission history for a brand, newest first. Scoped by RLS — only the user's own submissions are returned.
+
+**Errors:** `400` missing brandSlug · `401` invalid token · `500` DB failure
+
+**Body**
+```json
+{ "brandSlug": "bikershades" }
+```
+
+**Response `200`**
+```json
+[
+  {
+    "id": "uuid",
+    "status": "Processing",
+    "createdAt": "2026-07-01T12:00:00.000Z",
+    "packageName": "BikerArmour",
+    "packagePriceCents": 22900,
+    "packagePairsMin": 3,
+    "packagePairsMax": 5,
+    "packageBrands": ["BikerArmour"],
+    "packageImageSrc": "https://...",
+    "odSphere": "-1.25",
+    "odCylinder": "-0.50",
+    "odAxis": "90",
+    "osSphere": "None",
+    "osCylinder": "None",
+    "osAxis": "None",
+    "lensType": "Single Vision",
+    "helmetSize": "Large",
+    "hatSize": "7¼",
+    "noseBridge": "Thin & Narrow",
+    "buyingPreference": "All Styles & Sizes Fit",
+    "frameType": "With Foam Cushion",
+    "specialRequests": "None",
+    "prescriptionUrl": "None",
+    "headshotUrl": "None",
+    "contactName": "John Smith",
+    "contactEmail": "customer@example.com",
+    "contactPhone": "None"
+  }
+]
+```
+
+Status values: `Processing`, `Emailed`, `Curating`, `Shipped`, `Received`. Optional fields (`specialRequests`, `prescriptionUrl`, `headshotUrl`, `contactPhone`, and unselected prescription fields) are `"None"` when not provided.
 
 ---
 
