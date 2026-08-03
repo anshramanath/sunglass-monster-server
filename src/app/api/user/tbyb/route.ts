@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     contact_name: body.name,
     contact_email: email,
     contact_phone: body.phone,
-    status: "Pending",
+    status: "Processing",
   }).select("id").single();
 
   if (error) return err(error.message, 500);
