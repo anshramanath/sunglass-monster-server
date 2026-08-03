@@ -228,10 +228,10 @@ export default function TbybTable({
                   </div>
                 </div>
 
-                {/* Preferences · Uploads */}
+                {/* Specifications · Uploads */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, paddingTop: 24, borderTop: "1px solid #e5e5e5" }}>
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Preferences</div>
+                    <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Specifications</div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 16px", fontSize: 14 }}>
                       <div style={{ color: "#737373" }}>Lens type</div><div>{sub.lensType}</div>
                       <div style={{ color: "#737373" }}>Helmet size</div><div>{sub.helmetSize}</div>
