@@ -137,7 +137,7 @@ Unknown filter slugs are silently ignored — all products are returned.
 
 ### GET /api/public/sale
 
-Paginated sale products (`sale = true`). Same response shape as `/products` except `sale` field is omitted (implied). No `sale` filter slug needed.
+Paginated sale products (`sale = true`). Same response shape as `/products`. No `sale` filter slug needed.
 
 **Query Params**
 | Param | Required | Default | Description |
@@ -149,7 +149,7 @@ Paginated sale products (`sale = true`). Same response shape as `/products` exce
 
 **Errors:** `400` missing brandSlug · `500` DB failure
 
-**Response `200`** — same shape as `/products` without the `sale` field on each product.
+**Response `200`** — same shape as `/products`.
 
 ---
 
