@@ -60,10 +60,10 @@ create policy "tbyb_submissions: users read own"
 
 -- Seed packages (run after inserting the bikershades brand row)
 insert into tbyb_packages (brand_slug, name, slug, price_cents, image_src, pairs_min, pairs_max, brands) values
-  ('bikershades', 'BikerArmour',            'biker-armour',        22900, 'https://<supabase>/bikershades/packages/biker-armour.png',         3, 5,  array['BikerArmour']),
-  ('bikershades', 'Wiley X',                'wiley-x',             24900, 'https://<supabase>/bikershades/packages/wiley-x.png',              3, 5,  array['Wiley X']),
-  ('bikershades', '7Eye',                   '7eye',                24900, 'https://<supabase>/bikershades/packages/7eye.png',                 3, 5,  array['7Eye']),
-  ('bikershades', 'BikerArmour + Wiley X',  'biker-armour-wileyx', 27900, 'https://<supabase>/bikershades/packages/biker-armour-wiley-x.png', 5, 8,  array['BikerArmour', 'Wiley X']),
-  ('bikershades', 'BikerArmour + 7Eye',     'biker-armour-7eye',   27900, 'https://<supabase>/bikershades/packages/biker-armour-7eye.png',    5, 8,  array['BikerArmour', '7Eye']),
-  ('bikershades', 'Triple Play',            'triple-play',         32900, 'https://<supabase>/bikershades/packages/triple-play.png',          7, 10, array['Wiley X', '7Eye', 'BikerArmour']),
-  ('bikershades', '7Eye Ziena',             '7eye-ziena',          34900, 'https://<supabase>/bikershades/packages/7eye-ziena.png',           3, 3,  array['7Eye Ziena']);
+  ('bikershades', 'BikerArmour',                  'bikerarmour',            22900, 'https://<supabase>/bikershades/packages/bikerarmour.webp',         3, 5,  array['BikerArmour']),
+  ('bikershades', 'Wiley X',                      'wiley-x',                24900, 'https://<supabase>/bikershades/packages/wileyx.webp',              3, 5,  array['Wiley X']),
+  ('bikershades', '7Eye',                         '7eye',                   24900, 'https://<supabase>/bikershades/packages/7eye.webp',                3, 5,  array['7Eye']),
+  ('bikershades', 'BikerArmour + Wiley X',        'bikerarmour-wiley-x',    27900, 'https://<supabase>/bikershades/packages/bikerarmour-wileyx.webp',  5, 8,  array['BikerArmour', 'Wiley X']),
+  ('bikershades', 'BikerArmour + 7Eye',           'bikerarmour-7eye',       27900, 'https://<supabase>/bikershades/packages/bikerarmour-7eye.webp',    5, 8,  array['BikerArmour', '7Eye']),
+  ('bikershades', 'BikerArmour + 7Eye + Wiley X', 'bikerarmour-7eye-wiley-x', 32900, 'https://<supabase>/bikershades/packages/bikerarmour-7eye-wileyx.webp', 7, 10, array['BikerArmour', '7Eye', 'Wiley X']),
+  ('bikershades', '7Eye Ziena',                   '7eye-ziena',             34900, 'https://<supabase>/bikershades/packages/7eye.webp',                3, 3,  array['7Eye']);
