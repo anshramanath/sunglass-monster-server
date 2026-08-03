@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import type { User } from "@supabase/supabase-js";
 import { signOut } from "@/lib/auth";
@@ -18,20 +18,15 @@ const NAV = [
   { label: "Analytics", path: "/analytics" },
 ];
 
-export default function Sidebar({
-  user,
-  currentBrandSlug,
-}: {
-  user: User;
-  currentBrandSlug: string;
-}) {
+export default function Sidebar({ user }: { user: User }) {
+  const { brandSlug } = useParams<{ brandSlug: string }>();
   const pathname = usePathname();
   const router = useRouter();
   const [navigating, setNavigating] = useState(false);
 
   useEffect(() => { setNavigating(false); }, [pathname]);
 
-  const currentBrand = BRANDS.find((b) => b.slug === currentBrandSlug) ?? BRANDS[0];
+  const currentBrand = BRANDS.find((b) => b.slug === brandSlug) ?? BRANDS[0];
   const name = (user.user_metadata?.name as string | undefined) ?? user.email ?? "";
   const initials = name[0].toUpperCase();
 
@@ -41,7 +36,7 @@ export default function Sidebar({
   }
 
   function isActive(path: string) {
-    const base = `/admin/${currentBrandSlug}`;
+    const base = `/admin/${brandSlug}`;
     return path === "" ? pathname === base : pathname.startsWith(base + path);
   }
 
@@ -61,7 +56,7 @@ export default function Sidebar({
       <div className="mb-8">
         <div className="flex flex-col gap-2">
           {BRANDS.map((brand) => {
-            const active = brand.slug === currentBrandSlug;
+            const active = brand.slug === brandSlug;
             return (
               <div
                 key={brand.slug}
@@ -102,7 +97,7 @@ export default function Sidebar({
           return (
             <div
               key={label}
-              onClick={() => !active && navigate(`/admin/${currentBrandSlug}${path}`)}
+              onClick={() => !active && navigate(`/admin/${brandSlug}${path}`)}
               style={{
                 padding: "11px 12px",
                 fontSize: 14,
@@ -117,6 +112,24 @@ export default function Sidebar({
           );
         })}
       </div>
+
+      {brandSlug === "bikershades" && (
+        <div style={{ marginTop: 32 }}>
+          <div
+            onClick={() => !isActive("/tbyb") && navigate(`/admin/${brandSlug}/tbyb`)}
+            style={{
+              padding: "11px 12px",
+              fontSize: 14,
+              fontWeight: 500,
+              cursor: "pointer",
+              background: isActive("/tbyb") ? currentBrand.accent : "transparent",
+              color: isActive("/tbyb") ? "#ffffff" : "#525252",
+            }}
+          >
+            TBYB
+          </div>
+        </div>
+      )}
 
       <div className="flex-1" />
 

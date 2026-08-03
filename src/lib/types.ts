@@ -126,3 +126,32 @@ export type FormVariation = {
   attrs: FormAttr[];
   images: FormImage[];
 };
+
+export type TbybSubmission = {
+  id: string;
+  createdAt: string;
+  status: string;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  packageName: string;
+  packagePriceCents: number;
+  packagePairsMin: number;
+  packagePairsMax: number;
+  packageBrands: string[];
+  odSphere: string;
+  odCylinder: string;
+  odAxis: string;
+  osSphere: string;
+  osCylinder: string;
+  osAxis: string;
+  lensType: string;
+  helmetSize: string;
+  hatSize: string;
+  noseBridge: string;
+  buyingPreference: string;
+  frameType: string;
+  specialRequests: string;
+  prescriptionUrl: string;
+  headshotUrl: string;
+};

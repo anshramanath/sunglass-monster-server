@@ -81,6 +81,14 @@
       </sc-for>
     </div>
 
+    <div style="display:flex; flex-direction:column; gap:2px; margin-top:32px;">
+      <sc-for list="{{ tbybNavItems }}" as="item" hint-placeholder-count="1">
+        <div onClick="{{ item.onClick }}" style="{{ item.rowStyle }}">
+          {{ item.label }}
+        </div>
+      </sc-for>
+    </div>
+
     <div style="flex:1;"></div>
 
     <div style="border-top:1px solid var(--color-border); padding-top:16px; display:flex; align-items:center; gap:10px;">
@@ -262,6 +270,135 @@
         </sc-if>
         <sc-if value="{{ !hasOrders }}" hint-placeholder-val="{{ false }}">
           <div style="padding:60px 0; color:var(--grey-500); font-size:15px; border-top:1px solid var(--color-border); text-align:left;">No orders placed for this brand yet.</div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <!-- ===================== TBYB ===================== -->
+    <sc-if value="{{ isTbyb }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <sc-if value="{{ hasTbyb }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px;">
+              <sc-for list="{{ tbybFilterOptions }}" as="opt" hint-placeholder-count="6">
+                <div onClick="{{ opt.select }}" style="{{ opt.style }}">{{ opt.label }}</div>
+              </sc-for>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1.2fr 1.4fr 1.1fr 1.6fr 1.2fr 32px; gap:16px; padding:0 0 10px; border-bottom:1px solid var(--aritzia-black); font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500);">
+              <div>Submission</div><div>Placed</div><div>Customer</div><div>Package</div><div>Status</div><div></div>
+            </div>
+
+            <sc-for list="{{ tbybView }}" as="sub" hint-placeholder-count="6">
+              <div style="border-bottom:1px solid var(--color-border);">
+                <div onClick="{{ sub.toggle }}" style="display:grid; grid-template-columns:1.2fr 1.4fr 1.1fr 1.6fr 1.2fr 32px; gap:16px; align-items:center; padding:16px 0; cursor:pointer;">
+                  <div style="font-size:14px;">{{ sub.displayId }}</div>
+                  <div style="font-size:14px; color:var(--grey-500);">{{ sub.dateDisplay }}</div>
+                  <div style="font-size:14px;">{{ sub.customerName }}</div>
+                  <div style="font-size:14px;">{{ sub.packageName }}</div>
+                  <div style="display:flex; align-items:center; gap:6px; font-size:13px; color:{{ sub.statusColor }};">
+                    <span style="width:6px; height:6px; border-radius:50%; background:{{ sub.statusColor }}; flex:none;"></span>{{ sub.statusLabel }}
+                  </div>
+                  <div style="font-size:16px; color:var(--grey-500); text-align:center; transform:{{ sub.chevronTransform }}; transition:transform 120ms;">⌄</div>
+                </div>
+
+                <sc-if value="{{ sub.expanded }}" hint-placeholder-val="{{ false }}">
+                  <div style="background:var(--grey-50); padding:24px 24px 28px; margin-bottom:8px;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:32px; margin-bottom:28px;">
+                      <div>
+                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Contact</div>
+                        <div style="font-size:14px; line-height:1.6;">
+                          <div>{{ sub.customerName }}</div>
+                          <div style="color:var(--grey-500);">{{ sub.contactEmail }}</div>
+                          <div style="color:var(--grey-500);">{{ sub.contactPhone }}</div>
+                        </div>
+                      </div>
+                      <div>
+                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Package</div>
+                        <div style="font-size:14px; line-height:1.6;">
+                          <div>{{ sub.packageName }} · {{ sub.packagePriceDisplay }}</div>
+                          <div style="color:var(--grey-500);">{{ sub.pairsDisplay }} pairs</div>
+                          <div style="color:var(--grey-500);">{{ sub.brandsDisplay }}</div>
+                        </div>
+                      </div>
+                      <div>
+                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Status</div>
+                        <div style="position:relative;">
+                          <div onClick="{{ sub.toggleStatusDropdown }}" style="height:38px; width:100%; border:1px solid var(--aritzia-black); padding:0 12px; font-family:var(--font-sans); font-size:13px; background:var(--aritzia-white); display:flex; align-items:center; justify-content:space-between; gap:8px; cursor:pointer; user-select:none; box-sizing:border-box;">
+                            <span>{{ sub.statusLabel }}</span>
+                            <span style="font-size:10px; transform:{{ sub.statusChevron }}; transition:transform 120ms;">▾</span>
+                          </div>
+                          <sc-if value="{{ sub.statusDropdownOpen }}" hint-placeholder-val="{{ false }}">
+                            <div style="position:absolute; top:40px; left:0; width:100%; background:var(--aritzia-white); border:1px solid var(--aritzia-black); z-index:10; box-sizing:border-box;">
+                              <sc-for list="{{ sub.statusOptions }}" as="st" hint-placeholder-count="5">
+                                <div onClick="{{ st.select }}" style="{{ st.rowStyle }}">
+                                  <div>{{ st.label }}</div>
+                                  <div style="font-size:11px; color:{{ st.descColor }}; margin-top:2px;">{{ st.description }}</div>
+                                </div>
+                              </sc-for>
+                            </div>
+                          </sc-if>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-bottom:28px; padding-top:24px; border-top:1px solid var(--color-border);">
+                      <div>
+                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Prescription · {{ sub.lensType }}</div>
+                        <div style="display:grid; grid-template-columns:44px 1fr 1fr 1fr; gap:10px 16px; font-size:13px;">
+                          <div></div><div style="color:var(--grey-500);">Sphere</div><div style="color:var(--grey-500);">Cylinder</div><div style="color:var(--grey-500);">Axis</div>
+                          <div style="color:var(--grey-500);">OD</div><div>{{ sub.odSphere }}</div><div>{{ sub.odCylinder }}</div><div>{{ sub.odAxis }}</div>
+                          <div style="color:var(--grey-500);">OS</div><div>{{ sub.osSphere }}</div><div>{{ sub.osCylinder }}</div><div>{{ sub.osAxis }}</div>
+                        </div>
+                      </div>
+                      <div>
+                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Special requests</div>
+                        <div style="font-size:14px; line-height:1.55; color:{{ sub.requestsColor }};">{{ sub.specialRequestsDisplay }}</div>
+                      </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; padding-top:24px; border-top:1px solid var(--color-border);">
+                      <div>
+                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Fit preferences</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 16px; font-size:14px;">
+                          <div style="color:var(--grey-500);">Helmet size</div><div>{{ sub.helmetSize }}</div>
+                          <div style="color:var(--grey-500);">Hat size</div><div>{{ sub.hatSize }}</div>
+                          <div style="color:var(--grey-500);">Nose bridge</div><div>{{ sub.noseBridge }}</div>
+                          <div style="color:var(--grey-500);">Buying preference</div><div>{{ sub.buyingPreference }}</div>
+                          <div style="color:var(--grey-500);">Frame type</div><div>{{ sub.frameType }}</div>
+                        </div>
+                      </div>
+                      <div>
+                        <div style="display:flex; flex-direction:column; gap:20px;">
+                          <div>
+                            <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Prescription upload</div>
+                            <sc-if value="{{ sub.prescriptionUrl }}" hint-placeholder-val="{{ false }}">
+                              <a href="{{ sub.prescriptionUrl }}" target="_blank" rel="noopener" style="font-size:14px; color:var(--aritzia-black); text-decoration:underline; text-underline-offset:3px;">View prescription ↗</a>
+                            </sc-if>
+                            <sc-if value="{{ !sub.prescriptionUrl }}" hint-placeholder-val="{{ true }}">
+                              <div style="font-size:14px; color:var(--grey-400);">None</div>
+                            </sc-if>
+                          </div>
+                          <div>
+                            <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Headshot</div>
+                            <sc-if value="{{ sub.headshotUrl }}" hint-placeholder-val="{{ false }}">
+                              <a href="{{ sub.headshotUrl }}" target="_blank" rel="noopener" style="font-size:14px; color:var(--aritzia-black); text-decoration:underline; text-underline-offset:3px;">View headshot ↗</a>
+                            </sc-if>
+                            <sc-if value="{{ !sub.headshotUrl }}" hint-placeholder-val="{{ true }}">
+                              <div style="font-size:14px; color:var(--grey-400);">None</div>
+                            </sc-if>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ !hasTbyb }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:60px 0; color:var(--grey-500); font-size:15px; border-top:1px solid var(--color-border); text-align:left;">No TBYB submissions yet.</div>
         </sc-if>
       </div>
     </sc-if>
@@ -902,6 +1039,10 @@ class Component extends DCLogic {
     openCarrierDropdown: null,
     openAttributeDropdown: null,
     pendingConfirm: null,
+    tbybFilter: 'all',
+    expandedTbyb: null,
+    openTbybStatusDropdown: null,
+    tbybSubmissions: null,
     collapsedCats: {},
     selectedProductId: null,
     products: JSON.parse(JSON.stringify(this.seedProducts))
@@ -950,6 +1091,67 @@ class Component extends DCLogic {
 
   carrierOptions = ['UPS', 'FedEx', 'USPS', 'Canada Post', 'DHL'];
   attributeKeys = ['color', 'power', 'transition', 'quantity', 'size'];
+  tbybStatuses = ['Processing', 'Emailed', 'Curating', 'Shipped', 'Received'];
+  tbybStatusDescriptions = {
+    Processing: 'We got your submission',
+    Emailed: "We've reached out to you",
+    Curating: "We're selecting your glasses",
+    Shipped: 'Your package is on the way',
+    Received: 'We got everything back'
+  };
+
+  seedTbybSubmissions = [
+    { id: 's1', uuid: '0884ac30-70a2-448d-9756-befaab38df09', created_at: 'Jul 28, 2026 · 11:04 AM', status: 'Processing', contact_name: 'Jordan Reyes', contact_email: 'jordan.reyes@gmail.com', contact_phone: '(604) 555-0142',
+      package_name: 'Triple Play', package_price_cents: 32900, package_pairs_min: 7, package_pairs_max: 10, package_brands: ['Wiley X', '7Eye', 'BikerArmour'],
+      od_sphere: '-1.25', od_cylinder: '-0.50', od_axis: '90', os_sphere: '-1.00', os_cylinder: '-0.25', os_axis: '85', lens_type: 'Single Vision',
+      helmet_size: 'L', hat_size: '7 1/4', nose_bridge: 'Medium', buying_preference: 'Snug wrap', frame_type: 'With Foam Cushion',
+      special_requests: 'Prefer darker tint if possible, ride mostly at midday.', prescription_url: 'assets/product-1.jpg', headshot_url: 'assets/product-2.jpg' },
+    { id: 's2', uuid: '1a72e5f4-3c9b-4d21-a8e6-72c1f4a90b3d', created_at: 'Jul 27, 2026 · 3:42 PM', status: 'Curating', contact_name: 'Priya Nair', contact_email: 'priya.nair@outlook.com', contact_phone: '(778) 555-0199',
+      package_name: 'Double Down', package_price_cents: 24900, package_pairs_min: 4, package_pairs_max: 6, package_brands: ['Wiley X', 'BikerArmour'],
+      od_sphere: '+0.75', od_cylinder: '0.00', od_axis: '—', os_sphere: '+0.50', os_cylinder: '0.00', os_axis: '—', lens_type: 'Single Vision',
+      helmet_size: 'M', hat_size: '7', nose_bridge: 'Low', buying_preference: 'Standard fit', frame_type: 'No Foam Cushion',
+      special_requests: '', prescription_url: '', headshot_url: 'assets/product-3.jpg' },
+    { id: 's3', uuid: '5e8d2a71-9f4c-4b83-b1e0-3d6a8c2f7e15', created_at: 'Jul 25, 2026 · 9:15 AM', status: 'Shipped', contact_name: 'Mika Tanaka', contact_email: 'mtanaka@icloud.com', contact_phone: '(416) 555-0187',
+      package_name: 'Solo Ride', package_price_cents: 14900, package_pairs_min: 2, package_pairs_max: 3, package_brands: ['7Eye'],
+      od_sphere: '-3.00', od_cylinder: '-0.75', od_axis: '170', os_sphere: '-2.75', os_cylinder: '-1.00', os_axis: '5', lens_type: 'Progressive',
+      helmet_size: 'XL', hat_size: '7 5/8', nose_bridge: 'High', buying_preference: 'Snug wrap', frame_type: 'With Foam Cushion',
+      special_requests: 'Please include a hard case if available.', prescription_url: 'assets/product-4.jpg', headshot_url: 'assets/product-1.jpg' },
+    { id: 's4', uuid: 'c3f9b6a2-1d5e-4a97-9c4b-8e2f1a6d5c30', created_at: 'Jul 22, 2026 · 6:30 PM', status: 'Received', contact_name: 'Dee Morrison', contact_email: 'dee.morrison@yahoo.com', contact_phone: '(212) 555-0163',
+      package_name: 'Triple Play', package_price_cents: 32900, package_pairs_min: 7, package_pairs_max: 10, package_brands: ['Wiley X', '7Eye', 'BikerArmour'],
+      od_sphere: '0.00', od_cylinder: '0.00', od_axis: '—', os_sphere: '0.00', os_cylinder: '0.00', os_axis: '—', lens_type: 'Non-Prescription',
+      helmet_size: 'M', hat_size: '7 1/8', nose_bridge: 'Medium', buying_preference: 'Standard fit', frame_type: 'No Foam Cushion',
+      special_requests: '', prescription_url: '', headshot_url: '' },
+    { id: 's5', uuid: '7b2e4f81-6a3c-4d09-8f5e-1c9a3b7d2e64', created_at: 'Jul 19, 2026 · 1:12 PM', status: 'Emailed', contact_name: 'Khalil Osei', contact_email: 'khalil.osei@gmail.com', contact_phone: '(647) 555-0121',
+      package_name: 'Double Down', package_price_cents: 24900, package_pairs_min: 4, package_pairs_max: 6, package_brands: ['Wiley X', 'BikerArmour'],
+      od_sphere: '-0.50', od_cylinder: '-0.25', od_axis: '60', os_sphere: '-0.75', os_cylinder: '-0.25', os_axis: '120', lens_type: 'Single Vision',
+      helmet_size: 'S', hat_size: '6 7/8', nose_bridge: 'Low', buying_preference: 'Loose fit', frame_type: 'With Foam Cushion',
+      special_requests: 'Changed my mind — please cancel and refund.', prescription_url: 'assets/product-2.jpg', headshot_url: '' },
+    { id: 's6', uuid: '4d6a1c53-8e2f-4b70-a9d4-6f3c8e1a5b92', created_at: 'Jul 15, 2026 · 8:50 AM', status: 'Processing', contact_name: 'Casey Walsh', contact_email: 'cwalsh@proton.me', contact_phone: '(519) 555-0155',
+      package_name: 'Solo Ride', package_price_cents: 14900, package_pairs_min: 2, package_pairs_max: 3, package_brands: ['BikerArmour'],
+      od_sphere: '-2.00', od_cylinder: '0.00', od_axis: '—', os_sphere: '-2.25', os_cylinder: '0.00', os_axis: '—', lens_type: 'Single Vision',
+      helmet_size: 'L', hat_size: '7 3/8', nose_bridge: 'Medium', buying_preference: 'Snug wrap', frame_type: 'With Foam Cushion',
+      special_requests: '', prescription_url: 'assets/product-3.jpg', headshot_url: 'assets/product-4.jpg' }
+  ];
+
+  tbybStatusMeta(status, accent) {
+    const map = {
+      Processing: { label: 'Processing', color: 'var(--grey-500)' },
+      Emailed: { label: 'Emailed', color: accent },
+      Curating: { label: 'Curating', color: accent },
+      Shipped: { label: 'Shipped', color: 'var(--aritzia-black)' },
+      Received: { label: 'Received', color: 'var(--aritzia-black)' }
+    };
+    return map[status] || { label: status, color: 'var(--grey-500)' };
+  }
+
+  toggleTbyb(id) { this.setState(s => ({ expandedTbyb: s.expandedTbyb === id ? null : id })); }
+  toggleTbybStatusDropdown(id) { this.setState(s => ({ openTbybStatusDropdown: s.openTbybStatusDropdown === id ? null : id })); }
+  setTbybStatus(id, status) {
+    this.setState(s => ({
+      tbybSubmissions: (s.tbybSubmissions || this.seedTbybSubmissions).map(sub => sub.id === id ? { ...sub, status } : sub),
+      openTbybStatusDropdown: null
+    }));
+  }
 
   toggleOrder(id) { this.setState(s => ({ expandedOrder: s.expandedOrder === id ? null : id })); }
   setOrderCarrier(orderId, carrier) {
@@ -1211,16 +1413,18 @@ class Component extends DCLogic {
     ];
     const brandAccent = brandData.accent;
     const brandAccentHover = this.shade(brandAccent, -0.18);
-    const navItems = navDefs.map(n => {
+    const buildNavItem = (n) => {
       const active = s.page === n.key;
       return {
         label: n.label,
         onClick: () => this.setState({ page: n.key, selectedProductId: null }),
         rowStyle: `padding:11px 12px; font-size:14px; font-weight:500; cursor:pointer; background:${active ? brandAccent : 'transparent'}; color:${active ? 'var(--aritzia-white)' : 'var(--grey-700)'};`
       };
-    });
+    };
+    const navItems = navDefs.map(buildNavItem);
+    const tbybNavItems = [buildNavItem({ key: 'tbyb', label: 'TBYB' })];
 
-    const pageTitles = { overview: 'Overview', orders: 'Orders', products: 'Products', categories: 'Categories', analytics: 'Analytics' };
+    const pageTitles = { overview: 'Overview', orders: 'Orders', products: 'Products', categories: 'Categories', analytics: 'Analytics', tbyb: 'TBYB' };
 
     const flatCats = [];
     this.flattenCats(brandData.categories, 0, {}, flatCats);
@@ -1291,6 +1495,53 @@ class Component extends DCLogic {
         value: opt.value, label: opt.label,
         select: () => this.setState({ orderFilter: opt.value }),
         style: `padding:11px 18px; font-size:14px; font-weight:500; letter-spacing:0.02em; cursor:pointer; white-space:nowrap; flex:none; border:1px solid ${active ? brandAccent : 'var(--aritzia-black)'}; background:${active ? brandAccent : 'var(--aritzia-white)'}; color:${active ? 'var(--aritzia-white)' : 'var(--aritzia-black)'};`
+      };
+    });
+
+    const tbybSubmissions = s.tbybSubmissions || this.seedTbybSubmissions;
+    const tbybStatusCounts = { all: tbybSubmissions.length };
+    this.tbybStatuses.forEach(st => { tbybStatusCounts[st] = tbybSubmissions.filter(sub => sub.status === st).length; });
+    const tbybFilterDefs = [{ value: 'all', label: `All (${tbybStatusCounts.all})` }].concat(this.tbybStatuses.map(st => ({ value: st, label: `${st} (${tbybStatusCounts[st]})` })));
+    const tbybFilterOptions = tbybFilterDefs.map(opt => {
+      const active = s.tbybFilter === opt.value;
+      return {
+        value: opt.value, label: opt.label,
+        select: () => this.setState({ tbybFilter: opt.value }),
+        style: `padding:11px 18px; font-size:14px; font-weight:500; letter-spacing:0.02em; cursor:pointer; white-space:nowrap; flex:none; border:1px solid ${active ? brandAccent : 'var(--aritzia-black)'}; background:${active ? brandAccent : 'var(--aritzia-white)'}; color:${active ? 'var(--aritzia-white)' : 'var(--aritzia-black)'};`
+      };
+    });
+    const filteredTbyb = tbybSubmissions.filter(sub => s.tbybFilter === 'all' || sub.status === s.tbybFilter);
+    const tbybView = filteredTbyb.map(sub => {
+      const meta = this.tbybStatusMeta(sub.status, brandAccent);
+      const expanded = s.expandedTbyb === sub.id;
+      const statusDropdownOpen = s.openTbybStatusDropdown === sub.id;
+      return {
+        id: sub.id, displayId: '#' + (sub.uuid || sub.id).slice(-8).toUpperCase(), dateDisplay: sub.created_at, customerName: sub.contact_name || 'None', contactEmail: sub.contact_email || 'None', contactPhone: sub.contact_phone || 'None',
+        packageName: sub.package_name, packagePriceDisplay: this.fmt(sub.package_price_cents),
+        pairsDisplay: sub.package_pairs_min === sub.package_pairs_max ? String(sub.package_pairs_min) : `${sub.package_pairs_min}\u2013${sub.package_pairs_max}`,
+        brandsDisplay: sub.package_brands.join(', '),
+        statusLabel: meta.label, statusColor: meta.color,
+        toggle: () => this.toggleTbyb(sub.id),
+        expanded,
+        chevronTransform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+        lensType: sub.lens_type || 'None',
+        odSphere: sub.od_sphere || 'None', odCylinder: sub.od_cylinder || 'None', odAxis: sub.od_axis || 'None',
+        osSphere: sub.os_sphere || 'None', osCylinder: sub.os_cylinder || 'None', osAxis: sub.os_axis || 'None',
+        helmetSize: sub.helmet_size || 'None', hatSize: sub.hat_size || 'None', noseBridge: sub.nose_bridge || 'None',
+        buyingPreference: sub.buying_preference || 'None', frameType: sub.frame_type || 'None',
+        specialRequestsDisplay: sub.special_requests || 'None provided',
+        requestsColor: sub.special_requests ? 'var(--aritzia-black)' : 'var(--grey-400)',
+        prescriptionUrl: sub.prescription_url, headshotUrl: sub.headshot_url,
+        toggleStatusDropdown: () => this.toggleTbybStatusDropdown(sub.id),
+        statusDropdownOpen,
+        statusChevron: statusDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+        statusOptions: this.tbybStatuses.map(st => ({
+          label: st,
+          description: this.tbybStatusDescriptions[st],
+          select: () => this.setTbybStatus(sub.id, st),
+          rowStyle: `padding:9px 12px; font-size:13px; cursor:pointer; background:${sub.status === st ? brandAccent : 'var(--aritzia-white)'}; color:${sub.status === st ? 'var(--aritzia-white)' : 'var(--aritzia-black)'};`,
+          descColor: sub.status === st ? 'var(--aritzia-white)' : 'var(--grey-500)'
+        }))
       };
     });
 
@@ -1402,6 +1653,7 @@ class Component extends DCLogic {
       brandOptions,
       onBrandChange: (e) => this.setState({ brand: e.target.value, page: s.page, orderFilter: 'all', expandedOrder: null, productSearch: '', productCategory: 'all', productPageSize: 6, collapsedCats: {}, selectedProductId: null }),
       navItems,
+      tbybNavItems,
       adminName: 'Alex Rivera',
       adminInitials: 'AR',
       onSignOut: () => this.setState({ signedIn: false, signInEmail: '', signInPassword: '' }),
@@ -1410,6 +1662,7 @@ class Component extends DCLogic {
       showPageHeader: !(s.page === 'products' && s.selectedProductId),
       isOverview: s.page === 'overview',
       isOrders: s.page === 'orders',
+      isTbyb: s.page === 'tbyb',
       showProductList: s.page === 'products' && !s.selectedProductId,
       showProductDetail: s.page === 'products' && !!s.selectedProductId,
       isCategories: s.page === 'categories',
@@ -1418,6 +1671,10 @@ class Component extends DCLogic {
       catalogueStats, orderStats,
       hasRecent: recentProducts.length > 0,
       recentProducts,
+
+      hasTbyb: tbybSubmissions.length > 0,
+      tbybFilterOptions,
+      tbybView,
 
       hasOrders: brandData.orders.length > 0,
       orderFilter: s.orderFilter,
