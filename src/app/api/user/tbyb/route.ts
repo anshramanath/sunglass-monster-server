@@ -127,26 +127,31 @@ export async function POST(req: NextRequest) {
 
   const shortId = "#" + submissionId.slice(-8).toUpperCase();
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    client_reference_id: client.user.id,
-    customer_email: sub.email,
-    metadata: { type: "tbyb", submissionId, brandSlug },
-    line_items: [{
-      price_data: {
-        currency: "usd",
-        product_data: {
-          name: `${pkg.name} · ${pkg.pairs_min === pkg.pairs_max ? pkg.pairs_min : `${pkg.pairs_min}–${pkg.pairs_max}`} Pairs`,
-          description: shortId,
-          images: [pkg.image_src],
+  let session;
+  try {
+    session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      client_reference_id: client.user.id,
+      customer_email: sub.email,
+      metadata: { type: "tbyb", submissionId, brandSlug },
+      line_items: [{
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: `${pkg.name} · ${pkg.pairs_min === pkg.pairs_max ? pkg.pairs_min : `${pkg.pairs_min}–${pkg.pairs_max}`} Pairs`,
+            description: shortId,
+            images: [pkg.image_src],
+          },
+          unit_amount: pkg.price_cents,
         },
-        unit_amount: pkg.price_cents,
-      },
-      quantity: 1,
-    }],
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-  }, { idempotencyKey: submissionId });
+        quantity: 1,
+      }],
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+    }, { idempotencyKey: submissionId });
+  } catch {
+    return err("Failed to create checkout session", 500);
+  }
 
   if (!session.url) return err("Failed to create checkout session", 500);
 

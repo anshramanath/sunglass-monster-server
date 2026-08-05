@@ -124,33 +124,38 @@ export async function POST(req: NextRequest) {
   const orderCount = count ?? 0;
   const idempotencyKey = `${user.id}:${hashCart(items, entryMap)}:${orderCount}`;
 
-  const session = await stripe.checkout.sessions.create(
-    {
-      mode: "payment",
-      client_reference_id: user.id,
-      customer_email: user.email,
-      metadata: { type: "order", brandSlug },
-      line_items: (items as CartItem[]).map((item) => {
-        const entry = entryMap.get(`${item.productSlug}:${item.sku}`)!;
-        return {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: entry.attribute.length > 0 ? `${entry.name} — ${entry.attribute.map((a) => a.option).join(" / ")}` : entry.name,
-              description: item.sku,
-              images: [entry.imageSrc],
+  let session;
+  try {
+    session = await stripe.checkout.sessions.create(
+      {
+        mode: "payment",
+        client_reference_id: user.id,
+        customer_email: user.email,
+        metadata: { type: "order", brandSlug },
+        line_items: (items as CartItem[]).map((item) => {
+          const entry = entryMap.get(`${item.productSlug}:${item.sku}`)!;
+          return {
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name: entry.attribute.length > 0 ? `${entry.name} — ${entry.attribute.map((a) => a.option).join(" / ")}` : entry.name,
+                description: item.sku,
+                images: [entry.imageSrc],
+              },
+              unit_amount: entry.priceCents,
             },
-            unit_amount: entry.priceCents,
-          },
-          quantity: item.quantity,
-        };
-      }),
-      shipping_address_collection: { allowed_countries: ["US"] },
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-    },
-    { idempotencyKey }
-  );
+            quantity: item.quantity,
+          };
+        }),
+        shipping_address_collection: { allowed_countries: ["US"] },
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+      },
+      { idempotencyKey }
+    );
+  } catch {
+    return err("Failed to create checkout session", 500);
+  }
 
   if (!session.url) return err("Failed to create checkout session", 500);
   const sessionUrl = { url: session.url };
