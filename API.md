@@ -612,7 +612,7 @@ Returns the authenticated user's TBYB submission history for a brand, newest fir
 
 `shippingAddress` is `null` until payment completes — it is stored by the webhook after checkout.
 
-Status values: `Unpaid`, `Processing`, `Emailed`, `Curating`, `Shipped`, `Received`, `Refunded`. `Unpaid` is set on submission before payment; `Refunded` is set by the Stripe webhook on full refund. Both are system-set and not admin-editable. Optional fields (`specialRequests`, `prescriptionUrl`, `headshotUrl`, `contactPhone`, and unselected prescription fields) are `"None"` when not provided.
+Status values: `Unpaid`, `Curating`, `Emailed`, `Shipped`, `Received`, `Refunded`. `Unpaid` is set on submission before payment; `Curating` is set by the webhook after successful payment; `Refunded` is set by the webhook on full refund. `Unpaid` and `Refunded` are not admin-editable. Optional fields (`specialRequests`, `prescriptionUrl`, `headshotUrl`, `contactPhone`, and unselected prescription fields) are `"None"` when not provided.
 
 ---
 
@@ -733,7 +733,7 @@ Stripe webhook handler. Verified via `stripe-signature` header. Handles the foll
 
 **`checkout.session.completed`** — dispatches on `session.metadata.type`:
 - `"order"` — inserts an `orders` row with status `processing` and `order_items` rows from expanded Stripe line items. Idempotent via `stripe_session_id`.
-- `"tbyb"` — updates the matching `tbyb_submissions` row to status `Processing` and stores `stripe_session_id` / `stripe_payment_intent`.
+- `"tbyb"` — updates the matching `tbyb_submissions` row to status `Curating` and stores `stripe_session_id`, `stripe_payment_intent`, and `shipping_address`.
 - Unknown type — returns `400`.
 
 **`charge.refunded`** — matched by `stripe_payment_intent`. Only fires if `charge.amount_refunded > 0`. Tries orders first; if no order rows are updated, falls back to updating the matching `tbyb_submissions` row to `Refunded`. For orders: sets `refunded_cents` to the cumulative refunded amount; sets `status` to `refunded` only on a full refund (`amount_refunded === amount`) — partial refunds update `refunded_cents` only.

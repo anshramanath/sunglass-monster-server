@@ -5,12 +5,11 @@ import { formatPrice } from "@/lib/utils";
 import { updateTbybStatus } from "@/lib/admin/tbyb";
 import type { TbybSubmission } from "@/lib/types";
 
-const STATUSES = ["Processing", "Emailed", "Curating", "Shipped", "Received"] as const;
+const STATUSES = ["Curating", "Emailed", "Shipped", "Received"] as const;
 
 const STATUS_DESCRIPTIONS: Record<string, string> = {
-  Processing: "We got your submission",
-  Emailed: "We've reached out to you",
   Curating: "We're selecting your glasses",
+  Emailed: "We've reached out to you",
   Shipped: "Your package is on the way",
   Received: "We got everything back",
 };
@@ -31,7 +30,7 @@ function formatDate(iso: string) {
 }
 
 function statusColor(status: string, accent: string) {
-  if (status === "Processing" || status === "Unpaid") return "#737373";
+  if (status === "Unpaid") return "#737373";
   if (status === "Shipped" || status === "Received" || status === "Refunded") return "#000000";
   return accent;
 }
@@ -115,6 +114,8 @@ export default function TbybTable({
           sub.packagePairsMin === sub.packagePairsMax
             ? String(sub.packagePairsMin)
             : `${sub.packagePairsMin}–${sub.packagePairsMax}`;
+        const statusLocked = sub.status === "Unpaid" || sub.status === "Refunded";
+        const saveDisabled = draftStatus[sub.id] === sub.status || saving !== null;
 
         return (
           <div key={sub.id} style={{ borderBottom: "1px solid #e5e5e5" }}>
@@ -159,50 +160,44 @@ export default function TbybTable({
 
                   <div>
                     <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Status</div>
-                    {sub.status === "Unpaid" || sub.status === "Refunded" ? (
-                      <div style={{ height: 38, border: "1px solid #e5e5e5", padding: "0 12px", fontSize: 13, color: "#737373", display: "flex", alignItems: "center" }}>
-                        {sub.status}
-                      </div>
-                    ) : (
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <div style={{ position: "relative", flex: 1 }}>
-                          <div
-                            onClick={() => setStatusDropdown(isDropdownOpen ? null : sub.id)}
-                            style={{ height: 38, border: "1px solid #000000", padding: "0 12px", fontSize: 13, background: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, cursor: "pointer", userSelect: "none", boxSizing: "border-box" }}
-                          >
-                            <span>{draftStatus[sub.id]}</span>
-                            <span style={{ fontSize: 10, transform: isDropdownOpen ? "rotate(0deg)" : "rotate(180deg)", transition: "transform 120ms" }}>▾</span>
-                          </div>
-                          {isDropdownOpen && (
-                            <>
-                              <div onClick={() => setStatusDropdown(null)} style={{ position: "fixed", inset: 0, zIndex: 9 }} />
-                              <div style={{ position: "absolute", top: 40, left: 0, width: "100%", background: "#ffffff", border: "1px solid #000000", zIndex: 10, boxSizing: "border-box" }}>
-                                {STATUSES.map((st) => {
-                                  const isActive = draftStatus[sub.id] === st;
-                                  return (
-                                    <div
-                                      key={st}
-                                      onClick={() => { setDraftStatus((prev) => ({ ...prev, [sub.id]: st })); setStatusDropdown(null); }}
-                                      style={{ padding: "9px 12px", fontSize: 13, cursor: "pointer", background: isActive ? accent : "#ffffff", color: isActive ? "#ffffff" : "#000000" }}
-                                    >
-                                      <div>{st}</div>
-                                      <div style={{ fontSize: 11, color: isActive ? "#ffffff" : "#737373", marginTop: 2 }}>{STATUS_DESCRIPTIONS[st]}</div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </>
-                          )}
-                        </div>
-                        <button
-                          onClick={() => handleStatusSave(sub.id)}
-                          disabled={draftStatus[sub.id] === sub.status || saving !== null}
-                          style={{ height: 38, padding: "0 14px", background: accent, color: "#ffffff", border: "none", fontSize: 13, fontWeight: 500, cursor: (draftStatus[sub.id] === sub.status || saving !== null) ? "default" : "pointer", opacity: (draftStatus[sub.id] === sub.status || saving !== null) ? 0.4 : 1, flexShrink: 0 }}
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ position: "relative", flex: 1 }}>
+                        <div
+                          onClick={() => !statusLocked && setStatusDropdown(isDropdownOpen ? null : sub.id)}
+                          style={{ height: 38, border: `1px solid ${statusLocked ? "#e5e5e5" : "#000000"}`, padding: "0 12px", fontSize: 13, background: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, cursor: statusLocked ? "default" : "pointer", userSelect: "none", boxSizing: "border-box", color: statusLocked ? "#737373" : "#000000" }}
                         >
-                          {saving === sub.id ? "Saving…" : "Save"}
-                        </button>
+                          <span>{draftStatus[sub.id]}</span>
+                          <span style={{ fontSize: 10, opacity: statusLocked ? 0.3 : 1, transform: isDropdownOpen ? "rotate(0deg)" : "rotate(180deg)", transition: "transform 120ms" }}>▾</span>
+                        </div>
+                        {isDropdownOpen && (
+                          <>
+                            <div onClick={() => setStatusDropdown(null)} style={{ position: "fixed", inset: 0, zIndex: 9 }} />
+                            <div style={{ position: "absolute", top: 40, left: 0, width: "100%", background: "#ffffff", border: "1px solid #000000", zIndex: 10, boxSizing: "border-box" }}>
+                              {STATUSES.map((st) => {
+                                const isActive = draftStatus[sub.id] === st;
+                                return (
+                                  <div
+                                    key={st}
+                                    onClick={() => { setDraftStatus((prev) => ({ ...prev, [sub.id]: st })); setStatusDropdown(null); }}
+                                    style={{ padding: "9px 12px", fontSize: 13, cursor: "pointer", background: isActive ? accent : "#ffffff", color: isActive ? "#ffffff" : "#000000" }}
+                                  >
+                                    <div>{st}</div>
+                                    <div style={{ fontSize: 11, color: isActive ? "#ffffff" : "#737373", marginTop: 2 }}>{STATUS_DESCRIPTIONS[st]}</div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </>
+                        )}
                       </div>
-                    )}
+                      <button
+                        onClick={() => handleStatusSave(sub.id)}
+                        disabled={saveDisabled}
+                        style={{ height: 38, padding: "0 14px", background: accent, color: "#ffffff", border: "none", fontSize: 13, fontWeight: 500, cursor: saveDisabled ? "default" : "pointer", opacity: saveDisabled ? 0.4 : 1, flexShrink: 0 }}
+                      >
+                        {saving === sub.id ? "Saving…" : "Save"}
+                      </button>
+                    </div>
                   </div>
                 </div>
 

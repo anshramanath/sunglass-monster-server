@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
           const { error } = await supabase
             .from("tbyb_submissions")
             .update({
-              status: "Processing",
+              status: "Curating",
               stripe_session_id: session.id,
               stripe_payment_intent: paymentIntent ?? null,
               shipping_address: {
