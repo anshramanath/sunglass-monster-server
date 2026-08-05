@@ -11,7 +11,7 @@ export async function getTbybSubmissions(brandSlug: string): Promise<TbybSubmiss
   const { data, error } = await supabase
     .from("tbyb_submissions")
     .select(
-      "id, created_at, status, contact_name, contact_email, contact_phone, package_name, package_price_cents, package_pairs_min, package_pairs_max, package_brands, od_sphere, od_cylinder, od_axis, os_sphere, os_cylinder, os_axis, lens_type, helmet_size, hat_size, nose_bridge, buying_preference, frame_type, special_requests, prescription_url, headshot_url"
+      "id, created_at, status, refunded_cents, contact_name, contact_email, contact_phone, package_name, package_price_cents, package_pairs_min, package_pairs_max, package_brands, od_sphere, od_cylinder, od_axis, os_sphere, os_cylinder, os_axis, lens_type, helmet_size, hat_size, nose_bridge, buying_preference, frame_type, special_requests, prescription_url, headshot_url, shipping_address"
     )
     .eq("brand_slug", brandSlug)
     .order("created_at", { ascending: false });
@@ -22,6 +22,7 @@ export async function getTbybSubmissions(brandSlug: string): Promise<TbybSubmiss
     id: s.id,
     createdAt: s.created_at,
     status: s.status,
+    refundedCents: s.refunded_cents,
     contactName: s.contact_name,
     contactEmail: s.contact_email,
     contactPhone: s.contact_phone,
@@ -45,6 +46,7 @@ export async function getTbybSubmissions(brandSlug: string): Promise<TbybSubmiss
     specialRequests: s.special_requests,
     prescriptionUrl: s.prescription_url,
     headshotUrl: s.headshot_url,
+    shippingAddress: s.shipping_address,
   }));
 }
 

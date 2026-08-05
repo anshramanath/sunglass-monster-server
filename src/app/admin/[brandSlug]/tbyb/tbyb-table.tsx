@@ -198,6 +198,11 @@ export default function TbybTable({
                         {saving === sub.id ? "Saving…" : "Save"}
                       </button>
                     </div>
+                    {sub.refundedCents !== null && (
+                      <div style={{ marginTop: 10, fontSize: 13, color: accent }}>
+                        Refunded {formatPrice(sub.refundedCents)}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -229,41 +234,58 @@ export default function TbybTable({
                   </div>
                 </div>
 
-                {/* Specifications · Uploads */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, paddingTop: 24, borderTop: "1px solid #e5e5e5" }}>
-                  <div>
-                    <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Specifications</div>
+                {/* Specifications */}
+                <div style={{ paddingTop: 24, borderTop: "1px solid #e5e5e5", marginBottom: 28 }}>
+                  <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Specifications</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 16px", fontSize: 14 }}>
                       <div style={{ color: "#737373" }}>Lens type</div><div>{sub.lensType}</div>
                       <div style={{ color: "#737373" }}>Helmet size</div><div>{sub.helmetSize}</div>
                       <div style={{ color: "#737373" }}>Hat size</div><div>{sub.hatSize}</div>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 16px", fontSize: 14 }}>
                       <div style={{ color: "#737373" }}>Nose bridge</div><div>{sub.noseBridge}</div>
                       <div style={{ color: "#737373" }}>Buying preference</div><div>{sub.buyingPreference}</div>
                       <div style={{ color: "#737373" }}>Frame type</div><div>{sub.frameType}</div>
                     </div>
                   </div>
+                </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                    <div>
-                      <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Prescription upload</div>
-                      {sub.prescriptionUrl !== "None" ? (
-                        <a href={sub.prescriptionUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: "#000000", textDecoration: "underline", textUnderlineOffset: 3 }}>
-                          View prescription ↗
-                        </a>
-                      ) : (
-                        <div style={{ fontSize: 14, color: "#9ca3af" }}>None</div>
-                      )}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Headshot photo</div>
-                      {sub.headshotUrl !== "None" ? (
-                        <a href={sub.headshotUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: "#000000", textDecoration: "underline", textUnderlineOffset: 3 }}>
-                          View headshot ↗
-                        </a>
-                      ) : (
-                        <div style={{ fontSize: 14, color: "#9ca3af" }}>None</div>
-                      )}
-                    </div>
+                {/* Shipping address · Prescription upload · Headshot */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 32, paddingTop: 24, borderTop: "1px solid #e5e5e5" }}>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Shipping address</div>
+                    {sub.shippingAddress ? (
+                      <div style={{ fontSize: 14, lineHeight: 1.6 }}>
+                        <div>{sub.shippingAddress.name}</div>
+                        <div style={{ color: "#737373" }}>{sub.shippingAddress.line1}</div>
+                        {sub.shippingAddress.line2 && <div style={{ color: "#737373" }}>{sub.shippingAddress.line2}</div>}
+                        <div style={{ color: "#737373" }}>{sub.shippingAddress.city}, {sub.shippingAddress.state} {sub.shippingAddress.postalCode}</div>
+                        <div style={{ color: "#737373" }}>{sub.shippingAddress.country}</div>
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: 14 }}>None</div>
+                    )}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Prescription upload</div>
+                    {sub.prescriptionUrl !== "None" ? (
+                      <a href={sub.prescriptionUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: "#000000", textDecoration: "underline", textUnderlineOffset: 3 }}>
+                        View prescription ↗
+                      </a>
+                    ) : (
+                      <div style={{ fontSize: 14 }}>None</div>
+                    )}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Headshot photo</div>
+                    {sub.headshotUrl !== "None" ? (
+                      <a href={sub.headshotUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: "#000000", textDecoration: "underline", textUnderlineOffset: 3 }}>
+                        View headshot ↗
+                      </a>
+                    ) : (
+                      <div style={{ fontSize: 14 }}>None</div>
+                    )}
                   </div>
                 </div>
               </div>

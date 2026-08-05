@@ -131,6 +131,7 @@ export type TbybSubmission = {
   id: string;
   createdAt: string;
   status: string;
+  refundedCents: number | null;
   contactName: string;
   contactEmail: string;
   contactPhone: string;
@@ -154,4 +155,13 @@ export type TbybSubmission = {
   specialRequests: string;
   prescriptionUrl: string;
   headshotUrl: string;
+  shippingAddress: {
+    name: string;
+    line1: string | null;
+    line2: string | null;
+    city: string | null;
+    state: string | null;
+    postalCode: string | null;
+    country: string | null;
+  } | null;
 };
