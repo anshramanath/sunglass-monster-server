@@ -257,11 +257,11 @@ export default function TbybTable({
                     <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Shipping address</div>
                     {sub.shippingAddress ? (
                       <div style={{ fontSize: 14, lineHeight: 1.6 }}>
-                        <div>{sub.shippingAddress.name}</div>
-                        <div style={{ color: "#737373" }}>{sub.shippingAddress.line1}</div>
-                        {sub.shippingAddress.line2 && <div style={{ color: "#737373" }}>{sub.shippingAddress.line2}</div>}
-                        <div style={{ color: "#737373" }}>{sub.shippingAddress.city}, {sub.shippingAddress.state} {sub.shippingAddress.postalCode}</div>
-                        <div style={{ color: "#737373" }}>{sub.shippingAddress.country}</div>
+                        <div style={{ color: "#737373" }}>{sub.shippingAddress.name}</div>
+                        <div>{sub.shippingAddress.line1}</div>
+                        {sub.shippingAddress.line2 && <div>{sub.shippingAddress.line2}</div>}
+                        <div>{sub.shippingAddress.city}, {sub.shippingAddress.state} {sub.shippingAddress.postalCode}</div>
+                        <div>{sub.shippingAddress.country}</div>
                       </div>
                     ) : (
                       <div style={{ fontSize: 14 }}>None</div>

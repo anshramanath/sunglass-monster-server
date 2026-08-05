@@ -634,7 +634,7 @@ Uploads a file to the brand's Supabase Storage bucket under the `tbyb/` folder a
 
 ### POST /api/user/tbyb
 
-Submits a Try Before You Buy form. Saves the submission with status `"Unpaid"`, then creates a Stripe checkout session for the package deposit. The submission moves to `"Processing"` after successful payment via the Stripe webhook.
+Submits a Try Before You Buy form. Saves the submission with status `"Unpaid"`, then creates a Stripe checkout session for the package deposit. The submission moves to `"Curating"` after successful payment via the Stripe webhook.
 
 **Errors:** `400` missing required fields · `401` invalid token · `404` package not found · `500` DB or Stripe failure
 
