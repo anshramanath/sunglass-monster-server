@@ -315,11 +315,17 @@ create table tbyb_submissions (
   headshot_url        text        not null,
   contact_name        text        not null,
   contact_email       text        not null,
-  contact_phone       text        not null,
-  status              text        not null,
-  created_at          timestamptz not null default now(),
-  updated_at          timestamptz not null default now()
+  contact_phone         text        not null,
+  status                text        not null,
+  form_hash             text        not null,
+  stripe_session_id     text,
+  stripe_payment_intent text,
+  created_at            timestamptz not null default now(),
+  updated_at            timestamptz not null default now()
 );
+
+create unique index tbyb_submissions_form_hash_unpaid
+  on tbyb_submissions (form_hash) where status = 'Unpaid';
 
 alter table tbyb_packages   enable row level security;
 alter table tbyb_submissions enable row level security;

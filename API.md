@@ -601,7 +601,7 @@ Returns the authenticated user's TBYB submission history for a brand, newest fir
 ]
 ```
 
-Status values: `Processing`, `Emailed`, `Curating`, `Shipped`, `Received`. Optional fields (`specialRequests`, `prescriptionUrl`, `headshotUrl`, `contactPhone`, and unselected prescription fields) are `"None"` when not provided.
+Status values: `Unpaid`, `Processing`, `Emailed`, `Curating`, `Shipped`, `Received`, `Refunded`. `Unpaid` is set on submission before payment; `Refunded` is set by the Stripe webhook on full refund. Both are system-set and not admin-editable. Optional fields (`specialRequests`, `prescriptionUrl`, `headshotUrl`, `contactPhone`, and unselected prescription fields) are `"None"` when not provided.
 
 ---
 
@@ -622,41 +622,45 @@ Uploads a file to the brand's Supabase Storage bucket under the `tbyb/` folder a
 
 ### POST /api/user/tbyb
 
-Submits a Try Before You Buy form. Requires authentication — `user_id` is always populated from the token.
+Submits a Try Before You Buy form. Saves the submission with status `"Unpaid"`, then creates a Stripe checkout session for the package deposit. The submission moves to `"Processing"` after successful payment via the Stripe webhook.
 
-**Errors:** `400` missing required fields · `401` invalid token · `404` package not found · `500` DB failure
+**Errors:** `400` missing required fields · `401` invalid token · `404` package not found · `500` DB or Stripe failure
 
 **Body**
 ```json
 {
   "brandSlug": "bikershades",
-  "packageId": "uuid-of-selected-package",
-  "odSphere": "-1.25",
-  "odCylinder": "-0.50",
-  "odAxis": "90",
-  "osSphere": "None",
-  "osCylinder": "None",
-  "osAxis": "None",
-  "lensType": "Single Vision",
-  "helmetSize": "Large",
-  "hatSize": "7¼",
-  "noseBridge": "Thin & Narrow",
-  "sunglassFit": "All Styles & Sizes Fit",
-  "frameType": "With Foam Cushion",
-  "comments": "None",
-  "prescriptionUrl": "None",
-  "headshotUrl": "None",
-  "name": "John Smith",
-  "email": "customer@example.com",
-  "phone": "None"
+  "successUrl": "https://yourdomain.com/",
+  "cancelUrl": "https://yourdomain.com/",
+  "submission": {
+    "packageId": "uuid-of-selected-package",
+    "odSphere": "-1.25",
+    "odCylinder": "-0.50",
+    "odAxis": "90",
+    "osSphere": "None",
+    "osCylinder": "None",
+    "osAxis": "None",
+    "lensType": "Single Vision",
+    "helmetSize": "Large",
+    "hatSize": "7¼",
+    "noseBridge": "Thin & Narrow",
+    "sunglassFit": "All Styles & Sizes Fit",
+    "frameType": "With Foam Cushion",
+    "comments": "None",
+    "prescriptionUrl": "None",
+    "headshotUrl": "None",
+    "name": "John Smith",
+    "email": "customer@example.com",
+    "phone": "None"
+  }
 }
 ```
 
-All fields are required strings. Optional fields (`comments`, `phone`, `prescriptionUrl`, `headshotUrl`, and any unselected prescription/fitting fields) are sent as `"None"` when not provided — never `null`. `odAxis`/`osAxis` are `"None"` when their corresponding cylinder is `"None"`. `packageId` is the UUID from `tbyb_packages.id` — the backend looks up the package details and stores a snapshot on the submission.
+All form fields are required strings. Optional fields (`comments`, `phone`, `prescriptionUrl`, `headshotUrl`, and any unselected prescription/fitting fields) are sent as `"None"` when not provided — never `null`. `odAxis`/`osAxis` are `"None"` when their corresponding cylinder is `"None"`. `packageId` is the UUID from `tbyb_packages.id` — the backend looks up the package details and stores a snapshot on the submission.
 
 **Response `200`**
 ```json
-{ "id": "uuid" }
+{ "url": "https://checkout.stripe.com/..." }
 ```
 
 ---
@@ -714,6 +718,11 @@ Prices, name, images, and attributes are pulled from the DB — the frontend onl
 
 Stripe webhook handler. Verified via `stripe-signature` header. Handles the following events:
 
-**`checkout.session.completed`** — inserts an `orders` row with status `processing` and `order_items` rows derived from the expanded Stripe line items. Idempotent via `stripe_session_id` unique constraint.
+**`checkout.session.completed`** — dispatches on `session.metadata.type`:
+- `"order"` — inserts an `orders` row with status `processing` and `order_items` rows from expanded Stripe line items. Idempotent via `stripe_session_id`.
+- `"tbyb"` — updates the matching `tbyb_submissions` row to status `Processing` and stores `stripe_session_id` / `stripe_payment_intent`.
+- Unknown type — returns `400`.
 
-**`charge.refunded`** — updates the order matched by `stripe_payment_intent`. Only fires if `charge.amount_refunded > 0`. Sets `refunded_cents` to the cumulative refunded amount (not just the latest refund). Sets `status` to `refunded` only on a full refund (`amount_refunded === amount`) — partial refunds update `refunded_cents` only and leave status unchanged. All other events return `200` and are ignored.
+**`charge.refunded`** — matched by `stripe_payment_intent`. Only fires if `charge.amount_refunded > 0`. Tries orders first; if no order rows are updated, falls back to updating the matching `tbyb_submissions` row to `Refunded`. For orders: sets `refunded_cents` to the cumulative refunded amount; sets `status` to `refunded` only on a full refund (`amount_refunded === amount`) — partial refunds update `refunded_cents` only.
+
+All other events return `200` and are ignored.

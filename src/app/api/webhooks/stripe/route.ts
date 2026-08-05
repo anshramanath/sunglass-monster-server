@@ -27,65 +27,92 @@ export async function POST(req: NextRequest) {
       const brandSlug = session.metadata?.brandSlug;
       if (!brandSlug) return new Response("Missing brandSlug in session metadata", { status: 400 });
 
-      const { data: existing } = await supabase
-        .from("orders")
-        .select("id")
-        .eq("stripe_session_id", session.id)
-        .single();
+      const paymentIntent = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id;
 
-      if (existing) return new Response("OK", { status: 200 });
+      switch (session.metadata?.type) {
+        case "tbyb": {
+          const submissionId = session.metadata.submissionId;
+          if (!submissionId) return new Response("Missing submissionId in session metadata", { status: 400 });
 
-      const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100, expand: ["data.price.product"] });
+          const { error } = await supabase
+            .from("tbyb_submissions")
+            .update({
+              status: "Processing",
+              stripe_session_id: session.id,
+              stripe_payment_intent: paymentIntent ?? null,
+            })
+            .eq("id", submissionId)
+            .eq("brand_slug", brandSlug);
 
-      const { data: order, error: orderError } = await supabase
-        .from("orders")
-        .insert({
-          user_id: session.client_reference_id,
-          brand_slug: brandSlug,
-          stripe_session_id: session.id,
-          stripe_payment_intent: typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id,
-          status: "processing",
-          total_cents: session.amount_total!,
-          refunded_cents: null,
-          shipping_address: {
-            name: session.collected_information!.shipping_details!.name,
-            line1: session.collected_information!.shipping_details!.address!.line1,
-            line2: session.collected_information!.shipping_details!.address!.line2,
-            city: session.collected_information!.shipping_details!.address!.city,
-            state: session.collected_information!.shipping_details!.address!.state,
-            postalCode: session.collected_information!.shipping_details!.address!.postal_code,
-            country: session.collected_information!.shipping_details!.address!.country,
-          },
-        })
-        .select("id")
-        .single();
-
-      if (orderError || !order) return new Response("Failed to create order", { status: 500 });
-
-      const orderItems = lineItems.data.map((item) => {
-        const product = (item as any).price.product;
-        const [name, attribute] = product.name.split(" — ");
-        return {
-          order_id: order.id,
-          product_slug: slugify(name),
-          sku: product.description,
-          name,
-          image_src: product.images[0],
-          price_cents: item.price!.unit_amount!,
-          quantity: item.quantity!,
-          attribute: attribute ?? null,
-        };
-      });
-
-      if (orderItems.length > 0) {
-        const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
-        if (itemsError) {
-          await supabase.from("orders").delete().eq("id", order.id);
-          return new Response("Failed to create order items", { status: 500 });
+          if (error) return new Response("Failed to update submission", { status: 500 });
+          return new Response("OK", { status: 200 });
         }
-      }
 
-      return new Response("OK", { status: 200 });
+        case "order": {
+          const { data: existing } = await supabase
+            .from("orders")
+            .select("id")
+            .eq("stripe_session_id", session.id)
+            .eq("brand_slug", brandSlug)
+            .single();
+
+          if (existing) return new Response("OK", { status: 200 });
+
+          const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100, expand: ["data.price.product"] });
+
+          const { data: order, error: orderError } = await supabase
+            .from("orders")
+            .insert({
+              user_id: session.client_reference_id,
+              brand_slug: brandSlug,
+              stripe_session_id: session.id,
+              stripe_payment_intent: paymentIntent,
+              status: "processing",
+              total_cents: session.amount_total!,
+              refunded_cents: null,
+              shipping_address: {
+                name: session.collected_information!.shipping_details!.name,
+                line1: session.collected_information!.shipping_details!.address!.line1,
+                line2: session.collected_information!.shipping_details!.address!.line2,
+                city: session.collected_information!.shipping_details!.address!.city,
+                state: session.collected_information!.shipping_details!.address!.state,
+                postalCode: session.collected_information!.shipping_details!.address!.postal_code,
+                country: session.collected_information!.shipping_details!.address!.country,
+              },
+            })
+            .select("id")
+            .single();
+
+          if (orderError || !order) return new Response("Failed to create order", { status: 500 });
+
+          const orderItems = lineItems.data.map((item) => {
+            const product = (item as any).price.product;
+            const [name, attribute] = product.name.split(" — ");
+            return {
+              order_id: order.id,
+              product_slug: slugify(name),
+              sku: product.description,
+              name,
+              image_src: product.images[0],
+              price_cents: item.price!.unit_amount!,
+              quantity: item.quantity!,
+              attribute: attribute ?? null,
+            };
+          });
+
+          if (orderItems.length > 0) {
+            const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
+            if (itemsError) {
+              await supabase.from("orders").delete().eq("id", order.id).eq("brand_slug", brandSlug);
+              return new Response("Failed to create order items", { status: 500 });
+            }
+          }
+
+          return new Response("OK", { status: 200 });
+        }
+
+        default: return new Response("Unknown session type", { status: 400 });
+      }
     }
 
     case "charge.refunded": {
@@ -97,15 +124,25 @@ export async function POST(req: NextRequest) {
 
       const isFullRefund = charge.amount_refunded === charge.amount;
 
-      const { error } = await supabase
+      const { data: updatedOrders, error: orderError } = await supabase
         .from("orders")
         .update({
           refunded_cents: charge.amount_refunded,
           ...(isFullRefund && { status: "refunded" }),
         })
-        .eq("stripe_payment_intent", paymentIntent);
+        .eq("stripe_payment_intent", paymentIntent)
+        .select("id");
 
-      if (error) return new Response("Failed to update order", { status: 500 });
+      if (orderError) return new Response("Failed to update order", { status: 500 });
+
+      if (updatedOrders.length === 0) {
+        const { error: subError } = await supabase
+          .from("tbyb_submissions")
+          .update({ status: "Refunded" })
+          .eq("stripe_payment_intent", paymentIntent);
+
+        if (subError) return new Response("Failed to update submission", { status: 500 });
+      }
 
       return new Response("OK", { status: 200 });
     }

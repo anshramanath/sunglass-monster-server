@@ -35,7 +35,7 @@ function hashCart(items: CartItem[], entryMap: Map<string, Entry>) {
       };
     });
 
-  return crypto.createHash("sha256").update(JSON.stringify(sorted)).digest("hex").slice(0, 32);
+  return crypto.createHash("sha256").update(JSON.stringify(sorted)).digest("hex");
 }
 
 export async function POST(req: NextRequest) {
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
       mode: "payment",
       client_reference_id: user.id,
       customer_email: user.email,
-      metadata: { brandSlug },
+      metadata: { type: "order", brandSlug },
       line_items: (items as CartItem[]).map((item) => {
         const entry = entryMap.get(`${item.productSlug}:${item.sku}`)!;
         return {
