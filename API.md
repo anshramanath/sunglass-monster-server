@@ -596,10 +596,21 @@ Returns the authenticated user's TBYB submission history for a brand, newest fir
     "headshotUrl": "None",
     "contactName": "John Smith",
     "contactEmail": "customer@example.com",
-    "contactPhone": "None"
+    "contactPhone": "None",
+    "shippingAddress": {
+      "name": "John Smith",
+      "line1": "123 Main St",
+      "line2": null,
+      "city": "Austin",
+      "state": "TX",
+      "postalCode": "78701",
+      "country": "US"
+    }
   }
 ]
 ```
+
+`shippingAddress` is `null` until payment completes — it is stored by the webhook after checkout.
 
 Status values: `Unpaid`, `Processing`, `Emailed`, `Curating`, `Shipped`, `Received`, `Refunded`. `Unpaid` is set on submission before payment; `Refunded` is set by the Stripe webhook on full refund. Both are system-set and not admin-editable. Optional fields (`specialRequests`, `prescriptionUrl`, `headshotUrl`, `contactPhone`, and unselected prescription fields) are `"None"` when not provided.
 
@@ -657,6 +668,8 @@ Submits a Try Before You Buy form. Saves the submission with status `"Unpaid"`, 
 ```
 
 All form fields are required strings. Optional fields (`comments`, `phone`, `prescriptionUrl`, `headshotUrl`, and any unselected prescription/fitting fields) are sent as `"None"` when not provided — never `null`. `odAxis`/`osAxis` are `"None"` when their corresponding cylinder is `"None"`. `packageId` is the UUID from `tbyb_packages.id` — the backend looks up the package details and stores a snapshot on the submission.
+
+Stripe collects the shipping address at checkout — no need to collect it on the frontend.
 
 **Response `200`**
 ```json
