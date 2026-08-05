@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await supabase
     .from("tbyb_submissions")
-    .select("id, status, created_at, package_name, package_price_cents, package_pairs_min, package_pairs_max, package_brands, package_image_src, od_sphere, od_cylinder, od_axis, os_sphere, os_cylinder, os_axis, lens_type, helmet_size, hat_size, nose_bridge, buying_preference, frame_type, special_requests, prescription_url, headshot_url, contact_name, contact_email, contact_phone, shipping_address")
+    .select("id, status, refunded_cents, created_at, package_name, package_price_cents, package_pairs_min, package_pairs_max, package_brands, package_image_src, od_sphere, od_cylinder, od_axis, os_sphere, os_cylinder, os_axis, lens_type, helmet_size, hat_size, nose_bridge, buying_preference, frame_type, special_requests, prescription_url, headshot_url, contact_name, contact_email, contact_phone, shipping_address")
     .eq("brand_slug", brandSlug)
     .order("created_at", { ascending: false });
 
@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
   const submissions = (data ?? []).map((s) => ({
     id: s.id,
     status: s.status,
+    refundedCents: s.refunded_cents,
     createdAt: s.created_at,
     packageName: s.package_name,
     packagePriceCents: s.package_price_cents,

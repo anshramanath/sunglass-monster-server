@@ -147,7 +147,10 @@ export async function POST(req: NextRequest) {
       if (updatedOrders.length === 0) {
         const { error: subError } = await supabase
           .from("tbyb_submissions")
-          .update({ status: "Refunded" })
+          .update({
+            refunded_cents: charge.amount_refunded,
+            status: "Refunded",
+          })
           .eq("stripe_payment_intent", paymentIntent);
 
         if (subError) return new Response("Failed to update submission", { status: 500 });

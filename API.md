@@ -571,7 +571,8 @@ Returns the authenticated user's TBYB submission history for a brand, newest fir
 [
   {
     "id": "uuid",
-    "status": "Processing",
+    "status": "Curating",
+    "refundedCents": null,
     "createdAt": "2026-07-01T12:00:00.000Z",
     "packageName": "BikerArmour",
     "packagePriceCents": 22900,
@@ -610,7 +611,7 @@ Returns the authenticated user's TBYB submission history for a brand, newest fir
 ]
 ```
 
-`shippingAddress` is `null` until payment completes — it is stored by the webhook after checkout.
+`shippingAddress` is `null` until payment completes — it is stored by the webhook after checkout. `refundedCents` is `null` if no refund has occurred, or a positive integer (cents refunded). Any refund sets status to `Refunded`.
 
 Status values: `Unpaid`, `Curating`, `Emailed`, `Shipped`, `Received`, `Refunded`. `Unpaid` is set on submission before payment; `Curating` is set by the webhook after successful payment; `Refunded` is set by the webhook on full refund. `Unpaid` and `Refunded` are not admin-editable. Optional fields (`specialRequests`, `prescriptionUrl`, `headshotUrl`, `contactPhone`, and unselected prescription fields) are `"None"` when not provided.
 

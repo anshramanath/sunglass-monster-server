@@ -317,6 +317,7 @@ create table tbyb_submissions (
   contact_email       text        not null,
   contact_phone         text        not null,
   status                text        not null,
+  refunded_cents        int,
   form_hash             text        not null,
   stripe_session_id     text,
   stripe_payment_intent text,
