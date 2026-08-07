@@ -322,6 +322,8 @@ create table tbyb_submissions (
   stripe_session_id     text,
   stripe_payment_intent text,
   shipping_address      jsonb,
+  carrier               text,
+  tracking_number       text,
   created_at            timestamptz not null default now(),
   updated_at            timestamptz not null default now()
 );

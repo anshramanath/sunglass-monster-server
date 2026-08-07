@@ -132,6 +132,7 @@ export type TbybSubmission = {
   createdAt: string;
   status: string;
   refundedCents: number | null;
+  paymentIntent: string | null;
   contactName: string;
   contactEmail: string;
   contactPhone: string;
@@ -164,4 +165,6 @@ export type TbybSubmission = {
     postalCode: string | null;
     country: string | null;
   } | null;
+  carrier: string | null;
+  tracking: string | null;
 };

@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { formatPrice } from "@/lib/utils";
-import { updateTbybStatus } from "@/lib/admin/tbyb";
+import { updateTbybStatus, updateTbybShipping, undoTbybShipping } from "@/lib/admin/tbyb";
 import type { TbybSubmission } from "@/lib/types";
 
 const STATUSES = ["Curating", "Emailed", "Shipped", "Received"] as const;
+const CARRIERS = ["UPS", "FedEx", "USPS", "Canada Post", "DHL"] as const;
 
 const STATUS_DESCRIPTIONS: Record<string, string> = {
   Curating: "We're selecting your glasses",
@@ -46,17 +47,47 @@ export default function TbybTable({
   const [expanded, setExpanded] = useState<string | null>(null);
   const [statusDropdown, setStatusDropdown] = useState<string | null>(null);
   const [submissions, setSubmissions] = useState<TbybSubmission[]>(initialSubmissions);
-  const [draftStatus, setDraftStatus] = useState<Record<string, string>>(() =>
-    Object.fromEntries(initialSubmissions.map((s) => [s.id, s.status]))
+  const [draftFulfillment, setDraftFulfillment] = useState<Record<string, { status: string; carrier: string; tracking: string }>>(() =>
+    Object.fromEntries(initialSubmissions.map((s) => [s.id, {
+      status: s.status,
+      carrier: s.carrier ?? "",
+      tracking: s.tracking ?? "",
+    }]))
   );
-  const [saving, setSaving] = useState<string | null>(null);
+  const [savingStatus, setSavingStatus] = useState<string | null>(null);
+  const [carrierDropdown, setCarrierDropdown] = useState<string | null>(null);
+  const [savingShipping, setSavingShipping] = useState<string | null>(null);
+
+  function setDraftField(id: string, field: "status" | "carrier" | "tracking", value: string) {
+    setDraftFulfillment((prev) => ({ ...prev, [id]: { ...prev[id], [field]: value } }));
+  }
+
+  async function handleShippingSave(id: string) {
+    const { carrier, tracking } = draftFulfillment[id];
+    setSavingShipping(id);
+    await updateTbybShipping(id, carrier, tracking);
+    setSubmissions((prev) =>
+      prev.map((s) => s.id === id ? { ...s, carrier, tracking } : s)
+    );
+    setSavingShipping(null);
+  }
+
+  async function handleShippingUndo(id: string) {
+    setSavingShipping(id);
+    await undoTbybShipping(id);
+    setSubmissions((prev) =>
+      prev.map((s) => s.id === id ? { ...s, carrier: null, tracking: null } : s)
+    );
+    setDraftFulfillment((prev) => ({ ...prev, [id]: { ...prev[id], carrier: "", tracking: "" } }));
+    setSavingShipping(null);
+  }
 
   async function handleStatusSave(id: string) {
-    const status = draftStatus[id];
-    setSaving(id);
+    const { status } = draftFulfillment[id];
+    setSavingStatus(id);
     await updateTbybStatus(id, status);
     setSubmissions((prev) => prev.map((s) => (s.id === id ? { ...s, status } : s)));
-    setSaving(null);
+    setSavingStatus(null);
   }
 
   const filterDefs = [
@@ -108,14 +139,18 @@ export default function TbybTable({
 
       {filtered.map((sub) => {
         const isExpanded = expanded === sub.id;
-        const isDropdownOpen = statusDropdown === sub.id;
+        const isStatusDropdownOpen = statusDropdown === sub.id;
         const sc = statusColor(sub.status, accent);
         const pairsDisplay =
           sub.packagePairsMin === sub.packagePairsMax
             ? String(sub.packagePairsMin)
             : `${sub.packagePairsMin}–${sub.packagePairsMax}`;
         const statusLocked = sub.status === "Unpaid" || sub.status === "Refunded";
-        const saveDisabled = draftStatus[sub.id] === sub.status || saving !== null;
+        const draft = draftFulfillment[sub.id];
+        const saveStatusDisabled = draft.status === sub.status || savingStatus !== null || savingShipping !== null;
+        const shippingLocked = sub.status !== "Shipped" || !!(sub.carrier && sub.tracking);
+        const isCarrierDropdownOpen = carrierDropdown === sub.id;
+        const saveShippingDisabled = sub.status !== "Shipped" || !draft.carrier || !draft.tracking || savingShipping !== null || savingStatus !== null;
 
         return (
           <div key={sub.id} style={{ borderBottom: "1px solid #e5e5e5" }}>
@@ -140,21 +175,41 @@ export default function TbybTable({
               <div style={{ background: "#fafafa", padding: "24px 24px 28px", marginBottom: 8 }}>
                 {/* Contact · Package · Status */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 32, marginBottom: 28 }}>
-                  <div>
-                    <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Contact</div>
-                    <div style={{ fontSize: 14, lineHeight: 1.6 }}>
-                      <div style={{ color: "#737373" }}>{sub.contactName}</div>
-                      <div>{sub.contactEmail}</div>
-                      {sub.contactPhone !== "None" && <div style={{ color: "#737373" }}>{sub.contactPhone}</div>}
+                  <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Contact</div>
+                      <div style={{ fontSize: 14, lineHeight: 1.6 }}>
+                        <div style={{ color: "#737373" }}>{sub.contactName}</div>
+                        <div>{sub.contactEmail}</div>
+                        {sub.contactPhone !== "None" && <div style={{ color: "#737373" }}>{sub.contactPhone}</div>}
+                      </div>
+                    </div>
+                    <div>
+                      {sub.paymentIntent && (
+                        <>
+                          <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginTop: 18, marginBottom: 10 }}>Payment</div>
+                          <div style={{ fontSize: 14, color: "#737373", fontFamily: "monospace" }}>{sub.paymentIntent}</div>
+                        </>
+                      )}
                     </div>
                   </div>
 
-                  <div>
-                    <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Package</div>
-                    <div style={{ fontSize: 14, lineHeight: 1.6 }}>
-                      <div>{sub.packageName} · {formatPrice(sub.packagePriceCents)}</div>
-                      <div style={{ color: "#737373" }}>{pairsDisplay} Pairs</div>
-                      <div style={{ color: "#737373" }}>{sub.packageBrands.join(", ")}</div>
+                  <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Package</div>
+                      <div style={{ fontSize: 14, lineHeight: 1.6 }}>
+                        <div>{sub.packageName} · {formatPrice(sub.packagePriceCents)}</div>
+                        <div style={{ color: "#737373" }}>{pairsDisplay} Pairs</div>
+                        <div style={{ color: "#737373" }}>{sub.packageBrands.join(", ")}</div>
+                      </div>
+                    </div>
+                    <div>
+                      {sub.refundedCents !== null && (
+                        <>
+                          <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: accent, marginTop: 18, marginBottom: 10 }}>Refunded</div>
+                          <div style={{ fontSize: 14, color: accent }}>{formatPrice(sub.refundedCents)}</div>
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -163,22 +218,22 @@ export default function TbybTable({
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <div style={{ position: "relative", flex: 1 }}>
                         <div
-                          onClick={() => !statusLocked && setStatusDropdown(isDropdownOpen ? null : sub.id)}
+                          onClick={() => !statusLocked && setStatusDropdown(isStatusDropdownOpen ? null : sub.id)}
                           style={{ height: 38, border: `1px solid ${statusLocked ? "#e5e5e5" : "#000000"}`, padding: "0 12px", fontSize: 13, background: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, cursor: statusLocked ? "default" : "pointer", userSelect: "none", boxSizing: "border-box", color: statusLocked ? "#737373" : "#000000" }}
                         >
-                          <span>{draftStatus[sub.id]}</span>
-                          <span style={{ fontSize: 10, opacity: statusLocked ? 0.3 : 1, transform: isDropdownOpen ? "rotate(0deg)" : "rotate(180deg)", transition: "transform 120ms" }}>▾</span>
+                          <span>{draft.status}</span>
+                          <span style={{ fontSize: 10, transform: isStatusDropdownOpen ? "rotate(0deg)" : "rotate(180deg)", transition: "transform 120ms" }}>▾</span>
                         </div>
-                        {isDropdownOpen && (
+                        {isStatusDropdownOpen && (
                           <>
                             <div onClick={() => setStatusDropdown(null)} style={{ position: "fixed", inset: 0, zIndex: 9 }} />
                             <div style={{ position: "absolute", top: 40, left: 0, width: "100%", background: "#ffffff", border: "1px solid #000000", zIndex: 10, boxSizing: "border-box" }}>
                               {STATUSES.map((st) => {
-                                const isActive = draftStatus[sub.id] === st;
+                                const isActive = draft.status === st;
                                 return (
                                   <div
                                     key={st}
-                                    onClick={() => { setDraftStatus((prev) => ({ ...prev, [sub.id]: st })); setStatusDropdown(null); }}
+                                    onClick={() => { setDraftField(sub.id, "status", st); setStatusDropdown(null); }}
                                     style={{ padding: "9px 12px", fontSize: 13, cursor: "pointer", background: isActive ? accent : "#ffffff", color: isActive ? "#ffffff" : "#000000" }}
                                   >
                                     <div>{st}</div>
@@ -192,17 +247,73 @@ export default function TbybTable({
                       </div>
                       <button
                         onClick={() => handleStatusSave(sub.id)}
-                        disabled={saveDisabled}
-                        style={{ height: 38, padding: "0 14px", background: accent, color: "#ffffff", border: "none", fontSize: 13, fontWeight: 500, cursor: saveDisabled ? "default" : "pointer", opacity: saveDisabled ? 0.4 : 1, flexShrink: 0 }}
+                        disabled={saveStatusDisabled}
+                        style={{ height: 38, padding: "0 14px", background: accent, color: "#ffffff", border: "none", fontSize: 13, fontWeight: 500, cursor: saveStatusDisabled ? "default" : "pointer", opacity: saveStatusDisabled ? 0.4 : 1, flexShrink: 0 }}
                       >
-                        {saving === sub.id ? "Saving…" : "Save"}
+                        {savingStatus === sub.id ? "Saving…" : "Save"}
                       </button>
                     </div>
-                    {sub.refundedCents !== null && (
-                      <div style={{ marginTop: 10, fontSize: 13, color: accent }}>
-                        Refunded {formatPrice(sub.refundedCents)}
+
+                    {/* Fulfillment — always visible, interactive only when Shipped */}
+                    <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #e5e5e5", display: "flex", flexDirection: "column", gap: 8 }}>
+                      <div style={{ position: "relative" }}>
+                        <div
+                          onClick={() => !shippingLocked && setCarrierDropdown(isCarrierDropdownOpen ? null : sub.id)}
+                          style={{ height: 38, border: `1px solid ${shippingLocked ? "#e5e5e5" : "#000000"}`, padding: "0 12px", fontSize: 13, background: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, cursor: shippingLocked ? "default" : "pointer", userSelect: "none", boxSizing: "border-box", opacity: shippingLocked ? 0.5 : 1 }}
+                        >
+                          <span style={{ color: draft.carrier ? "#000000" : "#737373" }}>{draft.carrier || "Select carrier"}</span>
+                          <span style={{ fontSize: 10, transform: isCarrierDropdownOpen ? "rotate(0deg)" : "rotate(180deg)", transition: "transform 120ms" }}>▾</span>
+                        </div>
+                        {isCarrierDropdownOpen && (
+                          <>
+                            <div onClick={() => setCarrierDropdown(null)} style={{ position: "fixed", inset: 0, zIndex: 9 }} />
+                            <div style={{ position: "absolute", top: 40, left: 0, width: "100%", background: "#ffffff", border: "1px solid #000000", zIndex: 10, boxSizing: "border-box" }}>
+                              {CARRIERS.map((c) => {
+                                const isActive = draft.carrier === c;
+                                return (
+                                  <div
+                                    key={c}
+                                    onClick={() => { setDraftField(sub.id, "carrier", c); setCarrierDropdown(null); }}
+                                    style={{ padding: "9px 12px", fontSize: 13, cursor: "pointer", background: isActive ? accent : "#ffffff", color: isActive ? "#ffffff" : "#000000" }}
+                                  >
+                                    {c}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </>
+                        )}
                       </div>
-                    )}
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <input
+                          value={draft.tracking}
+                          onChange={(e) => setDraftField(sub.id, "tracking", e.target.value)}
+                          disabled={shippingLocked}
+                          placeholder="Tracking number"
+                          style={{ flex: 1, height: 38, boxSizing: "border-box", fontSize: 13, border: "1px solid #e5e5e5", padding: "0 12px", fontFamily: "inherit", color: "#000000", outline: "none", minWidth: 0, opacity: shippingLocked ? 0.5 : 1 }}
+                        />
+                        {sub.carrier && sub.tracking ? (
+                          <button
+                            onClick={() => handleShippingUndo(sub.id)}
+                            disabled={saveShippingDisabled}
+                            style={{ height: 38, padding: "0 14px", background: "#ffffff", color: "#000000", border: "1px solid #000000", fontSize: 13, fontWeight: 500, cursor: saveShippingDisabled ? "default" : "pointer", opacity: saveShippingDisabled ? 0.4 : 1, flexShrink: 0 }}
+                          >
+                            {savingShipping === sub.id ? "Undoing…" : "Undo"}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleShippingSave(sub.id)}
+                            disabled={saveShippingDisabled}
+                            style={{ height: 38, padding: "0 14px", background: accent, color: "#ffffff", border: "none", fontSize: 13, fontWeight: 500, cursor: saveShippingDisabled ? "default" : "pointer", opacity: saveShippingDisabled ? 0.4 : 1, flexShrink: 0 }}
+                          >
+                            {savingShipping === sub.id ? "Saving…" : "Save"}
+                          </button>
+                        )}
+                      </div>
+                      {draft.carrier && draft.tracking && (
+                        <div style={{ fontSize: 12, color: "#737373" }}>{draft.carrier} · {draft.tracking}</div>
+                      )}
+                    </div>
                   </div>
                 </div>
 

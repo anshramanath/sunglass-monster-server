@@ -11,7 +11,7 @@ export async function getTbybSubmissions(brandSlug: string): Promise<TbybSubmiss
   const { data, error } = await supabase
     .from("tbyb_submissions")
     .select(
-      "id, created_at, status, refunded_cents, contact_name, contact_email, contact_phone, package_name, package_price_cents, package_pairs_min, package_pairs_max, package_brands, od_sphere, od_cylinder, od_axis, os_sphere, os_cylinder, os_axis, lens_type, helmet_size, hat_size, nose_bridge, buying_preference, frame_type, special_requests, prescription_url, headshot_url, shipping_address"
+      "id, created_at, status, refunded_cents, stripe_payment_intent, contact_name, contact_email, contact_phone, package_name, package_price_cents, package_pairs_min, package_pairs_max, package_brands, od_sphere, od_cylinder, od_axis, os_sphere, os_cylinder, os_axis, lens_type, helmet_size, hat_size, nose_bridge, buying_preference, frame_type, special_requests, prescription_url, headshot_url, shipping_address, carrier, tracking_number"
     )
     .eq("brand_slug", brandSlug)
     .order("created_at", { ascending: false });
@@ -47,7 +47,34 @@ export async function getTbybSubmissions(brandSlug: string): Promise<TbybSubmiss
     prescriptionUrl: s.prescription_url,
     headshotUrl: s.headshot_url,
     shippingAddress: s.shipping_address,
+    paymentIntent: s.stripe_payment_intent,
+    carrier: s.carrier,
+    tracking: s.tracking_number,
   }));
+}
+
+export async function undoTbybShipping(id: string) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+
+  const { error } = await supabase
+    .from("tbyb_submissions")
+    .update({ carrier: null, tracking_number: null, updated_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) throw new Error("Failed to clear TBYB shipping");
+}
+
+export async function updateTbybShipping(id: string, carrier: string, tracking: string) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+
+  const { error } = await supabase
+    .from("tbyb_submissions")
+    .update({ carrier, tracking_number: tracking, updated_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) throw new Error("Failed to update TBYB fulfillment");
 }
 
 export async function updateTbybStatus(id: string, status: string) {
