@@ -606,12 +606,14 @@ Returns the authenticated user's TBYB submission history for a brand, newest fir
       "state": "TX",
       "postalCode": "78701",
       "country": "US"
-    }
+    },
+    "carrier": "UPS",
+    "trackingNumber": "1Z999AA10123456784"
   }
 ]
 ```
 
-`shippingAddress` is `null` until payment completes — it is stored by the webhook after checkout. `refundedCents` is `null` if no refund has occurred, or a positive integer (cents refunded). Any refund sets status to `Refunded`.
+`shippingAddress` is `null` until payment completes — it is stored by the webhook after checkout. `carrier` and `trackingNumber` are `null` until the admin saves shipping info. `refundedCents` is `null` if no refund has occurred, or a positive integer (cents refunded). Any refund sets status to `Refunded`.
 
 Status values: `Unpaid`, `Curating`, `Emailed`, `Shipped`, `Received`, `Refunded`. `Unpaid` is set on submission before payment; `Curating` is set by the webhook after successful payment; `Refunded` is set by the webhook on full refund. `Unpaid` and `Refunded` are not admin-editable. Optional fields (`specialRequests`, `prescriptionUrl`, `headshotUrl`, `contactPhone`, and unselected prescription fields) are `"None"` when not provided.
 
