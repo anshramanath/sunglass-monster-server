@@ -90,15 +90,17 @@ export default function TbybTable({
     setSavingStatus(null);
   }
 
+  const visible = submissions.filter((s) => s.status !== "Unpaid");
+
   const filterDefs = [
-    { value: "all", label: `All (${submissions.length})` },
-    ...["Unpaid", ...STATUSES, "Refunded"].map((s) => ({
+    { value: "all", label: `All (${visible.length})` },
+    ...[...STATUSES, "Refunded"].map((s) => ({
       value: s,
-      label: `${s} (${submissions.filter((sub) => sub.status === s).length})`,
+      label: `${s} (${visible.filter((sub) => sub.status === s).length})`,
     })),
   ];
 
-  const filtered = submissions.filter((s) => filter === "all" || s.status === filter);
+  const filtered = visible.filter((s) => filter === "all" || s.status === filter);
 
   return (
     <div>
