@@ -58,20 +58,11 @@ export async function POST(req: NextRequest) {
         }
 
         case "order": {
-          const { data: existing } = await supabase
-            .from("orders")
-            .select("id")
-            .eq("stripe_session_id", session.id)
-            .eq("brand_slug", brandSlug)
-            .single();
-
-          if (existing) return new Response("OK", { status: 200 });
-
           const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100, expand: ["data.price.product"] });
 
           const { data: order, error: orderError } = await supabase
             .from("orders")
-            .insert({
+            .upsert({
               user_id: session.client_reference_id,
               brand_slug: brandSlug,
               stripe_session_id: session.id,
@@ -88,7 +79,7 @@ export async function POST(req: NextRequest) {
                 postalCode: session.collected_information!.shipping_details!.address!.postal_code,
                 country: session.collected_information!.shipping_details!.address!.country,
               },
-            })
+            }, { onConflict: "stripe_session_id" })
             .select("id")
             .single();
 
@@ -110,11 +101,12 @@ export async function POST(req: NextRequest) {
           });
 
           if (orderItems.length > 0) {
-            const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
-            if (itemsError) {
-              await supabase.from("orders").delete().eq("id", order.id).eq("brand_slug", brandSlug);
-              return new Response("Failed to create order items", { status: 500 });
-            }
+            // unique constraint on (order_id, sku) — upsert on conflict makes retries safe
+            const { error: itemsError } = await supabase
+              .from("order_items")
+              .upsert(orderItems, { onConflict: "order_id,sku" });
+              
+            if (itemsError) return new Response("Failed to create order items", { status: 500 });
           }
 
           return new Response("OK", { status: 200 });

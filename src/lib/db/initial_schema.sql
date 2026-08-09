@@ -119,7 +119,8 @@ create table order_items (
   image_src     text  not null,
   price_cents   int   not null,
   quantity      int   not null,
-  attribute     text
+  attribute     text,
+  unique (order_id, sku)
 );
 
 alter table order_items enable row level security;
