@@ -118,6 +118,10 @@ export async function POST(req: NextRequest) {
             {
               email: session.customer_email,
               phone: session.customer_details!.phone,
+              billing: {
+                name: session.customer_details!.name,
+                address: session.customer_details!.address,
+              },
               name: shipping.name,
               address: shipping.address,
             },

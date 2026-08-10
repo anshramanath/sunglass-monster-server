@@ -672,7 +672,7 @@ Submits a Try Before You Buy form. Saves the submission with status `"Unpaid"`, 
 
 All form fields are required strings. Optional fields (`comments`, `phone`, `prescriptionUrl`, `headshotUrl`, and any unselected prescription/fitting fields) are sent as `"None"` when not provided — never `null`. `odAxis`/`osAxis` are `"None"` when their corresponding cylinder is `"None"`. `packageId` is the UUID from `tbyb_packages.id` — the backend looks up the package details and stores a snapshot on the submission.
 
-Stripe collects the shipping address at checkout — no need to collect it on the frontend.
+Stripe collects the shipping address and phone number at checkout — no need to collect them on the frontend.
 
 **Response `200`**
 ```json
@@ -683,7 +683,7 @@ Stripe collects the shipping address at checkout — no need to collect it on th
 
 ### POST /api/user/checkout
 
-Creates a Stripe checkout session. Returns a redirect URL. Stripe collects the shipping address — no need to collect it on the frontend.
+Creates a Stripe checkout session. Returns a redirect URL. Stripe collects the shipping address and phone number — no need to collect them on the frontend.
 
 Prices, name, images, and attributes are pulled from the DB — the frontend only needs to send `productSlug`, `sku`, `priceCents`, and `quantity`. Idempotent — same cart state and order count returns the same session URL; any DB change (price, name, image) produces a new session.
 
@@ -735,7 +735,7 @@ Prices, name, images, and attributes are pulled from the DB — the frontend onl
 Stripe webhook handler. Verified via `stripe-signature` header. Handles the following events:
 
 **`checkout.session.completed`** — dispatches on `session.metadata.type`:
-- `"order"` — inserts an `orders` row with status `processing` and `order_items` rows from expanded Stripe line items. Idempotent via `stripe_session_id`.
+- `"order"` — inserts an `orders` row with status `processing` and `order_items` rows from expanded Stripe line items. Idempotent via `stripe_session_id`. After inserting, triggers a Veeqo order sync: shipping info from `collected_information.shipping_details` maps to Veeqo's `deliver_to_attributes`; billing info (name, address, phone) from `customer_details` maps to Veeqo's `customer_attributes`. Result stored in `veeqo_order_id` / `veeqo_error` on the order row — not exposed via API.
 - `"tbyb"` — updates the matching `tbyb_submissions` row to status `Curating` and stores `stripe_session_id`, `stripe_payment_intent`, and `shipping_address`.
 - Unknown type — returns `400`.
 

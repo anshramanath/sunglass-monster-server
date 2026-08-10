@@ -70,18 +70,24 @@ async function resolveSku(sku: string): Promise<number> {
   return matches[0];
 }
 
+type Address = {
+  line1: string | null | undefined;
+  line2: string | null | undefined;
+  city: string | null | undefined;
+  state: string | null | undefined;
+  postal_code: string | null | undefined;
+  country: string | null | undefined;
+};
+
 type CustomerInfo = {
   email: string | null;
   phone: string | null;
-  name: string | null;
-  address: {
-    line1: string | null | undefined;
-    line2: string | null | undefined;
-    city: string | null | undefined;
-    state: string | null | undefined;
-    postal_code: string | null | undefined;
-    country: string | null | undefined;
+  billing: {
+    name: string | null;
+    address: Address | null;
   };
+  name: string | null;
+  address: Address;
 };
 
 export async function syncOrderToVeeqo(
@@ -136,7 +142,21 @@ export async function syncOrderToVeeqo(
           delivery_method_id: deliveryMethodId,
           number: orderNumber,
           delivery_cost: "0.00",
-          customer_attributes: { email: customer.email },
+          customer_attributes: {
+            email: customer.email,
+            phone: customer.phone,
+            ...(customer.billing.address ? {
+              billing_address_attributes: {
+                first_name: customer.billing.name,
+                address1: customer.billing.address.line1,
+                ...(customer.billing.address.line2 ? { address2: customer.billing.address.line2 } : {}),
+                city: customer.billing.address.city,
+                state: customer.billing.address.state,
+                zip: customer.billing.address.postal_code,
+                country: customer.billing.address.country,
+              },
+            } : {}),
+          },
           deliver_to_attributes: {
             first_name: customer.name,
             address1: customer.address.line1,
