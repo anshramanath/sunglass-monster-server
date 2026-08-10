@@ -170,7 +170,7 @@ export async function syncOrderToVeeqo(
           },
           line_items_attributes: lineItems,
           payment_attributes: {
-            payment_type: "credit_card",
+            payment_type: "stripe",
             reference_number: paymentIntent,
           },
         },
