@@ -148,7 +148,6 @@ export async function POST(req: NextRequest) {
           };
         }),
         shipping_address_collection: { allowed_countries: ["US"] },
-        automatic_tax: { enabled: true },
         phone_number_collection: { enabled: true },
         success_url: successUrl,
         cancel_url: cancelUrl,

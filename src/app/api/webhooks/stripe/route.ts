@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { syncOrderToVeeqo } from "@/lib/veeqo";
 
 function slugify(text: string) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -105,9 +106,23 @@ export async function POST(req: NextRequest) {
             const { error: itemsError } = await supabase
               .from("order_items")
               .upsert(orderItems, { onConflict: "order_id,sku" });
-              
+
             if (itemsError) return new Response("Failed to create order items", { status: 500 });
           }
+
+          const shipping = session.collected_information!.shipping_details!;
+          await syncOrderToVeeqo(
+            order.id,
+            brandSlug,
+            orderItems.map((i) => ({ sku: i.sku, qty: i.quantity, priceCents: i.price_cents })),
+            {
+              email: session.customer_email,
+              phone: session.customer_details!.phone,
+              name: shipping.name,
+              address: shipping.address,
+            },
+            paymentIntent!,
+          );
 
           return new Response("OK", { status: 200 });
         }

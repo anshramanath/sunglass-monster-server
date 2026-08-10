@@ -99,6 +99,8 @@ create table orders (
   carrier               text,
   tracking_number       text,
   shipping_address      jsonb       not null,
+  veeqo_order_id        bigint      null,
+  veeqo_error           text        null,
   created_at            timestamptz not null default now()
 );
 
