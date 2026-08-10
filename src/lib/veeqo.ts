@@ -70,6 +70,13 @@ async function resolveSku(sku: string): Promise<number> {
   return matches[0];
 }
 
+function splitName(name: string | null): { first_name: string | null; last_name: string | null } {
+  if (!name) return { first_name: null, last_name: null };
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return { first_name: parts[0], last_name: null };
+  return { first_name: parts.slice(0, -1).join(" "), last_name: parts[parts.length - 1] };
+}
+
 type Address = {
   line1: string | null | undefined;
   line2: string | null | undefined;
@@ -146,7 +153,7 @@ export async function syncOrderToVeeqo(
             email: customer.email,
             phone: customer.phone,
             billing_address_attributes: {
-              first_name: customer.billing.name,
+              ...splitName(customer.billing.name),
               address1: customer.billing.address!.line1,
               ...(customer.billing.address!.line2 ? { address2: customer.billing.address!.line2 } : {}),
               city: customer.billing.address!.city,
@@ -156,7 +163,7 @@ export async function syncOrderToVeeqo(
             },
           },
           deliver_to_attributes: {
-            first_name: customer.name,
+            ...splitName(customer.name),
             address1: customer.address.line1,
             ...(customer.address.line2 ? { address2: customer.address.line2 } : {}),
             city: customer.address.city,
