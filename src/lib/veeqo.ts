@@ -84,7 +84,7 @@ type CustomerInfo = {
   phone: string | null;
   billing: {
     name: string | null;
-    address: Address | null;
+    address: Address;
   };
   name: string | null;
   address: Address;
@@ -145,17 +145,15 @@ export async function syncOrderToVeeqo(
           customer_attributes: {
             email: customer.email,
             phone: customer.phone,
-            ...(customer.billing.address ? {
-              billing_address_attributes: {
-                first_name: customer.billing.name,
-                address1: customer.billing.address.line1,
-                ...(customer.billing.address.line2 ? { address2: customer.billing.address.line2 } : {}),
-                city: customer.billing.address.city,
-                state: customer.billing.address.state,
-                zip: customer.billing.address.postal_code,
-                country: customer.billing.address.country,
-              },
-            } : {}),
+            billing_address_attributes: {
+              first_name: customer.billing.name,
+              address1: customer.billing.address!.line1,
+              ...(customer.billing.address!.line2 ? { address2: customer.billing.address!.line2 } : {}),
+              city: customer.billing.address!.city,
+              state: customer.billing.address!.state,
+              zip: customer.billing.address!.postal_code,
+              country: customer.billing.address!.country,
+            },
           },
           deliver_to_attributes: {
             first_name: customer.name,
@@ -170,7 +168,7 @@ export async function syncOrderToVeeqo(
           },
           line_items_attributes: lineItems,
           payment_attributes: {
-            payment_type: "stripe",
+            payment_type: "Stripe",
             reference_number: paymentIntent,
           },
         },
