@@ -188,5 +188,38 @@
     "colors": [
       { "slug": "black", "option": "Black", "value": "#000000" }
     ]
+  },
+  {
+    "name": "BikerArmour Transporter",
+    "slug": "bikerarmour-transporter",
+    "image": "images/bikerarmour-transporter.png",
+    "priceCents": 4999,
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Lugnut",
+    "slug": "bikerarmour-lugnut",
+    "image": "images/bikerarmour-lugnut.png",
+    "priceCents": 4999,
+    "rxLow": -4.00,
+    "rxHigh": 4.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Spyder",
+    "slug": "bikerarmour-spyder",
+    "image": "images/bikerarmour-spyder.png",
+    "priceCents": 4999,
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
   }
 ]
