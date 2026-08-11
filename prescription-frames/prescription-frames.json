@@ -1,0 +1,91 @@
+[
+  {
+    "name": "Wiley X Saint",
+    "slug": "wiley-x-saint",
+    "image": "images/wiley-x-saint.png",
+    "priceCents": 14900,
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "white", "option": "White", "value": "#ffffff" },
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Tomahawk",
+    "slug": "bikerarmour-tomahawk",
+    "image": "images/bikerarmour-tomahawk.png",
+    "priceCents": 4999,
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" }
+    ]
+  },
+  {
+    "name": "BikerArmour Camshaft",
+    "slug": "bikerarmour-camshaft",
+    "image": "images/bikerarmour-camshaft.png",
+    "priceCents": 3999,
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Airfoil",
+    "slug": "bikerarmour-airfoil",
+    "image": "images/bikerarmour-airfoil.png",
+    "priceCents": 4999,
+    "rxLow": -3.00,
+    "rxHigh": 3.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Blower Goggles",
+    "slug": "bikerarmour-blower-goggles",
+    "image": "images/bikerarmour-blower-goggles.png",
+    "priceCents": 4999,
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour BumbleBee Goggles",
+    "slug": "bikerarmour-bumblebee-goggles",
+    "image": "images/bikerarmour-bumblebee-goggles.png",
+    "priceCents": 4999,
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Camber",
+    "slug": "bikerarmour-camber",
+    "image": "images/bikerarmour-camber.png",
+    "priceCents": 4999,
+    "rxLow": -4.00,
+    "rxHigh": 4.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Detonate",
+    "slug": "bikerarmour-detonate",
+    "image": "images/bikerarmour-detonate.png",
+    "priceCents": 4999,
+    "rxLow": -3.00,
+    "rxHigh": 3.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  }
+]
