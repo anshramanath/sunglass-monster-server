@@ -87,5 +87,38 @@
     "colors": [
       { "slug": "black", "option": "Black", "value": "#000000" }
     ]
+  },
+  {
+    "name": "BikerArmour Downforce",
+    "slug": "bikerarmour-downforce",
+    "image": "images/bikerarmour-downforce.png",
+    "priceCents": 4999,
+    "rxLow": -3.00,
+    "rxHigh": 3.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Dynamo",
+    "slug": "bikerarmour-dynamo",
+    "image": "images/bikerarmour-dynamo.png",
+    "priceCents": 4999,
+    "rxLow": -4.00,
+    "rxHigh": 4.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Enduro",
+    "slug": "bikerarmour-enduro",
+    "image": "images/bikerarmour-enduro.png",
+    "priceCents": 4999,
+    "rxLow": -3.00,
+    "rxHigh": 3.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
   }
 ]
