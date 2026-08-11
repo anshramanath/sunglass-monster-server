@@ -21,7 +21,7 @@ export default async function TbybPage({
           {brandName}
         </div>
         <div style={{ fontSize: 34, fontWeight: 400, lineHeight: 1.05, letterSpacing: "-0.01em" }}>
-          TBYB
+          Try Before You Buy
         </div>
       </div>
 
