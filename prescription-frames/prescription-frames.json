@@ -120,5 +120,40 @@
     "colors": [
       { "slug": "black", "option": "Black", "value": "#000000" }
     ]
+  },
+  {
+    "name": "BikerArmour Evolution",
+    "slug": "bikerarmour-evolution",
+    "image": "images/bikerarmour-evolution.png",
+    "priceCents": 4999,
+    "rxLow": -3.00,
+    "rxHigh": 3.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Mini Tank Goggles",
+    "slug": "bikerarmour-mini-tank-goggles",
+    "image": "images/bikerarmour-mini-tank-goggles.png",
+    "priceCents": 4999,
+    "rxLow": -5.00,
+    "rxHigh": 5.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Monster",
+    "slug": "bikerarmour-monster",
+    "image": "images/bikerarmour-monster.png",
+    "priceCents": 4999,
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" },
+      { "slug": "red", "option": "Red", "value": "#cc0000" },
+      { "slug": "blue", "option": "Blue", "value": "#1a4aaa" }
+    ]
   }
 ]
