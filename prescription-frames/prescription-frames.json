@@ -325,5 +325,40 @@
     "colors": [
       { "slug": "black", "option": "Black", "value": "#000000" }
     ]
+  },
+  {
+    "name": "BikerArmour Raptor",
+    "slug": "bikerarmour-raptor",
+    "image": "images/bikerarmour-raptor.png",
+    "priceCents": 6999,
+    "rxLow": -6.00,
+    "rxHigh": 6.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "7eye Bali",
+    "slug": "7eye-bali",
+    "image": "images/7eye-bali.png",
+    "priceCents": 11900,
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "gloss-black", "option": "Gloss Black", "value": "#000000" },
+      { "slug": "gray-tortoise", "option": "Gray Tortoise", "value": "#5a5a5a" }
+    ]
+  },
+  {
+    "name": "7eye Whirlwind",
+    "slug": "7eye-whirlwind",
+    "image": "images/7eye-whirlwind.png",
+    "priceCents": 11900,
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "glossy-black", "option": "Glossy Black", "value": "#000000" },
+      { "slug": "gray-tortoise", "option": "Gray Tortoise", "value": "#5a5a5a" }
+    ]
   }
 ]
