@@ -292,5 +292,38 @@
     "colors": [
       { "slug": "black", "option": "Black", "value": "#000000" }
     ]
+  },
+  {
+    "name": "BikerArmour Dymo",
+    "slug": "bikerarmour-dymo",
+    "image": "images/bikerarmour-dymo.png",
+    "priceCents": 4900,
+    "rxLow": -6.00,
+    "rxHigh": 6.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Marauder",
+    "slug": "bikerarmour-marauder",
+    "image": "images/bikerarmour-marauder.png",
+    "priceCents": 4999,
+    "rxLow": -3.00,
+    "rxHigh": 3.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Air Boss High Power",
+    "slug": "bikerarmour-air-boss-high-power",
+    "image": "images/bikerarmour-air-boss-high-power.png",
+    "priceCents": 5900,
+    "rxLow": -8.00,
+    "rxHigh": 8.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
   }
 ]
