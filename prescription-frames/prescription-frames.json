@@ -155,5 +155,38 @@
       { "slug": "red", "option": "Red", "value": "#cc0000" },
       { "slug": "blue", "option": "Blue", "value": "#1a4aaa" }
     ]
+  },
+  {
+    "name": "BikerArmour Pola Bora",
+    "slug": "bikerarmour-pola-bora",
+    "image": "images/bikerarmour-pola-bora.png",
+    "priceCents": 4999,
+    "rxLow": -4.00,
+    "rxHigh": 4.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Socket Goggle",
+    "slug": "bikerarmour-socket-goggle",
+    "image": "images/bikerarmour-socket-goggle.png",
+    "priceCents": 4999,
+    "rxLow": -4.00,
+    "rxHigh": 4.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Tank Goggles",
+    "slug": "bikerarmour-tank-goggles",
+    "image": "images/bikerarmour-tank-goggles.png",
+    "priceCents": 4999,
+    "rxLow": -4.00,
+    "rxHigh": 4.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
   }
 ]
