@@ -221,5 +221,38 @@
     "colors": [
       { "slug": "black", "option": "Black", "value": "#000000" }
     ]
+  },
+  {
+    "name": "BikerArmour Air Boss",
+    "slug": "bikerarmour-air-boss",
+    "image": "images/bikerarmour-air-boss.png",
+    "priceCents": 4999,
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour Octane",
+    "slug": "bikerarmour-octane",
+    "image": "images/bikerarmour-octane.png",
+    "priceCents": 4999,
+    "rxLow": -3.00,
+    "rxHigh": 3.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "BikerArmour T-Rex",
+    "slug": "bikerarmour-t-rex",
+    "image": "images/bikerarmour-t-rex.png",
+    "priceCents": 3900,
+    "rxLow": -3.00,
+    "rxHigh": 3.00,
+    "colors": [
+      { "slug": "black", "option": "Black", "value": "#000000" }
+    ]
   }
 ]
