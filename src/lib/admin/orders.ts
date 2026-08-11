@@ -34,7 +34,7 @@ export async function getOrders(brandSlug: string) {
   const { data, error } = await supabase
     .from("orders")
     .select(`
-      id, status, total_cents, refunded_cents, carrier, tracking_number, shipping_address, stripe_payment_intent, created_at,
+      id, status, total_cents, refunded_cents, carrier, tracking_number, shipping_address, stripe_payment_intent, veeqo_order_id, veeqo_error, created_at,
       order_items(id, name, sku, image_src, price_cents, quantity, attribute)
     `)
     .eq("brand_slug", brandSlug)
@@ -59,6 +59,8 @@ export async function getOrders(brandSlug: string) {
       country: string;
     },
     paymentIntent: o.stripe_payment_intent as string,
+    veeqoOrderId: o.veeqo_order_id,
+    veeqoError: o.veeqo_error,
     createdAt: o.created_at,
     items: o.order_items.map((i) => ({
       id: i.id,

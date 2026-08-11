@@ -32,6 +32,8 @@ export type Order = {
     country: string;
   };
   paymentIntent: string;
+  veeqoOrderId: string | null;
+  veeqoError: string | null;
   createdAt: string;
   items: OrderItem[];
 };

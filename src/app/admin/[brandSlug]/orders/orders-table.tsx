@@ -73,6 +73,7 @@ export default function OrdersTable({
   const orderList = Object.values(orders);
 
   const isPartialRefund = (o: typeof orderList[0]) => o.status !== "refunded" && o.refundedCents > 0;
+  const isVeeqoErrored = (o: typeof orderList[0]) => o.veeqoOrderId === null && o.veeqoError !== null;
 
   const filterDefs = [
     { value: "all", label: `All (${orderList.length})` },
@@ -81,6 +82,7 @@ export default function OrdersTable({
       label: `${label} (${orderList.filter((o) => o.status === value).length})`,
     })),
     { value: "partial_refund", label: `Partially Refunded (${orderList.filter(isPartialRefund).length})` },
+    { value: "veeqo_error", label: `Veeqo Error (${orderList.filter(isVeeqoErrored).length})` },
   ];
 
   return (
@@ -121,7 +123,7 @@ export default function OrdersTable({
         <div />
       </div>
 
-      {orderList.filter((o) => filter === "all" || (filter === "partial_refund" ? isPartialRefund(o) : o.status === filter)).map((o) => {
+      {orderList.filter((o) => filter === "all" || (filter === "partial_refund" ? isPartialRefund(o) : filter === "veeqo_error" ? isVeeqoErrored(o) : o.status === filter)).map((o) => {
         const isExpanded = expanded === o.id;
         const sc = statusColor(o.status);
         const hasRefund = o.refundedCents > 0;
@@ -165,6 +167,12 @@ export default function OrdersTable({
                   <div>
                     <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#737373", marginBottom: 10 }}>Payment</div>
                     <div style={{ fontSize: 14, color: "#737373", fontFamily: "monospace" }}>{o.paymentIntent}</div>
+                    {o.veeqoOrderId === null && o.veeqoError && (
+                      <>
+                        <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", marginTop: 18, marginBottom: 10 }}>Veeqo Error</div>
+                        <div style={{ fontSize: 14 }}>{o.veeqoError}</div>
+                      </>
+                    )}
                     {hasRefund && (
                       <>
                         <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: accent, marginTop: 18, marginBottom: 10 }}>{isRefunded ? "Refunded" : "Partially Refunded"}</div>

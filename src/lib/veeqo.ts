@@ -119,7 +119,7 @@ export async function syncOrderToVeeqo(
   if (claimError) console.error("Veeqo sync claim DB error", claimError);
   if (claimError || !claimed) return;
 
-  let veeqoOrderId: number | null = null;
+  let veeqoOrderId: string | null = null;
   let veeqoError: string | null = null;
 
   const brandName = getBrandBySlug(brandSlug)?.name ?? brandSlug;
@@ -185,7 +185,7 @@ export async function syncOrderToVeeqo(
     if (!res.ok) throw "Veeqo order creation failed";
     
     const data = await res.json();
-    veeqoOrderId = data.id as number;
+    veeqoOrderId = String(data.id);
   } catch (e) {
     veeqoError = typeof e === "string" ? e : "Veeqo order creation failed";
   }
