@@ -599,5 +599,45 @@
       { "slug": "sunset-tortoise", "option": "Sunset Tortoise", "value": "#c17a2a" },
       { "slug": "glossy-black", "option": "Glossy Black", "value": "#000000" }
     ]
+  },
+  {
+    "name": "Wiley X Gravity",
+    "slug": "wiley-x-gravity",
+    "image": "images/wiley-x-gravity.png",
+    "priceCents": 11900,
+    "size": "MED-LG",
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" }
+    ]
+  },
+  {
+    "name": "7eye Aspen",
+    "slug": "7eye-aspen",
+    "image": "images/7eye-aspen.png",
+    "priceCents": 11900,
+    "size": "SM-MED",
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "black-fade", "option": "Black Fade", "value": "#1a1a1a" },
+      { "slug": "sunset-tortoise", "option": "Sunset Tortoise", "value": "#c17a2a" },
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" }
+    ]
+  },
+  {
+    "name": "7eye Bora",
+    "slug": "7eye-bora",
+    "image": "images/7eye-bora.png",
+    "priceCents": 11900,
+    "size": "MED-LG",
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "charcoal", "option": "Charcoal", "value": "#3d3d3d" },
+      { "slug": "gloss-black", "option": "Gloss Black", "value": "#000000" },
+      { "slug": "dark-tortoise", "option": "Dark Tortoise", "value": "#4a3010" }
+    ]
   }
 ]
