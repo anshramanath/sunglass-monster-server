@@ -1026,5 +1026,41 @@
     "colors": [
       { "slug": "charcoal", "option": "Charcoal", "value": "#3d3d3d" }
     ]
+  },
+  {
+    "name": "Wiley X Gravity High Power",
+    "slug": "wiley-x-gravity-high-power",
+    "image": "images/wiley-x-gravity-high-power.png",
+    "priceCents": 12900,
+    "size": "MED-LG",
+    "rxLow": -7.00,
+    "rxHigh": 5.00,
+    "colors": [
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" }
+    ]
+  },
+  {
+    "name": "Wiley X Boss High Power",
+    "slug": "wiley-x-boss-high-power",
+    "image": "images/wiley-x-boss-high-power.png",
+    "priceCents": 12900,
+    "size": "LG-XL",
+    "rxLow": -7.00,
+    "rxHigh": 5.00,
+    "colors": [
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" }
+    ]
+  },
+  {
+    "name": "Wiley X Enzo High Power",
+    "slug": "wiley-x-enzo-high-power",
+    "image": "images/wiley-x-enzo-high-power.png",
+    "priceCents": 12900,
+    "size": "MED-LG",
+    "rxLow": -7.00,
+    "rxHigh": 5.00,
+    "colors": [
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" }
+    ]
   }
 ]
