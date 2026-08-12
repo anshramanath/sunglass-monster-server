@@ -25,11 +25,16 @@ for frame in frames:
     name = frame.get("name", "")
     slug = frame.get("slug", "")
     image = frame.get("image", "")
+    price_cents = frame.get("priceCents")
     size = frame.get("size")
     rx_low = frame.get("rxLow")
     rx_high = frame.get("rxHigh")
     colors = frame.get("colors")
     tag = f"[{name}]"
+
+    if not name:
+        print(f"{tag} missing name")
+        errors += 1
 
     if slug in seen_slugs:
         print(f"{tag} duplicate slug '{slug}'")
@@ -48,6 +53,13 @@ for frame in frames:
         errors += 1
     if not os.path.exists(os.path.join(IMAGES_DIR, f"{slug}.png")):
         print(f"{tag} image file missing: images/{slug}.png")
+        errors += 1
+
+    if price_cents is None:
+        print(f"{tag} missing priceCents")
+        errors += 1
+    elif price_cents <= 3500:
+        print(f"{tag} price ${price_cents / 100:.2f} is below minimum $35.00")
         errors += 1
 
     if not size:
