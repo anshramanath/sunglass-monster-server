@@ -519,5 +519,44 @@
       { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" },
       { "slug": "gloss-demi", "option": "Gloss Demi", "value": "#8b6914" }
     ]
+  },
+  {
+    "name": "Wiley X Ovation",
+    "slug": "wiley-x-ovation",
+    "image": "images/wiley-x-ovation.png",
+    "priceCents": 10900,
+    "size": "SM-LG",
+    "rxLow": -6.00,
+    "rxHigh": 6.00,
+    "colors": [
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" },
+      { "slug": "matte-slate", "option": "Matte Slate", "value": "#6b7c8d" },
+      { "slug": "matte-woodgrain", "option": "Matte Woodgrain", "value": "#7b5e3c" }
+    ]
+  },
+  {
+    "name": "Wiley X Affinity",
+    "slug": "wiley-x-affinity",
+    "image": "images/wiley-x-affinity.png",
+    "priceCents": 10900,
+    "size": "SM-MED",
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "gloss-black", "option": "Gloss Black", "value": "#000000" },
+      { "slug": "matte-demi", "option": "Matte Demi", "value": "#7a5c1e" }
+    ]
+  },
+  {
+    "name": "Wiley X Aspect",
+    "slug": "wiley-x-aspect",
+    "image": "images/wiley-x-aspect.png",
+    "priceCents": 10900,
+    "size": "MED-LG",
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" }
+    ]
   }
 ]
