@@ -383,5 +383,17 @@
       { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" },
       { "slug": "gloss-black", "option": "Gloss Black", "value": "#000000" }
     ]
+  },
+  {
+    "name": "Wiley X Twisted",
+    "slug": "wiley-x-twisted",
+    "image": "images/wiley-x-twisted.png",
+    "priceCents": 10900,
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" },
+      { "slug": "matte-grey", "option": "Matte Grey", "value": "#888888" }
+    ]
   }
 ]
