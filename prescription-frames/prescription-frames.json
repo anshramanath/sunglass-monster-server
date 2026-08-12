@@ -719,5 +719,43 @@
       { "slug": "glossy-black", "option": "Glossy Black", "value": "#000000" },
       { "slug": "charcoal", "option": "Charcoal", "value": "#3d3d3d" }
     ]
+  },
+  {
+    "name": "7eye Raptor",
+    "slug": "7eye-raptor",
+    "image": "images/7eye-raptor.png",
+    "priceCents": 11900,
+    "size": "MED-LG",
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "gloss-black", "option": "Gloss Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "7eye Sedona",
+    "slug": "7eye-sedona",
+    "image": "images/7eye-sedona.png",
+    "priceCents": 11900,
+    "size": "SM-MED",
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "black-pearl", "option": "Black Pearl", "value": "#1a1a1a" }
+    ]
+  },
+  {
+    "name": "7eye Sierra",
+    "slug": "7eye-sierra",
+    "image": "images/7eye-sierra.png",
+    "priceCents": 11900,
+    "size": "SM-MED",
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "black-stripe-tortoise", "option": "Black Stripe Tortoise", "value": "#2a1a08" },
+      { "slug": "light-tortoise", "option": "Light Tortoise", "value": "#c89030" },
+      { "slug": "brown-tortoise", "option": "Brown Tortoise", "value": "#7a4818" }
+    ]
   }
 ]
