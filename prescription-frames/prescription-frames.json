@@ -1089,19 +1089,5 @@
       { "slug": "wood-grain-veneer", "option": "Wood Grain Veneer", "value": "#7b5c3a" },
       { "slug": "silver-titan", "option": "Silver Titan", "value": "#9ea0a3" }
     ]
-  },
-  {
-    "name": "Ziena Marina",
-    "slug": "ziena-marina",
-    "image": "images/ziena-marina.png",
-    "priceCents": 18000,
-    "size": "MED-LG",
-    "rxLow": -5.00,
-    "rxHigh": 5.00,
-    "colors": [
-      { "slug": "gloss-black", "option": "Gloss Black", "value": "#000000" },
-      { "slug": "tortoise", "option": "Tortoise", "value": "#8b6835" },
-      { "slug": "merlot", "option": "Merlot", "value": "#8b2635" }
-    ]
   }
 ]
