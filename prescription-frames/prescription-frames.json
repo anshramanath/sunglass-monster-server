@@ -912,5 +912,42 @@
       { "slug": "kryptek-typhon", "option": "Kryptek Typhon", "value": "#1a1a1a" },
       { "slug": "hickory-brown", "option": "Hickory Brown", "value": "#6b3a1f" }
     ]
+  },
+  {
+    "name": "7eye Notus",
+    "slug": "7eye-notus",
+    "image": "images/7eye-notus.png",
+    "priceCents": 11900,
+    "size": "MED-XLG",
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "gloss-black", "option": "Gloss Black", "value": "#000000" },
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" }
+    ]
+  },
+  {
+    "name": "Wiley X Rebel",
+    "slug": "wiley-x-rebel",
+    "image": "images/wiley-x-rebel.png",
+    "priceCents": 10900,
+    "size": "MED-LG",
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" }
+    ]
+  },
+  {
+    "name": "Wiley X XL-1 Advanced",
+    "slug": "wiley-x-xl-1-advanced",
+    "image": "images/wiley-x-xl-1-advanced.png",
+    "priceCents": 12900,
+    "size": "SM-MED",
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" }
+    ]
   }
 ]
