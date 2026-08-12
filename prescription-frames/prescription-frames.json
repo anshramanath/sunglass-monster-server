@@ -137,7 +137,7 @@
     "slug": "bikerarmour-evolution",
     "image": "images/bikerarmour-evolution.png",
     "priceCents": 4999,
-    "size": "MED-XLG",
+    "size": "MED-XL",
     "rxLow": -3.00,
     "rxHigh": 3.00,
     "colors": [
@@ -247,7 +247,7 @@
     "slug": "bikerarmour-air-boss",
     "image": "images/bikerarmour-air-boss.png",
     "priceCents": 4999,
-    "size": "MED-XLG",
+    "size": "MED-XL",
     "rxLow": -3.50,
     "rxHigh": 3.50,
     "colors": [
@@ -259,7 +259,7 @@
     "slug": "bikerarmour-octane",
     "image": "images/bikerarmour-octane.png",
     "priceCents": 4999,
-    "size": "LG-XLG",
+    "size": "LG-XL",
     "rxLow": -3.00,
     "rxHigh": 3.00,
     "colors": [
@@ -283,7 +283,7 @@
     "slug": "bikerarmour-angel",
     "image": "images/bikerarmour-angel.png",
     "priceCents": 4999,
-    "size": "XSM-MED",
+    "size": "XS-MED",
     "rxLow": -1.50,
     "rxHigh": 1.50,
     "colors": [
@@ -336,7 +336,7 @@
     "slug": "bikerarmour-marauder",
     "image": "images/bikerarmour-marauder.png",
     "priceCents": 4999,
-    "size": "MED-XLG",
+    "size": "MED-XL",
     "rxLow": -3.00,
     "rxHigh": 3.00,
     "colors": [
@@ -360,7 +360,7 @@
     "slug": "bikerarmour-raptor",
     "image": "images/bikerarmour-raptor.png",
     "priceCents": 6999,
-    "size": "MED-XLG",
+    "size": "MED-XL",
     "rxLow": -6.00,
     "rxHigh": 6.00,
     "colors": [
@@ -699,7 +699,7 @@
     "slug": "7eye-derby",
     "image": "images/7eye-derby.png",
     "priceCents": 11900,
-    "size": "MED-XLG",
+    "size": "MED-XL",
     "rxLow": -3.50,
     "rxHigh": 3.50,
     "colors": [
@@ -763,7 +763,7 @@
     "slug": "7eye-taku-plus",
     "image": "images/7eye-taku-plus.png",
     "priceCents": 11900,
-    "size": "MED-XLG",
+    "size": "MED-XL",
     "rxLow": -3.50,
     "rxHigh": 3.50,
     "colors": [
@@ -891,7 +891,7 @@
     "slug": "7eye-panhead",
     "image": "images/7eye-panhead.png",
     "priceCents": 11900,
-    "size": "MED-XLG",
+    "size": "MED-XL",
     "rxLow": -3.50,
     "rxHigh": 3.50,
     "colors": [
@@ -918,7 +918,7 @@
     "slug": "7eye-notus",
     "image": "images/7eye-notus.png",
     "priceCents": 11900,
-    "size": "MED-XLG",
+    "size": "MED-XL",
     "rxLow": -3.50,
     "rxHigh": 3.50,
     "colors": [
