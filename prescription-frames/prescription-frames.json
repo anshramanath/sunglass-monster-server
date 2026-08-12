@@ -481,5 +481,43 @@
     "colors": [
       { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" }
     ]
+  },
+  {
+    "name": "Wiley X Censor",
+    "slug": "wiley-x-censor",
+    "image": "images/wiley-x-censor.png",
+    "priceCents": 10900,
+    "size": "SM-MED",
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "glossy-black", "option": "Glossy Black", "value": "#000000" },
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" }
+    ]
+  },
+  {
+    "name": "Wiley X Ignite",
+    "slug": "wiley-x-ignite",
+    "image": "images/wiley-x-ignite.png",
+    "priceCents": 10900,
+    "size": "MED-LG",
+    "rxLow": -3.50,
+    "rxHigh": 3.50,
+    "colors": [
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" }
+    ]
+  },
+  {
+    "name": "Wiley X Helix",
+    "slug": "wiley-x-helix",
+    "image": "images/wiley-x-helix.png",
+    "priceCents": 10900,
+    "size": "SM-MED",
+    "rxLow": -4.00,
+    "rxHigh": 4.00,
+    "colors": [
+      { "slug": "matte-black", "option": "Matte Black", "value": "#2b2b2b" },
+      { "slug": "gloss-demi", "option": "Gloss Demi", "value": "#8b6914" }
+    ]
   }
 ]
