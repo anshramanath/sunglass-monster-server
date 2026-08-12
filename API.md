@@ -344,6 +344,40 @@ Atomically increments the view count for a category or product. Pass exactly one
 
 ---
 
+### GET /api/public/prescriptions
+
+Returns all prescription frames for a brand, sorted alphabetically by name.
+
+**Query Params**
+| Param | Required | Description |
+|-------|----------|-------------|
+| brandSlug | yes | Brand slug |
+
+**Errors:** `400` missing brandSlug · `500` DB failure
+
+**Response `200`**
+```json
+[
+  {
+    "id": "uuid",
+    "name": "7eye Aspen",
+    "slug": "7eye-aspen",
+    "imageSrc": "https://...",
+    "priceCents": 11900,
+    "size": "SM-MED",
+    "rxLow": -3.5,
+    "rxHigh": 3.5,
+    "colors": [
+      { "option": "Matte Black", "slug": "matte-black", "value": "#2b2b2b" }
+    ]
+  }
+]
+```
+
+`size` is a dash-separated range of standard size tokens (`XS`, `SM`, `MED`, `LG`, `XL`, `XXL`). `rxLow` and `rxHigh` are the prescription range in diopters (negative = myopia, positive = hyperopia). `colors` mirrors the JSON schema from the catalog.
+
+---
+
 ### POST /api/public/validate-cart
 
 Checks whether each cart item exists and whether the price matches the current DB price. Call on cart page entry and before checkout.
