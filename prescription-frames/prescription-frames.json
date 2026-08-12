@@ -990,5 +990,41 @@
       { "slug": "dark-tortoise", "option": "Dark Tortoise", "value": "#4a3010" },
       { "slug": "charcoal", "option": "Charcoal", "value": "#3d3d3d" }
     ]
+  },
+  {
+    "name": "7eye Sedona High Power",
+    "slug": "7eye-sedona-high-power",
+    "image": "images/7eye-sedona-high-power.png",
+    "priceCents": 12900,
+    "size": "SM-MED",
+    "rxLow": -5.00,
+    "rxHigh": 5.00,
+    "colors": [
+      { "slug": "glossy-black", "option": "Glossy Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "7eye Aspen High Power",
+    "slug": "7eye-aspen-high-power",
+    "image": "images/7eye-aspen-high-power.png",
+    "priceCents": 12900,
+    "size": "SM-MED",
+    "rxLow": -6.00,
+    "rxHigh": 6.00,
+    "colors": [
+      { "slug": "glossy-black", "option": "Glossy Black", "value": "#000000" }
+    ]
+  },
+  {
+    "name": "7eye Bora High Power",
+    "slug": "7eye-bora-high-power",
+    "image": "images/7eye-bora-high-power.png",
+    "priceCents": 12900,
+    "size": "MED-LG",
+    "rxLow": -6.00,
+    "rxHigh": 6.00,
+    "colors": [
+      { "slug": "charcoal", "option": "Charcoal", "value": "#3d3d3d" }
+    ]
   }
 ]
