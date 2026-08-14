@@ -657,7 +657,7 @@ Status values: `Unpaid`, `Curating`, `Emailed`, `Shipped`, `Received`, `Refunded
 
 Uploads a file to the brand's Supabase Storage bucket under the `tbyb/` folder and returns the public URL. Used for prescription and headshot uploads before form submission.
 
-**Request:** `multipart/form-data` with a `file` field and a `brandSlug` field. Uploads to the brand's storage bucket.
+**Request:** `multipart/form-data` with a `file` field, a `brandSlug` field, and a `folder` field. Uploads to `<brandSlug>/<folder>/<filename>-<uuid>` in Supabase storage.
 
 **Errors:** `400` missing file or brandSlug · `401` invalid token · `500` storage failure
 

@@ -15,8 +15,11 @@ export async function POST(req: NextRequest) {
   const brandSlug = formData.get("brandSlug") as string | null;
   if (!brandSlug) return err("brandSlug is required", 400);
 
+  const folder = formData.get("folder") as string | null;
+  if (!folder) return err("folder is required", 400);
+
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const path = `tbyb/${safeName}-${crypto.randomUUID()}`;
+  const path = `${folder}/${safeName}-${crypto.randomUUID()}`;
 
   const adminSupabase = createAdminClient();
 
