@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await supabase
     .from("tbyb_submissions")
-    .select("deposit_cents")
+    .select("deposit_cents, refunded_cents")
     .eq("brand_slug", brandSlug)
     .ilike("id", `%${submissionId}`)
     .single();
@@ -28,5 +28,7 @@ export async function POST(req: NextRequest) {
 
   if (data.deposit_cents === null) return err("TBYB payment not completed", 402);
 
-  return ok({ depositCents: data.deposit_cents });
+  const availableCents = Math.max(data.deposit_cents - (data.refunded_cents ?? 0), 0);
+
+  return ok({ depositCents: availableCents });
 }

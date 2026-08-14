@@ -35,12 +35,23 @@ export async function POST(req: NextRequest) {
           const submissionId = session.metadata.submissionId;
           if (!submissionId) return new Response("Missing submissionId in session metadata", { status: 400 });
 
+          const { data: submission, error: submissionError } = await supabase
+            .from("tbyb_submissions")
+            .select("package_price_cents")
+            .eq("id", submissionId)
+            .single();
+
+          if (submissionError) return new Response("Failed to fetch submission", { status: 500 });
+
+          const depositCents = Math.max(submission.package_price_cents - 3000, 0);
+
           const { error } = await supabase
             .from("tbyb_submissions")
             .update({
               status: "Curating",
               stripe_session_id: session.id,
               stripe_payment_intent: paymentIntent ?? null,
+              deposit_cents: depositCents,
               shipping_address: {
                 name: session.collected_information?.shipping_details?.name ?? null,
                 line1: session.collected_information?.shipping_details?.address?.line1 ?? null,
