@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     .from("tbyb_submissions")
     .select("deposit_cents, refunded_cents")
     .eq("brand_slug", brandSlug)
-    .ilike("id", `%${submissionId}`)
+    .filter("id::text", "ilike", `%${submissionId}`)
     .single();
 
   if (error?.code === "PGRST116") return err("Submission not found", 404);
