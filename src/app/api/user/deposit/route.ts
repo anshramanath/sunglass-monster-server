@@ -18,17 +18,17 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await supabase
     .from("tbyb_submissions")
-    .select("deposit_cents, refunded_cents")
-    .eq("brand_slug", brandSlug)
-    .filter("id::text", "ilike", `%${submissionId}`)
-    .single();
+    .select("id, deposit_cents, refunded_cents")
+    .eq("brand_slug", brandSlug);
 
-  if (error?.code === "PGRST116") return err("Submission not found", 404);
   if (error) return err(error.message, 500);
 
-  if (data.deposit_cents === null) return err("TBYB payment not completed", 402);
+  const sub = data.find((s) => s.id.slice(-8).toUpperCase() === submissionId.toUpperCase());
+  if (!sub) return err("Submission not found", 404);
 
-  const availableCents = Math.max(data.deposit_cents - (data.refunded_cents ?? 0), 0);
+  if (sub.deposit_cents === null) return err("TBYB payment not completed", 402);
+
+  const availableCents = Math.max(sub.deposit_cents - (sub.refunded_cents ?? 0), 0);
 
   return ok({ depositCents: availableCents });
 }
