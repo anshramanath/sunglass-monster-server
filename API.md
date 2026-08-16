@@ -7,7 +7,7 @@ All endpoints return:
 { "success": false, "message": "Error description", "data": { ... } }
 ```
 
-The third shape is only used by `/validate-cart` and `/checkout` on 404/409/422 — `data` contains the per-item validation array.
+The third shape is used by `/validate-cart` and `/checkout` on 404/409/422 (per-item validation array) and by `/rx-order` on 422 (`{ depositCents }`).
 
 **Status codes**
 | Status | Meaning |
@@ -777,7 +777,7 @@ Submits a prescription frame order, optionally applying a TBYB deposit. Always g
 }
 ```
 
-`tbybSubmissionId` and `depositCents` are optional — omit both for non-TBYB orders. When provided, `depositCents` must match the current available balance from `/api/user/deposit`; if stale, returns `409` with `{ depositCents: <fresh amount> }`. Optional fields (`comments`, `phone`, `prescriptionUrl`, `headshotUrl`, unused PD fields, unused lens fields) are sent as `"None"` when not provided.
+`tbybSubmissionId` and `depositCents` are optional — omit both for non-TBYB orders. When provided, `depositCents` must match the current available balance from `/api/user/deposit`; if stale, returns `422` with `{ depositCents: <fresh amount> }`. Optional fields (`comments`, `phone`, `prescriptionUrl`, `headshotUrl`, unused PD fields, unused lens fields) are sent as `"None"` when not provided.
 
 Stripe collects the shipping address, billing address, and phone number at checkout.
 
