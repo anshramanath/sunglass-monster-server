@@ -737,7 +737,7 @@ Returns the available deposit balance for a TBYB submission identified by its sh
 
 Submits a prescription frame order, optionally applying a TBYB deposit. Always goes through Stripe checkout — minimum charge is $0.50 so shipping is always collected. Idempotent: same inputs return the same Stripe session URL.
 
-**Errors:** `400` missing required fields · `401` invalid token · `404` frame or TBYB submission not found · `409` deposit amount changed (includes fresh `depositCents`) · `500` DB or Stripe failure
+**Errors:** `400` missing required fields · `401` invalid token · `404` frame or TBYB submission not found · `409` session race conflict (retry) · `422` deposit amount changed (includes fresh `depositCents`) · `500` DB or Stripe failure
 
 **Body**
 ```json
@@ -786,7 +786,7 @@ Stripe collects the shipping address, billing address, and phone number at check
 { "url": "https://checkout.stripe.com/..." }
 ```
 
-**Response `409`**
+**Response `422`**
 ```json
 { "success": false, "message": "Deposit amount has changed", "data": { "depositCents": 15900 } }
 ```
