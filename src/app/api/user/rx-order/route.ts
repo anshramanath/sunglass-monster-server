@@ -202,5 +202,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  if (!session.url) return err("Failed to create checkout session", 500);
+
   return ok({ url: session.url });
 }

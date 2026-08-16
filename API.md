@@ -715,6 +715,84 @@ Stripe collects the shipping address, billing address, and phone number at check
 
 ---
 
+### POST /api/user/deposit
+
+Returns the available deposit balance for a TBYB submission identified by its short ID (last 8 chars of UUID). The available amount is computed as `max(deposit_cents - refunded_cents, 0)`.
+
+**Errors:** `400` missing params · `401` invalid token · `402` TBYB payment not completed · `404` submission not found · `500` DB failure
+
+**Body**
+```json
+{ "brandSlug": "bikershades", "submissionId": "ABCD1234" }
+```
+
+**Response `200`**
+```json
+{ "depositCents": 19900 }
+```
+
+---
+
+### POST /api/user/rx-order
+
+Submits a prescription frame order, optionally applying a TBYB deposit. Always goes through Stripe checkout — minimum charge is $0.50 so shipping is always collected. Idempotent: same inputs return the same Stripe session URL.
+
+**Errors:** `400` missing required fields · `401` invalid token · `404` frame or TBYB submission not found · `409` deposit amount changed (includes fresh `depositCents`) · `500` DB or Stripe failure
+
+**Body**
+```json
+{
+  "brandSlug": "bikershades",
+  "successUrl": "https://yourdomain.com/success",
+  "cancelUrl": "https://yourdomain.com/cancel",
+  "submission": {
+    "frameId": "uuid",
+    "frameColorSlug": "matte-black",
+    "tbybSubmissionId": "ABCD1234",
+    "depositCents": 19900,
+    "visionType": "Single Vision",
+    "odSphere": "-1.25",
+    "odCylinder": "-0.50",
+    "odAxis": "90",
+    "osSphere": "None",
+    "osCylinder": "None",
+    "osAxis": "None",
+    "pdMode": "single",
+    "pd": "63",
+    "pdLeft": "None",
+    "pdRight": "None",
+    "lensMaterial": "Polycarbonate",
+    "lensColorCategory": "None",
+    "lensColor": "None",
+    "arCoating": "None",
+    "scratchCoating": "None",
+    "mirrorCoating": "None",
+    "comments": "None",
+    "prescriptionUrl": "None",
+    "headshotUrl": "None",
+    "name": "John Smith",
+    "email": "customer@example.com",
+    "phone": "None"
+  }
+}
+```
+
+`tbybSubmissionId` and `depositCents` are optional — omit both for non-TBYB orders. When provided, `depositCents` must match the current available balance from `/api/user/deposit`; if stale, returns `409` with `{ depositCents: <fresh amount> }`. Optional fields (`comments`, `phone`, `prescriptionUrl`, `headshotUrl`, unused PD fields, unused lens fields) are sent as `"None"` when not provided.
+
+Stripe collects the shipping address, billing address, and phone number at checkout.
+
+**Response `200`**
+```json
+{ "url": "https://checkout.stripe.com/..." }
+```
+
+**Response `409`**
+```json
+{ "success": false, "message": "Deposit amount has changed", "data": { "depositCents": 15900 } }
+```
+
+---
+
 ### POST /api/user/checkout
 
 Creates a Stripe checkout session. Returns a redirect URL. Stripe collects the shipping address, billing address, and phone number — no need to collect them on the frontend.
@@ -771,6 +849,7 @@ Stripe webhook handler. Verified via `stripe-signature` header. Handles the foll
 **`checkout.session.completed`** — dispatches on `session.metadata.type`:
 - `"order"` — inserts an `orders` row with status `processing` and `order_items` rows from expanded Stripe line items. Idempotent via `stripe_session_id`. After inserting, triggers a Veeqo order sync: shipping info from `collected_information.shipping_details` maps to Veeqo's `deliver_to_attributes`; billing info (name, address, phone) from `customer_details` maps to Veeqo's `customer_attributes`. Result stored in `veeqo_order_id` / `veeqo_error` on the order row — not exposed via API.
 - `"tbyb"` — updates the matching `tbyb_submissions` row to status `Curating` and stores `stripe_session_id`, `stripe_payment_intent`, and `shipping_address`.
+- `"rx-order"` — updates the matching `rx_orders` row to status `Processing` and stores `stripe_session_id` and `stripe_payment_intent`. If the order used a TBYB deposit, atomically sets `deposit_cents = depositLeftCents` and `open_stripe_session_id = null` on the `tbyb_submissions` row in a single write.
 - Unknown type — returns `400`.
 
 **`charge.refunded`** — matched by `stripe_payment_intent`. Only fires if `charge.amount_refunded > 0`. Tries orders first; if no order rows are updated, falls back to updating the matching `tbyb_submissions` row to `Refunded`. For orders: sets `refunded_cents` to the cumulative refunded amount; sets `status` to `refunded` only on a full refund (`amount_refunded === amount`) — partial refunds update `refunded_cents` only.
