@@ -5,6 +5,78 @@ import { createUserClient } from "@/lib/supabase/user";
 import { stripe } from "@/lib/stripe";
 import { ok, err } from "@/lib/api";
 
+const VISION_TYPE_PRICES: Record<string, number> = {
+  "Traditional Single Vision (+$99)": 9900,
+  "Digital Single Vision w/ Wider Peripheral (+$129)": 12900,
+  "Digital Progressives (+$249)": 24900,
+  "Digital Sport Progressives (+$359)": 35900,
+  "FT 28 Bifocals (+$159)": 15900,
+};
+
+const LENS_MATERIAL_PRICES: Record<string, number> = {
+  "Impact Resistant Polycarbonate": 0,
+  "Impact Resistant Trivex (+$39)": 3900,
+};
+
+const LENS_COLOR_PRICES: Record<string, number> = {
+  "Gen8 Clear to Grey ($99)": 9900,
+  "Gen8 Clear to Brown ($99)": 9900,
+  "Gen8 Clear to Amber ($99)": 9900,
+  "Gen8 Clear to Graphite Green ($99)": 9900,
+  "Gen8 Clear to Amethyst Purple ($99)": 9900,
+  "Gen8 Clear to Emerald Green ($99)": 9900,
+  "Gen8 Clear to Sapphire Blue ($99)": 9900,
+  "XtrActive Darkest Clear to Dark Gray ($119)": 11900,
+  "XtrActive Clear to Dark Brown ($119)": 11900,
+  "XtrActive Polarized Clear to Gray ($169)": 16900,
+  "Polarized Gray (+$79)": 7900,
+  "Polarized Brown (+$79)": 7900,
+  "Dark Gray (+$15)": 1500,
+  "Light Gray (+$15)": 1500,
+  "Dark Brown (+$15)": 1500,
+  "Light Brown (+$15)": 1500,
+  "G-15 Gray/Green (+$15)": 1500,
+  "HD Copper (+$15)": 1500,
+  "Yellow (+$15)": 1500,
+  "Rose (+$15)": 1500,
+  "Blue (+$15)": 1500,
+  "Purple (+$15)": 1500,
+  "Clear / No Tint": 0,
+  "None": 0,
+};
+
+const AR_COATING_PRICES: Record<string, number> = {
+  "Classic A/R: Basic A/R w/ Standard Oleophobic, Hydrophobic Coat & Scratch Coat (+$79)": 7900,
+  "Elite A/R: Superior A/R w/ Best Oleo/Hydrophobic Coat & Scratch Coat (+$99)": 9900,
+  "Elite A/R + Anti Fog: Includes Permanent Anti-Fog Coat + 2 yr Scratch Warranty (+$159)": 15900,
+  "None": 0,
+};
+
+const SCRATCH_COAT_PRICES: Record<string, number> = {
+  "Multi Layer Baked On Ultimate Scratch Coat (+$39)": 3900,
+  "None": 0,
+};
+
+const MIRROR_COAT_PRICES: Record<string, number> = {
+  "Flash Style Mirror Silver (+$65)": 6500,
+  "Flash Style Mirror Gold (+$65)": 6500,
+  "Flash Style Mirror Blue (+$65)": 6500,
+  "Flash Style Mirror Green (+$65)": 6500,
+  "Flash Style Mirror Cobalt (+$65)": 6500,
+  "Flash Style Mirror Red (+$65)": 6500,
+  "Flash Style Mirror Pink (+$65)": 6500,
+  "Solid Mirror Silver (+$65)": 6500,
+  "Solid Mirror Black (+$65)": 6500,
+  "Solid Mirror Gold (+$65)": 6500,
+  "Solid Mirror Blue (+$65)": 6500,
+  "Solid Mirror Cobalt (+$65)": 6500,
+  "Solid Mirror Green (+$65)": 6500,
+  "Solid Mirror Orange (+$65)": 6500,
+  "Solid Mirror Red (+$65)": 6500,
+  "Solid Mirror Pink (+$65)": 6500,
+  "None": 0,
+};
+
 export async function POST(req: NextRequest) {
   const client = await createUserClient(req);
   if (!client) return err("Unauthorized", 401);
@@ -36,8 +108,27 @@ export async function POST(req: NextRequest) {
   if (frameError?.code === "PGRST116") return err("Frame not found", 404);
   if (frameError) return err(frameError.message, 500);
 
+  const visionTypePrice = VISION_TYPE_PRICES[submission.visionType];
+  const lensMaterialPrice = LENS_MATERIAL_PRICES[submission.lensMaterial];
+  const lensColorPrice = LENS_COLOR_PRICES[submission.lensColor];
+  const arCoatingPrice = AR_COATING_PRICES[submission.arCoating];
+  const scratchCoatingPrice = SCRATCH_COAT_PRICES[submission.scratchCoating];
+  const mirrorCoatingPrice = MIRROR_COAT_PRICES[submission.mirrorCoating];
+
+  if (
+    visionTypePrice === undefined ||
+    lensMaterialPrice === undefined ||
+    lensColorPrice === undefined ||
+    arCoatingPrice === undefined ||
+    scratchCoatingPrice === undefined ||
+    mirrorCoatingPrice === undefined
+  ) return err("Invalid lens option", 400);
+
+  const addonCents = visionTypePrice + lensMaterialPrice + lensColorPrice + arCoatingPrice + scratchCoatingPrice + mirrorCoatingPrice;
+  const totalPriceCents = frame.price_cents + addonCents;
+
   // Resolve TBYB submission if provided
-  let tbybSub: { id: string; deposit_cents: number; deposit_left_cents: number; open_stripe_session_id: string | null } | null = null;
+  let tbybSub: { id: string; deposit_cents: number; deposit_used_cents: number; deposit_left_cents: number; open_stripe_session_id: string | null } | null = null;
 
   if (submission.tbybSubmissionId) {
     const { supabase: userSupabase } = client;
@@ -59,12 +150,12 @@ export async function POST(req: NextRequest) {
       return err("Deposit amount has changed", 422, { depositCents: available });
     }
 
-    const depositUsed = Math.min(available, frame.price_cents);
-    tbybSub = { id: match.id, deposit_cents: available, deposit_left_cents: match.deposit_cents - depositUsed, open_stripe_session_id: match.open_stripe_session_id };
+    const depositUsed = Math.min(available, totalPriceCents);
+    tbybSub = { id: match.id, deposit_cents: available, deposit_used_cents: depositUsed, deposit_left_cents: match.deposit_cents - depositUsed, open_stripe_session_id: match.open_stripe_session_id };
   }
 
   const depositCents = tbybSub?.deposit_cents ?? 0;
-  const chargeCents = Math.max(frame.price_cents - depositCents, 50);
+  const chargeCents = Math.max(totalPriceCents - depositCents, 50);
 
   const { user } = client;
 
@@ -76,7 +167,7 @@ export async function POST(req: NextRequest) {
     frame_image_src: frame.image_src,
     frame_price_cents: frame.price_cents,
     frame_color_slug: submission.frameColorSlug,
-    deposit_used_cents: depositCents,
+    deposit_used_cents: tbybSub?.deposit_used_cents ?? null,
     charge_cents: chargeCents,
     vision_type: submission.visionType,
     od_sphere: submission.odSphere,

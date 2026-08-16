@@ -366,7 +366,7 @@ create table rx_orders (
   frame_image_src       text        not null,
   frame_price_cents     int         not null,
   frame_color_slug      text        not null,
-  deposit_used_cents    int         not null,
+  deposit_used_cents    int,
   charge_cents          int         not null,
   status                text        not null,
   stripe_session_id     text,
