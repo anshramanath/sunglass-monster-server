@@ -53,6 +53,8 @@ create table rx_orders (
   ar_coating            text        not null,
   scratch_coating       text        not null,
   mirror_coating        text        not null,
+  carrier               text,
+  tracking_number       text,
   comments              text        not null,
   prescription_url      text        not null,
   headshot_url          text        not null,
