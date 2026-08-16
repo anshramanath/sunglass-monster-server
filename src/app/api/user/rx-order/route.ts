@@ -1,0 +1,206 @@
+import { NextRequest } from "next/server";
+import crypto from "crypto";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { createUserClient } from "@/lib/supabase/user";
+import { stripe } from "@/lib/stripe";
+import { ok, err } from "@/lib/api";
+
+export async function POST(req: NextRequest) {
+  const client = await createUserClient(req);
+  if (!client) return err("Unauthorized", 401);
+
+  const body = await req.json();
+
+  const brandSlug = body.brandSlug;
+  if (!brandSlug) return err("brandSlug is required", 400);
+
+  const submission = body.submission;
+  if (!submission) return err("submission is required", 400);
+
+  const successUrl = body.successUrl;
+  if (!successUrl) return err("successUrl is required", 400);
+
+  const cancelUrl = body.cancelUrl;
+  if (!cancelUrl) return err("cancelUrl is required", 400);
+
+  const adminSupabase = createAdminClient();
+
+  // Look up frame
+  const { data: frame, error: frameError } = await adminSupabase
+    .from("prescription_frames")
+    .select("name, slug, price_cents, image_src")
+    .eq("id", submission.frameId)
+    .eq("brand_slug", brandSlug)
+    .single();
+
+  if (frameError?.code === "PGRST116") return err("Frame not found", 404);
+  if (frameError) return err(frameError.message, 500);
+
+  // Resolve TBYB submission if provided
+  let tbybSub: { id: string; deposit_cents: number; deposit_left_cents: number; open_stripe_session_id: string | null } | null = null;
+
+  if (submission.tbybSubmissionId) {
+    const { supabase: userSupabase } = client;
+
+    const { data: subs } = await userSupabase
+      .from("tbyb_submissions")
+      .select("id, deposit_cents, refunded_cents, open_stripe_session_id")
+      .eq("brand_slug", brandSlug);
+
+    const match = (subs ?? []).find(
+      (s) => s.id.slice(-8).toUpperCase() === submission.tbybSubmissionId.toUpperCase()
+    );
+
+    if (!match) return err("TBYB submission not found", 404);
+
+    const available = Math.max(match.deposit_cents - (match.refunded_cents ?? 0), 0);
+
+    if (submission.depositCents !== available) {
+      return err("Deposit amount has changed", 409, { depositCents: available });
+    }
+
+    const depositUsed = Math.min(available, frame.price_cents);
+    tbybSub = { id: match.id, deposit_cents: available, deposit_left_cents: match.deposit_cents - depositUsed, open_stripe_session_id: match.open_stripe_session_id };
+  }
+
+  const depositCents = tbybSub?.deposit_cents ?? 0;
+  const chargeCents = Math.max(frame.price_cents - depositCents, 50);
+
+  const { user } = client;
+
+  const orderRow = {
+    brand_slug: brandSlug,
+    user_id: user!.id,
+    frame_name: frame.name,
+    frame_slug: frame.slug,
+    frame_image_src: frame.image_src,
+    frame_price_cents: frame.price_cents,
+    frame_color_slug: submission.frameColorSlug,
+    deposit_used_cents: depositCents,
+    charge_cents: chargeCents,
+    vision_type: submission.visionType,
+    od_sphere: submission.odSphere,
+    od_cylinder: submission.odCylinder,
+    od_axis: submission.odAxis,
+    os_sphere: submission.osSphere,
+    os_cylinder: submission.osCylinder,
+    os_axis: submission.osAxis,
+    pd_mode: submission.pdMode,
+    pd: submission.pd,
+    pd_left: submission.pdLeft,
+    pd_right: submission.pdRight,
+    lens_material: submission.lensMaterial,
+    lens_color_category: submission.lensColorCategory,
+    lens_color: submission.lensColor,
+    ar_coating: submission.arCoating,
+    scratch_coating: submission.scratchCoating,
+    mirror_coating: submission.mirrorCoating,
+    comments: submission.comments,
+    prescription_url: submission.prescriptionUrl,
+    headshot_url: submission.headshotUrl,
+    contact_name: submission.name,
+    contact_email: submission.email,
+    contact_phone: submission.phone,
+  };
+
+  const formHash = crypto
+    .createHash("sha256")
+    .update(JSON.stringify(orderRow))
+    .digest("hex");
+
+  let orderId: string;
+
+  const { data: inserted, error: insertError } = await adminSupabase
+    .from("rx_orders")
+    .insert({ ...orderRow, form_hash: formHash, status: "Unpaid" })
+    .select("id")
+    .single();
+
+  if (insertError) {
+    if (insertError.code === "23505") {
+      const { data: existing, error: lookupError } = await adminSupabase
+        .from("rx_orders")
+        .select("id")
+        .eq("form_hash", formHash)
+        .eq("status", "Unpaid")
+        .single();
+
+      if (lookupError) return err("Failed to create order", 500);
+      orderId = existing.id;
+    } else {
+      return err(insertError.message, 500);
+    }
+  } else {
+    orderId = inserted!.id;
+  }
+
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    line_items: [{
+      quantity: 1,
+      price_data: {
+        currency: "usd",
+        unit_amount: chargeCents,
+        product_data: {
+          name: frame.name,
+          images: [frame.image_src],
+        },
+      },
+    }],
+    metadata: {
+      brandSlug,
+      type: "rx-order",
+      rxOrderId: orderId,
+      ...(tbybSub && {
+        tbybSubmissionId: tbybSub.id,
+        depositLeftCents: String(tbybSub.deposit_left_cents),
+      }),
+    },
+    client_reference_id: user!.id,
+    success_url: successUrl,
+    cancel_url: cancelUrl,
+    billing_address_collection: "required",
+    phone_number_collection: { enabled: true },
+    shipping_address_collection: { allowed_countries: ["US"] },
+  }, { idempotencyKey: orderId });
+
+  if (tbybSub) {
+    if (session.id !== tbybSub.open_stripe_session_id) {
+      if (tbybSub.open_stripe_session_id) {
+        try {
+          await stripe.checkout.sessions.expire(tbybSub.open_stripe_session_id);
+        } catch (e: any) {
+          if (e?.type === "invalid_request_error") {
+            const existing = await stripe.checkout.sessions.retrieve(tbybSub.open_stripe_session_id);
+            if (existing.status === "complete") {
+              return err("Previous session already completed — please retry shortly", 500);
+            }
+          } else {
+            return err("Failed to expire existing session", 500);
+          }
+        }
+        
+        const { error: nullError } = await adminSupabase
+          .from("tbyb_submissions")
+          .update({ open_stripe_session_id: null })
+          .eq("id", tbybSub.id);
+
+        if (nullError) return err("Failed to clear session", 500);
+      }
+
+      const { data: claimed, error: claimError } = await adminSupabase
+        .from("tbyb_submissions")
+        .update({ open_stripe_session_id: session.id })
+        .eq("id", tbybSub.id)
+        .is("open_stripe_session_id", null)
+        .select("id");
+
+      if (claimError) return err("Failed to claim session", 500);
+      if (claimed.length === 0) {
+        return err("Session conflict, please retry", 409);
+      }
+    }
+  }
+
+  return ok({ url: session.url });
+}

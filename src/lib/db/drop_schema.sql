@@ -4,6 +4,7 @@
 -- Development only — never run in production
 -- ============================================================
 
+drop table if exists rx_orders cascade;
 drop table if exists prescription_frames cascade;
 drop table if exists tbyb_submissions cascade;
 drop table if exists tbyb_packages cascade;

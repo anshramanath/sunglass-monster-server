@@ -142,6 +142,36 @@ export async function POST(req: NextRequest) {
           return new Response("OK", { status: 200 });
         }
 
+        case "rx-order": {
+          const { rxOrderId, tbybSubmissionId, depositLeftCents } = session.metadata;
+          if (!rxOrderId) return new Response("Missing rxOrderId in session metadata", { status: 400 });
+
+          const { error: orderError } = await supabase
+            .from("rx_orders")
+            .update({
+              status: "Processing",
+              stripe_session_id: session.id,
+              stripe_payment_intent: paymentIntent ?? null,
+            })
+            .eq("id", rxOrderId);
+
+          if (orderError) return new Response("Failed to update rx order", { status: 500 });
+
+          if (tbybSubmissionId && depositLeftCents) {
+            const { error: subError } = await supabase
+              .from("tbyb_submissions")
+              .update({
+                deposit_cents: parseInt(depositLeftCents, 10),
+                open_stripe_session_id: null,
+              })
+              .eq("id", tbybSubmissionId);
+
+            if (subError) return new Response("Failed to update tbyb submission", { status: 500 });
+          }
+
+          return new Response("OK", { status: 200 });
+        }
+
         default: return new Response("Unknown session type", { status: 400 });
       }
     }
