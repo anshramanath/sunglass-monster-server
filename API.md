@@ -750,7 +750,7 @@ Submits a prescription frame order, optionally applying a TBYB deposit. Always g
     "frameColorSlug": "matte-black",
     "tbybSubmissionId": "ABCD1234",
     "depositCents": 19900,
-    "visionType": "Single Vision",
+    "visionType": "Traditional Single Vision (+$99)",
     "odSphere": "-1.25",
     "odCylinder": "-0.50",
     "odAxis": "90",
@@ -761,7 +761,7 @@ Submits a prescription frame order, optionally applying a TBYB deposit. Always g
     "pd": "63",
     "pdLeft": "None",
     "pdRight": "None",
-    "lensMaterial": "Polycarbonate",
+    "lensMaterial": "Impact Resistant Polycarbonate",
     "lensColorCategory": "None",
     "lensColor": "None",
     "arCoating": "None",
@@ -776,6 +776,8 @@ Submits a prescription frame order, optionally applying a TBYB deposit. Always g
   }
 }
 ```
+
+`visionType`, `lensMaterial`, `lensColor`, `arCoating`, `scratchCoating`, and `mirrorCoating` must be exact strings from the server-side price dictionaries — unknown values return `400`. `"None"` is a valid value for all coating and color fields.
 
 `tbybSubmissionId` and `depositCents` are optional — omit both for non-TBYB orders. When provided, `depositCents` must match the current available balance from `/api/user/deposit`; if stale, returns `422` with `{ depositCents: <fresh amount> }`. Optional fields (`comments`, `phone`, `prescriptionUrl`, `headshotUrl`, unused PD fields, unused lens fields) are sent as `"None"` when not provided.
 

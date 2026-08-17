@@ -100,13 +100,18 @@ export async function POST(req: NextRequest) {
   // Look up frame
   const { data: frame, error: frameError } = await adminSupabase
     .from("prescription_frames")
-    .select("name, slug, price_cents, image_src")
+    .select("name, slug, price_cents, image_src, colors")
     .eq("id", submission.frameId)
     .eq("brand_slug", brandSlug)
     .single();
 
   if (frameError?.code === "PGRST116") return err("Frame not found", 404);
   if (frameError) return err(frameError.message, 500);
+
+  const frameColor = (frame.colors as { option: string; slug: string }[]).find(
+    (c) => c.slug === submission.frameColorSlug
+  );
+  if (!frameColor) return err("Invalid frame color", 400);
 
   const visionTypePrice = VISION_TYPE_PRICES[submission.visionType];
   const lensMaterialPrice = LENS_MATERIAL_PRICES[submission.lensMaterial];
@@ -166,7 +171,7 @@ export async function POST(req: NextRequest) {
     frame_slug: frame.slug,
     frame_image_src: frame.image_src,
     frame_price_cents: frame.price_cents,
-    frame_color_slug: submission.frameColorSlug,
+    frame_color: frameColor.option,
     total_price_cents: totalPriceCents,
     deposit_used_cents: tbybSub?.deposit_used_cents ?? null,
     stripe_charge_cents: chargeCents,
