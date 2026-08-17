@@ -197,15 +197,28 @@ export async function POST(req: NextRequest) {
       if (orderError) return new Response("Failed to update order", { status: 500 });
 
       if (updatedOrders.length === 0) {
-        const { error: subError } = await supabase
-          .from("tbyb_submissions")
+        const { data: updatedRxOrders, error: rxOrderError } = await supabase
+          .from("rx_orders")
           .update({
             refunded_cents: charge.amount_refunded,
-            status: "Refunded",
+            ...(isFullRefund && { status: "Refunded" }),
           })
-          .eq("stripe_payment_intent", paymentIntent);
+          .eq("stripe_payment_intent", paymentIntent)
+          .select("id");
 
-        if (subError) return new Response("Failed to update submission", { status: 500 });
+        if (rxOrderError) return new Response("Failed to update rx order", { status: 500 });
+
+        if (updatedRxOrders.length === 0) {
+          const { error: subError } = await supabase
+            .from("tbyb_submissions")
+            .update({
+              refunded_cents: charge.amount_refunded,
+              status: "Refunded",
+            })
+            .eq("stripe_payment_intent", paymentIntent);
+
+          if (subError) return new Response("Failed to update submission", { status: 500 });
+        }
       }
 
       return new Response("OK", { status: 200 });
