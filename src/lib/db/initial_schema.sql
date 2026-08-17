@@ -373,6 +373,7 @@ create table rx_orders (
   stripe_session_id     text,
   stripe_payment_intent text,
   refunded_cents        int,
+  shipping_address      jsonb,
   form_hash             text        not null,
   vision_type           text        not null,
   od_sphere             text        not null,

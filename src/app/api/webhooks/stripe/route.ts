@@ -152,6 +152,15 @@ export async function POST(req: NextRequest) {
               status: "Processing",
               stripe_session_id: session.id,
               stripe_payment_intent: paymentIntent ?? null,
+              shipping_address: {
+                name: session.collected_information?.shipping_details?.name ?? null,
+                line1: session.collected_information?.shipping_details?.address?.line1 ?? null,
+                line2: session.collected_information?.shipping_details?.address?.line2 ?? null,
+                city: session.collected_information?.shipping_details?.address?.city ?? null,
+                state: session.collected_information?.shipping_details?.address?.state ?? null,
+                postalCode: session.collected_information?.shipping_details?.address?.postal_code ?? null,
+                country: session.collected_information?.shipping_details?.address?.country ?? null,
+              },
             })
             .eq("id", rxOrderId);
 
