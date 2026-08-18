@@ -115,19 +115,25 @@ export default function Sidebar({ user }: { user: User }) {
 
       {brandSlug === "bikershades" && (
         <div style={{ marginTop: 32 }}>
-          <div
-            onClick={() => !isActive("/tbyb") && navigate(`/admin/${brandSlug}/tbyb`)}
-            style={{
-              padding: "11px 12px",
-              fontSize: 14,
-              fontWeight: 500,
-              cursor: "pointer",
-              background: isActive("/tbyb") ? currentBrand.accent : "transparent",
-              color: isActive("/tbyb") ? "#ffffff" : "#525252",
-            }}
-          >
-            TBYB
-          </div>
+          {[
+            { label: "TBYB", path: "/tbyb" },
+            { label: "Rx Orders", path: "/rx-orders" },
+          ].map(({ label, path }) => (
+            <div
+              key={path}
+              onClick={() => !isActive(path) && navigate(`/admin/${brandSlug}${path}`)}
+              style={{
+                padding: "11px 12px",
+                fontSize: 14,
+                fontWeight: 500,
+                cursor: "pointer",
+                background: isActive(path) ? currentBrand.accent : "transparent",
+                color: isActive(path) ? "#ffffff" : "#525252",
+              }}
+            >
+              {label}
+            </div>
+          ))}
         </div>
       )}
 

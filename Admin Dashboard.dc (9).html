@@ -315,26 +315,36 @@
                 <sc-if value="{{ sub.expanded }}" hint-placeholder-val="{{ false }}">
                   <div style="background:var(--grey-50); padding:24px 24px 28px; margin-bottom:8px;">
                     <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:32px; margin-bottom:28px;">
-                      <div>
-                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Contact</div>
-                        <div style="font-size:14px; line-height:1.6;">
-                          <div>{{ sub.customerName }}</div>
-                          <div style="color:var(--grey-500);">{{ sub.contactEmail }}</div>
-                          <div style="color:var(--grey-500);">{{ sub.contactPhone }}</div>
+                      <div style="display:flex; flex-direction:column; justify-content:space-between;">
+                        <div>
+                          <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Contact</div>
+                          <div style="font-size:14px; line-height:1.6;">
+                            <div style="color:var(--grey-500);">{{ sub.customerName }}</div>
+                            <div>{{ sub.contactEmail }}</div>
+                            <div style="color:var(--grey-500);">{{ sub.contactPhone }}</div>
+                          </div>
                         </div>
-                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-top:18px; margin-bottom:10px;">Payment</div>
-                        <div style="font-size:14px; color:var(--grey-500); font-family:monospace;">{{ sub.paymentIntent }}</div>
+                        <sc-if value="{{ sub.paymentIntent }}" hint-placeholder-val="{{ false }}">
+                          <div>
+                            <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-top:18px; margin-bottom:10px;">Payment</div>
+                            <div style="font-size:14px; color:var(--grey-500); font-family:monospace;">{{ sub.paymentIntent }}</div>
+                          </div>
+                        </sc-if>
                       </div>
-                      <div>
-                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Package</div>
-                        <div style="font-size:14px; line-height:1.6;">
-                          <div>{{ sub.packageName }} · {{ sub.packagePriceDisplay }}</div>
-                          <div style="color:var(--grey-500);">{{ sub.pairsDisplay }} Pairs</div>
-                          <div style="color:var(--grey-500);">{{ sub.brandsDisplay }}</div>
+                      <div style="display:flex; flex-direction:column; justify-content:space-between;">
+                        <div>
+                          <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Package</div>
+                          <div style="font-size:14px; line-height:1.6;">
+                            <div>{{ sub.packageName }} · {{ sub.packagePriceDisplay }}</div>
+                            <div style="color:var(--grey-500);">{{ sub.pairsDisplay }} Pairs</div>
+                            <div style="color:var(--grey-500);">{{ sub.brandsDisplay }}</div>
+                          </div>
                         </div>
                         <sc-if value="{{ sub.refundedDisplay }}" hint-placeholder-val="{{ false }}">
-                          <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:{{ sub.saveButtonColor }}; margin-top:18px; margin-bottom:10px;">Refunded</div>
-                          <div style="font-size:14px; color:{{ sub.saveButtonColor }};">{{ sub.refundedDisplay }}</div>
+                          <div>
+                            <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:{{ sub.saveButtonColor }}; margin-top:18px; margin-bottom:10px;">Refunded</div>
+                            <div style="font-size:14px; color:{{ sub.saveButtonColor }};">{{ sub.refundedDisplay }}</div>
+                          </div>
                         </sc-if>
                       </div>
                       <div>
@@ -358,35 +368,29 @@
                           </div>
                           <div onClick="{{ sub.saveStatus }}" style="height:38px; padding:0 14px; background:{{ sub.saveButtonColor }}; color:var(--aritzia-white); display:flex; align-items:center; font-size:13px; font-weight:500; cursor:{{ sub.saveCursor }}; opacity:{{ sub.saveOpacity }}; flex:none;">Save</div>
                         </div>
-                        <sc-if value="{{ sub.showFulfillment }}" hint-placeholder-val="{{ false }}">
-                          <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--color-border); display:flex; flex-direction:column; gap:8px;">
-                            <div style="position:relative;">
-                              <div onClick="{{ sub.fulfillment.toggleCarrier }}" style="height:38px; width:100%; border:1px solid var(--aritzia-black); padding:0 12px; font-family:var(--font-sans); font-size:13px; background:var(--aritzia-white); display:flex; align-items:center; justify-content:space-between; gap:8px; cursor:{{ sub.fulfillment.carrierCursor }}; user-select:none; box-sizing:border-box; opacity:{{ sub.fulfillment.carrierOpacity }};">
-                                <span>{{ sub.fulfillment.carrierLabel }}</span>
-                                <span style="font-size:10px; transform:{{ sub.fulfillment.carrierChevron }}; transition:transform 120ms;">▾</span>
+
+                        <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--color-border); display:flex; flex-direction:column; gap:8px;">
+                          <div style="position:relative;">
+                            <div onClick="{{ sub.fulfillment.toggleCarrier }}" style="height:38px; width:100%; border:1px solid {{ sub.fulfillment.carrierBorderColor }}; padding:0 12px; font-family:var(--font-sans); font-size:13px; background:var(--aritzia-white); display:flex; align-items:center; justify-content:space-between; gap:8px; cursor:{{ sub.fulfillment.carrierCursor }}; user-select:none; box-sizing:border-box; opacity:{{ sub.fulfillment.carrierOpacity }};">
+                              <span style="color:{{ sub.fulfillment.carrierLabelColor }};">{{ sub.fulfillment.carrierLabel }}</span>
+                              <span style="font-size:10px; transform:{{ sub.fulfillment.carrierChevron }}; transition:transform 120ms;">▾</span>
+                            </div>
+                            <sc-if value="{{ sub.fulfillment.carrierDropdownOpen }}" hint-placeholder-val="{{ false }}">
+                              <div style="position:absolute; top:40px; left:0; width:100%; background:var(--aritzia-white); border:1px solid var(--aritzia-black); z-index:10; box-sizing:border-box;">
+                                <sc-for list="{{ sub.fulfillment.carrierOptions }}" as="c" hint-placeholder-count="4">
+                                  <div onClick="{{ c.select }}" style="{{ c.rowStyle }}">{{ c.label }}</div>
+                                </sc-for>
                               </div>
-                              <sc-if value="{{ sub.fulfillment.carrierDropdownOpen }}" hint-placeholder-val="{{ false }}">
-                                <div style="position:absolute; top:40px; left:0; width:100%; background:var(--aritzia-white); border:1px solid var(--aritzia-black); z-index:10; box-sizing:border-box;">
-                                  <sc-for list="{{ sub.fulfillment.carrierOptions }}" as="c" hint-placeholder-count="4">
-                                    <div onClick="{{ c.select }}" style="{{ c.rowStyle }}">{{ c.label }}</div>
-                                  </sc-for>
-                                </div>
-                              </sc-if>
-                            </div>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                              <input value="{{ sub.fulfillment.tracking }}" onChange="{{ sub.fulfillment.setTracking }}" disabled="{{ sub.fulfillment.trackingDisabled }}" placeholder="Tracking number" style="flex:1; height:38px; box-sizing:border-box; font-family:var(--font-sans); font-size:13px; border:1px solid var(--color-border-input); padding:0 12px; min-width:0;" />
-                              <sc-if value="{{ sub.fulfillment.showUndo }}" hint-placeholder-val="{{ false }}">
-                                <div onClick="{{ sub.fulfillment.undo }}" style="height:38px; padding:0 14px; background:var(--aritzia-white); color:var(--aritzia-black); border:1px solid var(--aritzia-black); display:flex; align-items:center; font-size:13px; font-weight:500; cursor:pointer; flex:none;">{{ sub.fulfillment.undoLabel }}</div>
-                              </sc-if>
-                              <sc-if value="{{ sub.fulfillment.showSave }}" hint-placeholder-val="{{ false }}">
-                                <div onClick="{{ sub.fulfillment.save }}" style="height:38px; padding:0 14px; background:{{ sub.saveButtonColor }}; color:var(--aritzia-white); display:flex; align-items:center; font-size:13px; font-weight:500; cursor:pointer; flex:none; opacity:{{ sub.fulfillment.saveDisabled }};">{{ sub.fulfillment.saveLabel }}</div>
-                              </sc-if>
-                            </div>
-                            <sc-if value="{{ sub.fulfillment.summary }}" hint-placeholder-val="{{ false }}">
-                              <div style="font-size:12px; color:var(--grey-500);">{{ sub.fulfillment.summary }}</div>
                             </sc-if>
                           </div>
-                        </sc-if>
+                          <div style="display:flex; align-items:center; gap:8px;">
+                            <input value="{{ sub.fulfillment.tracking }}" onChange="{{ sub.fulfillment.setTracking }}" disabled="{{ sub.fulfillment.trackingDisabled }}" placeholder="Tracking number" style="flex:1; height:38px; box-sizing:border-box; font-family:var(--font-sans); font-size:13px; border:1px solid var(--color-border-input); padding:0 12px; color:var(--aritzia-black); outline:none; min-width:0; opacity:{{ sub.fulfillment.carrierOpacity }};" />
+                            <div onClick="{{ sub.fulfillment.save }}" style="height:38px; padding:0 14px; background:{{ sub.saveButtonColor }}; color:var(--aritzia-white); display:flex; align-items:center; font-size:13px; font-weight:500; cursor:{{ sub.fulfillment.saveCursor }}; opacity:{{ sub.fulfillment.saveOpacity }}; flex:none;">{{ sub.fulfillment.saveLabel }}</div>
+                          </div>
+                          <sc-if value="{{ sub.fulfillment.summary }}" hint-placeholder-val="{{ false }}">
+                            <div style="font-size:12px; color:var(--grey-500);">{{ sub.fulfillment.summary }}</div>
+                          </sc-if>
+                        </div>
                       </div>
                     </div>
 
@@ -461,6 +465,198 @@
         </sc-if>
         <sc-if value="{{ !hasTbyb }}" hint-placeholder-val="{{ false }}">
           <div style="padding:60px 0; color:var(--grey-500); font-size:15px; border-top:1px solid var(--color-border); text-align:left;">No TBYB submissions yet.</div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <!-- ===================== RX ORDERS ===================== -->
+    <sc-if value="{{ isRxOrders }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <sc-if value="{{ hasRxOrders }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px;">
+              <sc-for list="{{ rxFilterOptions }}" as="opt" hint-placeholder-count="6">
+                <div onClick="{{ opt.select }}" style="{{ opt.style }}">{{ opt.label }}</div>
+              </sc-for>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1.2fr 1.4fr 1.4fr 0.9fr 1.1fr 32px; gap:16px; padding:0 0 10px; border-bottom:1px solid var(--aritzia-black); font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500);">
+              <div>Order</div><div>Placed</div><div>Customer</div><div>Total</div><div>Status</div><div></div>
+            </div>
+
+            <sc-for list="{{ rxView }}" as="rx" hint-placeholder-count="6">
+              <div style="border-bottom:1px solid var(--color-border);">
+                <div onClick="{{ rx.toggle }}" style="display:grid; grid-template-columns:1.2fr 1.4fr 1.4fr 0.9fr 1.1fr 32px; gap:16px; align-items:center; padding:16px 0; cursor:pointer;">
+                  <div style="font-size:14px;">{{ rx.displayId }}</div>
+                  <div style="font-size:14px; color:var(--grey-500);">{{ rx.dateDisplay }}</div>
+                  <div style="font-size:14px;">{{ rx.customerName }}</div>
+                  <div style="font-size:14px;">{{ rx.totalDisplay }}</div>
+                  <div style="display:flex; align-items:center; gap:6px; font-size:13px; color:{{ rx.statusColor }};">
+                    <span style="width:6px; height:6px; border-radius:50%; background:{{ rx.statusColor }}; flex:none;"></span>{{ rx.statusLabel }}
+                  </div>
+                  <div style="font-size:16px; color:var(--grey-500); text-align:center; transform:{{ rx.chevronTransform }}; transition:transform 120ms;">⌄</div>
+                </div>
+
+                <sc-if value="{{ rx.expanded }}" hint-placeholder-val="{{ false }}">
+                  <div style="background:var(--grey-50); padding:24px 24px 28px; margin-bottom:8px;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:32px; margin-bottom:28px;">
+                      <div style="display:flex; flex-direction:column; justify-content:space-between;">
+                        <div>
+                          <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Contact</div>
+                          <div style="font-size:14px; line-height:1.6;">
+                            <div>{{ rx.customerName }}</div>
+                            <div style="color:var(--grey-500);">{{ rx.contactEmail }}</div>
+                            <div style="color:var(--grey-500);">{{ rx.contactPhone }}</div>
+                          </div>
+                        </div>
+                        <sc-if value="{{ rx.paymentIntent }}" hint-placeholder-val="{{ false }}">
+                          <div>
+                            <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-top:18px; margin-bottom:10px;">Payment</div>
+                            <div style="font-size:14px; color:var(--grey-500); font-family:monospace;">{{ rx.paymentIntent }}</div>
+                          </div>
+                        </sc-if>
+                      </div>
+                      <div style="display:flex; flex-direction:column; justify-content:space-between;">
+                        <div>
+                          <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Frame</div>
+                          <div style="font-size:14px; line-height:1.6;">
+                            <div>{{ rx.frameName }}</div>
+                            <div style="color:var(--grey-500);">{{ rx.frameColor }}</div>
+                            <div style="color:var(--grey-500);">Total {{ rx.totalDisplay }} · Paid {{ rx.stripeChargeDisplay }}</div>
+                          </div>
+                        </div>
+                        <sc-if value="{{ rx.refundedDisplay }}" hint-placeholder-val="{{ false }}">
+                          <div>
+                            <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:{{ rx.statusColor }}; margin-top:18px; margin-bottom:10px;">Refunded</div>
+                            <div style="font-size:14px; color:{{ rx.statusColor }};">{{ rx.refundedDisplay }}</div>
+                          </div>
+                        </sc-if>
+                      </div>
+                      <div>
+                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Status</div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                          <div style="position:relative; flex:1;">
+                            <div onClick="{{ rx.toggleStatusDropdown }}" style="height:38px; width:100%; border:1px solid {{ rx.statusBorderColor }}; padding:0 12px; font-family:var(--font-sans); font-size:13px; background:var(--aritzia-white); display:flex; align-items:center; justify-content:space-between; gap:8px; cursor:pointer; user-select:none; box-sizing:border-box; color:{{ rx.statusTextColor }};">
+                              <span>{{ rx.draftStatusLabel }}</span>
+                              <span style="font-size:10px; transform:{{ rx.statusChevron }}; transition:transform 120ms;">▾</span>
+                            </div>
+                            <sc-if value="{{ rx.statusDropdownOpen }}" hint-placeholder-val="{{ false }}">
+                              <div style="position:absolute; top:40px; left:0; width:100%; background:var(--aritzia-white); border:1px solid var(--aritzia-black); z-index:10; box-sizing:border-box;">
+                                <sc-for list="{{ rx.statusOptions }}" as="st" hint-placeholder-count="4">
+                                  <div onClick="{{ st.select }}" style="{{ st.rowStyle }}">
+                                    <div>{{ st.label }}</div>
+                                    <div style="font-size:11px; color:{{ st.descColor }}; margin-top:2px;">{{ st.description }}</div>
+                                  </div>
+                                </sc-for>
+                              </div>
+                            </sc-if>
+                          </div>
+                          <div onClick="{{ rx.saveStatus }}" style="height:38px; padding:0 14px; background:{{ rx.statusColor2 }}; color:var(--aritzia-white); display:flex; align-items:center; font-size:13px; font-weight:500; cursor:{{ rx.saveStatusCursor }}; opacity:{{ rx.saveStatusOpacity }}; flex:none;">Save</div>
+                        </div>
+
+                        <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--color-border); display:flex; flex-direction:column; gap:8px;">
+                          <div style="position:relative;">
+                            <div onClick="{{ rx.fulfillment.toggleCarrier }}" style="height:38px; width:100%; border:1px solid {{ rx.fulfillment.carrierBorderColor }}; padding:0 12px; font-family:var(--font-sans); font-size:13px; background:var(--aritzia-white); display:flex; align-items:center; justify-content:space-between; gap:8px; cursor:{{ rx.fulfillment.carrierCursor }}; user-select:none; box-sizing:border-box; opacity:{{ rx.fulfillment.carrierOpacity }};">
+                              <span style="color:{{ rx.fulfillment.carrierLabelColor }};">{{ rx.fulfillment.carrierLabel }}</span>
+                              <span style="font-size:10px; transform:{{ rx.fulfillment.carrierChevron }}; transition:transform 120ms;">▾</span>
+                            </div>
+                            <sc-if value="{{ rx.fulfillment.carrierDropdownOpen }}" hint-placeholder-val="{{ false }}">
+                              <div style="position:absolute; top:40px; left:0; width:100%; background:var(--aritzia-white); border:1px solid var(--aritzia-black); z-index:10; box-sizing:border-box;">
+                                <sc-for list="{{ rx.fulfillment.carrierOptions }}" as="c" hint-placeholder-count="4">
+                                  <div onClick="{{ c.select }}" style="{{ c.rowStyle }}">{{ c.label }}</div>
+                                </sc-for>
+                              </div>
+                            </sc-if>
+                          </div>
+                          <div style="display:flex; align-items:center; gap:8px;">
+                            <input value="{{ rx.fulfillment.tracking }}" onChange="{{ rx.fulfillment.setTracking }}" disabled="{{ rx.fulfillment.trackingDisabled }}" placeholder="Tracking number" style="flex:1; height:38px; box-sizing:border-box; font-family:var(--font-sans); font-size:13px; border:1px solid var(--color-border-input); padding:0 12px; color:var(--aritzia-black); outline:none; min-width:0; opacity:{{ rx.fulfillment.carrierOpacity }};" style-focus="outline:2px solid var(--aritzia-black); outline-offset:2px;" />
+                            <sc-if value="{{ rx.fulfillment.isShipped }}" hint-placeholder-val="{{ false }}">
+                              <div onClick="{{ rx.fulfillment.undo }}" style="height:38px; padding:0 14px; background:var(--aritzia-white); color:var(--aritzia-black); border:1px solid var(--aritzia-black); display:flex; align-items:center; font-size:13px; font-weight:500; cursor:pointer; flex:none;">{{ rx.fulfillment.undoLabel }}</div>
+                            </sc-if>
+                            <sc-if value="{{ !rx.fulfillment.isShipped }}" hint-placeholder-val="{{ true }}">
+                              <div onClick="{{ rx.fulfillment.save }}" style="height:38px; padding:0 14px; background:{{ rx.statusColor2 }}; color:var(--aritzia-white); display:flex; align-items:center; font-size:13px; font-weight:500; cursor:pointer; flex:none; opacity:{{ rx.fulfillment.saveOpacity }};">{{ rx.fulfillment.saveLabel }}</div>
+                            </sc-if>
+                          </div>
+                          <sc-if value="{{ rx.fulfillment.summary }}" hint-placeholder-val="{{ false }}">
+                            <div style="font-size:12px; color:var(--grey-500);">{{ rx.fulfillment.summary }}</div>
+                          </sc-if>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-bottom:28px; padding-top:24px; border-top:1px solid var(--color-border);">
+                      <div>
+                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Prescription</div>
+                        <div style="display:grid; grid-template-columns:44px 1fr 1fr 1fr; gap:10px 16px; font-size:13px;">
+                          <div></div><div style="color:var(--grey-500);">Sphere</div><div style="color:var(--grey-500);">Cylinder</div><div style="color:var(--grey-500);">Axis</div>
+                          <div style="color:var(--grey-500);">OD</div><div>{{ rx.odSphere }}</div><div>{{ rx.odCylinder }}</div><div>{{ rx.odAxis }}</div>
+                          <div style="color:var(--grey-500);">OS</div><div>{{ rx.osSphere }}</div><div>{{ rx.osCylinder }}</div><div>{{ rx.osAxis }}</div>
+                        </div>
+                      </div>
+                      <div>
+                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Vision type</div>
+                        <div style="font-size:14px; margin-bottom:18px;">{{ rx.visionType }}</div>
+                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Special requests</div>
+                        <div style="font-size:14px; line-height:1.55; color:{{ rx.commentsColor }};">{{ rx.commentsDisplay }}</div>
+                      </div>
+                    </div>
+
+                    <div style="padding-top:24px; border-top:1px solid var(--color-border); margin-bottom:28px;">
+                      <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Specifications</div>
+                      <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 16px; font-size:14px;">
+                          <div style="color:var(--grey-500);">PD</div><div>{{ rx.pdDisplay }}</div>
+                          <div style="color:var(--grey-500);">Lens material</div><div>{{ rx.lensMaterial }}</div>
+                          <div style="color:var(--grey-500);">Lens colour</div><div>{{ rx.lensColorDisplay }}</div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 16px; font-size:14px;">
+                          <div style="color:var(--grey-500);">AR coating</div><div>{{ rx.arCoatingDisplay }}</div>
+                          <div style="color:var(--grey-500);">Scratch coating</div><div>{{ rx.scratchCoatingDisplay }}</div>
+                          <div style="color:var(--grey-500);">Mirror coating</div><div>{{ rx.mirrorCoatingDisplay }}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:32px; padding-top:24px; border-top:1px solid var(--color-border);">
+                      <sc-if value="{{ rx.shippingAddress }}" hint-placeholder-val="{{ false }}">
+                        <div>
+                          <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Shipping address</div>
+                          <div style="font-size:14px; line-height:1.6;">
+                            <div>{{ rx.shippingAddress.name }}</div>
+                            <div>{{ rx.shippingAddress.line1 }}</div>
+                            <sc-if value="{{ rx.shippingAddress.line2 }}" hint-placeholder-val="{{ false }}"><div>{{ rx.shippingAddress.line2 }}</div></sc-if>
+                            <div>{{ rx.shippingAddress.cityStateZip }}</div>
+                            <div>{{ rx.shippingAddress.country }}</div>
+                          </div>
+                        </div>
+                      </sc-if>
+                      <div>
+                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Prescription upload</div>
+                        <sc-if value="{{ rx.prescriptionUrl }}" hint-placeholder-val="{{ false }}">
+                          <a href="{{ rx.prescriptionUrl }}" target="_blank" rel="noopener" style="font-size:14px; color:var(--aritzia-black); text-decoration:underline; text-underline-offset:3px;">View prescription ↗</a>
+                        </sc-if>
+                        <sc-if value="{{ !rx.prescriptionUrl }}" hint-placeholder-val="{{ true }}">
+                          <div style="font-size:14px; color:var(--grey-400);">None</div>
+                        </sc-if>
+                      </div>
+                      <div>
+                        <div style="font-size:12px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--grey-500); margin-bottom:10px;">Headshot photo</div>
+                        <sc-if value="{{ rx.headshotUrl }}" hint-placeholder-val="{{ false }}">
+                          <a href="{{ rx.headshotUrl }}" target="_blank" rel="noopener" style="font-size:14px; color:var(--aritzia-black); text-decoration:underline; text-underline-offset:3px;">View headshot ↗</a>
+                        </sc-if>
+                        <sc-if value="{{ !rx.headshotUrl }}" hint-placeholder-val="{{ true }}">
+                          <div style="font-size:14px; color:var(--grey-400);">None</div>
+                        </sc-if>
+                      </div>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ !hasRxOrders }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:60px 0; color:var(--grey-500); font-size:15px; border-top:1px solid var(--color-border); text-align:left;">No Rx orders yet.</div>
         </sc-if>
       </div>
     </sc-if>
@@ -1112,6 +1308,14 @@ class Component extends DCLogic {
     openTbybStatusDropdown: null,
     tbybDraftStatus: {},
     tbybSubmissions: null,
+    rxFilter: 'all',
+    expandedRx: null,
+    openRxStatusDropdown: null,
+    rxDraftStatus: {},
+    rxFulfillment: {},
+    openRxCarrierDropdown: null,
+    rxActing: {},
+    rxOrders: null,
     collapsedCats: {},
     selectedProductId: null,
     products: JSON.parse(JSON.stringify(this.seedProducts))
@@ -1170,6 +1374,152 @@ class Component extends DCLogic {
   };
   tbybLockedStatuses = ['Unpaid', 'Refunded'];
 
+  rxOrderStatuses = ['processing', 'emailed', 'shipped', 'delivered', 'refunded', 'partially_refunded'];
+  rxOrderEditableStatuses = ['processing', 'emailed', 'delivered'];
+  rxOrderLockedStatuses = ['refunded', 'partially_refunded'];
+  rxStatusDescriptions = {
+    processing: "We're reviewing your order",
+    emailed: "We've reached out about your prescription",
+    delivered: 'Your order has arrived'
+  };
+
+  seedRxOrders = [
+    { id: 'rx1', uuid: 'a4e91c72-6b3d-4f18-9e2a-53c7d1f80946', created_at: 'Aug 12, 2026 · 2:20 PM', status: 'processing', contact_name: 'Nadia Ferro', contact_email: 'nferro@gmail.com', contact_phone: '(604) 555-0142',
+      frame_name: 'Ridge Aviator', frame_slug: 'ridge-aviator', frame_color: 'Gold', frame_price_cents: 8800, total_price_cents: 14800, deposit_used_cents: 3000, stripe_charge_cents: 11800, stripe_payment_intent: 'pi_3RxOrd8m2eZv1a0001', refunded_cents: null, carrier: null, tracking_number: null,
+      vision_type: 'Single Vision', od_sphere: '-2.25', od_cylinder: '-0.50', od_axis: '180', os_sphere: '-2.00', os_cylinder: '-0.75', os_axis: '175',
+      pd_mode: 'Single', pd: '63', pd_left: null, pd_right: null,
+      lens_material: 'Polycarbonate', lens_color_category: 'Clear', lens_color: null, ar_coating: true, scratch_coating: true, mirror_coating: false,
+      comments: 'Please keep the frame color exactly as shown online.', prescription_url: 'assets/product-1.jpg', headshot_url: 'assets/product-2.jpg',
+      shipping_address: { name: 'Nadia Ferro', line1: '214 Bute St', line2: 'Apt 6', city: 'Vancouver', state: 'BC', postal: 'V6E 1Z9', country: 'Canada' } },
+    { id: 'rx2', uuid: 'f28d6b41-9a5c-4e73-b061-2d8f4c19a725', created_at: 'Aug 10, 2026 · 10:05 AM', status: 'emailed', contact_name: 'Owen Castillo', contact_email: 'owen.castillo@outlook.com', contact_phone: '(416) 555-0198',
+      frame_name: 'Route 66 Wraparound', frame_slug: 'route-66-wraparound', frame_color: 'Matte Black', frame_price_cents: 12800, total_price_cents: 19800, deposit_used_cents: 0, stripe_charge_cents: 19800, stripe_payment_intent: 'pi_3RxOrd8m2eZv1a0002', refunded_cents: null, carrier: null, tracking_number: null,
+      vision_type: 'Progressive', od_sphere: '+1.00', od_cylinder: '-0.25', od_axis: '90', os_sphere: '+1.25', os_cylinder: null, os_axis: null,
+      pd_mode: 'Dual', pd: null, pd_left: '31', pd_right: '32',
+      lens_material: 'Trivex', lens_color_category: 'Tinted', lens_color: 'Grey', ar_coating: true, scratch_coating: true, mirror_coating: false,
+      comments: '', prescription_url: 'assets/product-2.jpg', headshot_url: '',
+      shipping_address: { name: 'Owen Castillo', line1: '88 Robson St', line2: '', city: 'Vancouver', state: 'BC', postal: 'V6B 2A9', country: 'Canada' } },
+    { id: 'rx3', uuid: '7c1a9e35-4b62-4d8f-a0e9-6f3b2c85d417', created_at: 'Aug 6, 2026 · 4:48 PM', status: 'shipped', contact_name: 'Reina Voss', contact_email: 'reina.voss@icloud.com', contact_phone: '(778) 555-0163',
+      frame_name: 'Summit Aviator', frame_slug: 'summit-aviator', frame_color: 'Silver', frame_price_cents: 9800, total_price_cents: 16800, deposit_used_cents: 3000, stripe_charge_cents: 13800, stripe_payment_intent: 'pi_3RxOrd8m2eZv1a0003', refunded_cents: null, carrier: 'UPS', tracking_number: '1Z999AA10123456784',
+      vision_type: 'Single Vision', od_sphere: '-1.50', od_cylinder: null, od_axis: null, os_sphere: '-1.75', os_cylinder: null, os_axis: null,
+      pd_mode: 'Single', pd: '61', pd_left: null, pd_right: null,
+      lens_material: 'CR-39', lens_color_category: 'Clear', lens_color: null, ar_coating: false, scratch_coating: true, mirror_coating: false,
+      comments: 'Rush shipping if possible, thank you.', prescription_url: 'assets/product-3.jpg', headshot_url: 'assets/product-4.jpg',
+      shipping_address: { name: 'Reina Voss', line1: '600 8th Ave SW', line2: '', city: 'Calgary', state: 'AB', postal: 'T2P 1G8', country: 'Canada' } },
+    { id: 'rx4', uuid: 'd93f5a86-2e71-4c0d-9b4a-8a1e6f2c7b53', created_at: 'Jul 30, 2026 · 9:12 AM', status: 'delivered', contact_name: 'Marcus Boone', contact_email: 'mboone@yahoo.com', contact_phone: '(403) 555-0177',
+      frame_name: 'Overland Wraparound', frame_slug: 'overland-wraparound', frame_color: 'Black / Grey', frame_price_cents: 11800, total_price_cents: 18800, deposit_used_cents: 3000, stripe_charge_cents: 15800, stripe_payment_intent: 'pi_3RxOrd8m2eZv1a0004', refunded_cents: null, carrier: 'FedEx', tracking_number: '798551204732',
+      vision_type: 'Single Vision', od_sphere: '-3.00', od_cylinder: '-1.00', od_axis: '15', os_sphere: '-3.25', os_cylinder: '-1.25', os_axis: '10',
+      pd_mode: 'Single', pd: '64', pd_left: null, pd_right: null,
+      lens_material: 'Polycarbonate', lens_color_category: 'Photochromic', lens_color: null, ar_coating: true, scratch_coating: true, mirror_coating: false,
+      comments: '', prescription_url: 'assets/product-4.jpg', headshot_url: 'assets/product-1.jpg',
+      shipping_address: { name: 'Marcus Boone', line1: '12 King St W', line2: 'Suite 400', city: 'Toronto', state: 'ON', postal: 'M5H 1A1', country: 'Canada' } },
+    { id: 'rx5', uuid: '2b6e8d14-7f3a-49c6-8d05-1c4a9e6b3f82', created_at: 'Jul 24, 2026 · 3:30 PM', status: 'refunded', contact_name: 'Ines Whitfield', contact_email: 'ines.w@gmail.com', contact_phone: '(647) 555-0121',
+      frame_name: 'Fairway Golf', frame_slug: 'fairway-golf', frame_color: 'Tortoise', frame_price_cents: 11800, total_price_cents: 18800, deposit_used_cents: 3000, stripe_charge_cents: 15800, stripe_payment_intent: 'pi_3RxOrd8m2eZv1a0005', refunded_cents: 18800, carrier: null, tracking_number: null,
+      vision_type: 'Single Vision', od_sphere: '+0.75', od_cylinder: null, od_axis: null, os_sphere: '+0.50', os_cylinder: null, os_axis: null,
+      pd_mode: 'Single', pd: '60', pd_left: null, pd_right: null,
+      lens_material: 'CR-39', lens_color_category: 'Tinted', lens_color: 'Brown', ar_coating: false, scratch_coating: false, mirror_coating: false,
+      comments: 'Ordered the wrong frame color, requested a refund.', prescription_url: '', headshot_url: '',
+      shipping_address: { name: 'Ines Whitfield', line1: '3575 Boul St-Laurent', line2: '', city: 'Montréal', state: 'QC', postal: 'H2X 2T7', country: 'Canada' } },
+    { id: 'rx6', uuid: '9e4c7a23-5d81-4b6f-a3c8-7b2f1e9d6a40', created_at: 'Jul 18, 2026 · 11:55 AM', status: 'partially_refunded', contact_name: 'Theo Sandoval', contact_email: 'tsandoval@gmail.com', contact_phone: '(514) 555-0155',
+      frame_name: 'Backroad Sport Shield', frame_slug: 'backroad-sport-shield', frame_color: 'Black / Clear', frame_price_cents: 9800, total_price_cents: 16800, deposit_used_cents: 3000, stripe_charge_cents: 13800, stripe_payment_intent: 'pi_3RxOrd8m2eZv1a0006', refunded_cents: 5000, carrier: 'Canada Post', tracking_number: '4012839561220CA',
+      vision_type: 'Progressive', od_sphere: '-0.50', od_cylinder: '-0.25', od_axis: '160', os_sphere: '-0.75', os_cylinder: null, os_axis: null,
+      pd_mode: 'Dual', pd: null, pd_left: '32', pd_right: '31',
+      lens_material: 'Trivex', lens_color_category: 'Clear', lens_color: null, ar_coating: true, scratch_coating: true, mirror_coating: true,
+      comments: 'Lens coating peeled after a week, partial refund issued for reprocessing.', prescription_url: 'assets/product-1.jpg', headshot_url: '',
+      shipping_address: { name: 'Theo Sandoval', line1: '88 Spadina Ave', line2: '', city: 'Toronto', state: 'ON', postal: 'M5V 2J3', country: 'Canada' } }
+  ];
+
+  rxStatusMeta(status, accent) {
+    const map = {
+      processing: { label: 'Processing', color: 'var(--grey-500)' },
+      emailed: { label: 'Emailed', color: accent },
+      shipped: { label: 'Shipped', color: 'var(--aritzia-black)' },
+      delivered: { label: 'Delivered', color: 'var(--aritzia-black)' },
+      refunded: { label: 'Refunded', color: accent },
+      partially_refunded: { label: 'Partially refunded', color: accent }
+    };
+    return map[status] || { label: status, color: 'var(--grey-500)' };
+  }
+  toggleRx(id) { this.setState(s => ({ expandedRx: s.expandedRx === id ? null : id })); }
+  toggleRxStatusDropdown(id) {
+    if (this.rxOrderLockedStatuses.includes((this.state.rxOrders || this.seedRxOrders).find(o => o.id === id).status)) return;
+    this.setState(s => ({ openRxStatusDropdown: s.openRxStatusDropdown === id ? null : id }));
+  }
+  setRxDraftStatus(id, status) {
+    this.setState(s => ({ rxDraftStatus: { ...s.rxDraftStatus, [id]: status }, openRxStatusDropdown: null }));
+  }
+  saveRxStatus(id) {
+    const status = this.state.rxDraftStatus[id];
+    if (!status) return;
+    this.setState(s => ({
+      rxOrders: (s.rxOrders || this.seedRxOrders).map(o => o.id === id ? { ...o, status } : o),
+      rxDraftStatus: { ...s.rxDraftStatus, [id]: undefined }
+    }));
+  }
+  toggleRxCarrierDropdown(id) {
+    this.setState(s => ({ openRxCarrierDropdown: s.openRxCarrierDropdown === id ? null : id }));
+  }
+  setRxFulfillmentField(id, field, value) {
+    this.setState(s => ({
+      rxFulfillment: { ...s.rxFulfillment, [id]: { ...(s.rxFulfillment[id] || {}), [field]: value } },
+      openRxCarrierDropdown: field === 'carrier' ? null : s.openRxCarrierDropdown
+    }));
+  }
+  saveRxFulfillment(id, carrier, tracking) {
+    this.setState(s => ({ rxActing: { ...s.rxActing, [id]: true } }));
+    setTimeout(() => {
+      this.setState(s => ({
+        rxOrders: (s.rxOrders || this.seedRxOrders).map(o => o.id === id ? { ...o, carrier, tracking_number: tracking, status: 'shipped' } : o),
+        rxActing: { ...s.rxActing, [id]: false }
+      }));
+    }, 400);
+  }
+  undoRxFulfillment(id) {
+    this.setState(s => ({ rxActing: { ...s.rxActing, [id]: true } }));
+    setTimeout(() => {
+      this.setState(s => ({
+        rxOrders: (s.rxOrders || this.seedRxOrders).map(o => o.id === id ? { ...o, carrier: null, tracking_number: null, status: 'processing' } : o),
+        rxFulfillment: { ...s.rxFulfillment, [id]: {} },
+        rxActing: { ...s.rxActing, [id]: false }
+      }));
+    }, 400);
+  }
+  buildRxFulfillment(o, accent) {
+    const s = this.state;
+    const entry = s.rxFulfillment[o.id] || {};
+    const isShipped = o.status === 'shipped' || o.status === 'delivered';
+    const carrier = isShipped ? (o.carrier || '') : (entry.carrier ?? o.carrier ?? '');
+    const tracking = isShipped ? (o.tracking_number || '') : (entry.tracking ?? o.tracking_number ?? '');
+    const isOpen = s.openRxCarrierDropdown === o.id;
+    const acting = !!s.rxActing[o.id];
+    const saveDisabled = acting || !carrier || !tracking;
+    return {
+      carrierLabel: carrier || 'Select carrier',
+      carrierLabelColor: carrier ? 'var(--aritzia-black)' : 'var(--grey-500)',
+      carrierBorderColor: isShipped ? 'var(--color-border-input)' : 'var(--aritzia-black)',
+      carrierOpacity: isShipped ? 0.5 : 1,
+      carrierCursor: isShipped ? 'default' : 'pointer',
+      carrierDropdownOpen: isOpen,
+      carrierChevron: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+      toggleCarrier: () => { if (!isShipped) this.toggleRxCarrierDropdown(o.id); },
+      carrierOptions: this.carrierOptions.map(c => ({
+        label: c,
+        select: () => this.setRxFulfillmentField(o.id, 'carrier', c),
+        rowStyle: `padding:9px 12px; font-size:13px; cursor:pointer; background:${carrier === c ? accent : 'var(--aritzia-white)'}; color:${carrier === c ? 'var(--aritzia-white)' : 'var(--aritzia-black)'};`
+      })),
+      tracking,
+      trackingDisabled: isShipped,
+      setTracking: (e) => this.setRxFulfillmentField(o.id, 'tracking', e.target.value),
+      isShipped: o.status === 'shipped' || o.status === 'delivered',
+      saveDisabled,
+      saveOpacity: saveDisabled ? 0.4 : 1,
+      saveLabel: acting ? 'Saving\u2026' : 'Save',
+      undoLabel: acting ? 'Undoing\u2026' : 'Undo',
+      save: () => { if (!saveDisabled) this.saveRxFulfillment(o.id, carrier, tracking); },
+      undo: () => this.undoRxFulfillment(o.id),
+      summary: (o.carrier && o.tracking_number) ? `${o.carrier} \u00b7 ${o.tracking_number}` : ''
+    };
+  }
+
   seedTbybSubmissions = [
     { id: 's1', uuid: '0884ac30-70a2-448d-9756-befaab38df09', created_at: 'Jul 28, 2026 · 11:04 AM', status: 'Unpaid', refunded_cents: null, payment_intent: 'pi_3TByBKm2eZv1a0001', contact_name: 'Jordan Reyes', contact_email: 'jordan.reyes@gmail.com', contact_phone: '(604) 555-0142',
       package_name: 'Triple Play', package_price_cents: 32900, package_pairs_min: 7, package_pairs_max: 10, package_brands: ['Wiley X', '7Eye', 'BikerArmour'], package_image_src: 'assets/product-1.jpg',
@@ -1183,7 +1533,7 @@ class Component extends DCLogic {
       od_sphere: '+0.75', od_cylinder: 'None', od_axis: 'None', os_sphere: '+0.50', os_cylinder: 'None', os_axis: 'None', lens_type: 'Single Vision',
       helmet_size: 'Medium', hat_size: '7', nose_bridge: 'Low & Flat', buying_preference: 'All Styles & Sizes Fit', frame_type: 'Without Foam Cushion',
       special_requests: '', prescription_url: '', headshot_url: 'assets/product-3.jpg' },
-    { id: 's3', uuid: '5e8d2a71-9f4c-4b83-b1e0-3d6a8c2f7e15', created_at: 'Jul 25, 2026 · 9:15 AM', status: 'Shipped', refunded_cents: null, payment_intent: 'pi_3TByBKm2eZv1a0003', contact_name: 'Mika Tanaka', contact_email: 'mtanaka@icloud.com', contact_phone: '(416) 555-0187',
+    { id: 's3', uuid: '5e8d2a71-9f4c-4b83-b1e0-3d6a8c2f7e15', created_at: 'Jul 25, 2026 · 9:15 AM', status: 'Shipped', refunded_cents: null, payment_intent: 'pi_3TByBKm2eZv1a0003', carrier: 'FedEx', tracking: '798427301856', contact_name: 'Mika Tanaka', contact_email: 'mtanaka@icloud.com', contact_phone: '(416) 555-0187',
       package_name: 'Solo Ride', package_price_cents: 14900, package_pairs_min: 2, package_pairs_max: 3, package_brands: ['7Eye'], package_image_src: 'assets/product-3.jpg',
       shipping_address: { name: 'Mika Tanaka', line1: '88 Spadina Ave', line2: '', city: 'Toronto', state: 'ON', postal: 'M5V 2J3', country: 'Canada' },
       od_sphere: '-3.00', od_cylinder: '-0.75', od_axis: '170°', os_sphere: '-2.75', os_cylinder: '-1.00', os_axis: '5°', lens_type: 'Progressive',
@@ -1251,21 +1601,15 @@ class Component extends DCLogic {
   toggleAttributeDropdown(key) {
     this.setState(s => ({ openAttributeDropdown: s.openAttributeDropdown === key ? null : key }));
   }
-  saveTbybFulfillment(id, carrier, tracking) {
+  saveTbybShipping(id) {
+    const draft = this.state.tbybFulfillment[id] || {};
+    const sub = (this.state.tbybSubmissions || this.seedTbybSubmissions).find(s2 => s2.id === id);
+    const carrier = draft.carrier ?? sub.carrier ?? '';
+    const tracking = draft.tracking ?? sub.tracking ?? '';
     this.setState(s => ({ tbybActing: { ...s.tbybActing, [id]: true } }));
     setTimeout(() => {
       this.setState(s => ({
-        tbybFulfillmentLocked: { ...s.tbybFulfillmentLocked, [id]: true },
-        tbybActing: { ...s.tbybActing, [id]: false }
-      }));
-    }, 400);
-  }
-  undoTbybFulfillment(id) {
-    this.setState(s => ({ tbybActing: { ...s.tbybActing, [id]: true } }));
-    setTimeout(() => {
-      this.setState(s => ({
-        tbybFulfillmentLocked: { ...s.tbybFulfillmentLocked, [id]: false },
-        tbybFulfillment: { ...s.tbybFulfillment, [id]: {} },
+        tbybSubmissions: (s.tbybSubmissions || this.seedTbybSubmissions).map(s2 => s2.id === id ? { ...s2, carrier, tracking } : s2),
         tbybActing: { ...s.tbybActing, [id]: false }
       }));
     }, 400);
@@ -1273,38 +1617,34 @@ class Component extends DCLogic {
   buildTbybFulfillment(sub, accent) {
     const s = this.state;
     const entry = s.tbybFulfillment[sub.id] || {};
-    const enabled = sub.status === 'Shipped';
-    const locked = !!s.tbybFulfillmentLocked[sub.id];
-    const carrier = entry.carrier || '';
-    const tracking = entry.tracking || '';
+    const locked = sub.status !== 'Shipped';
+    const carrier = entry.carrier ?? sub.carrier ?? '';
+    const tracking = entry.tracking ?? sub.tracking ?? '';
     const isOpen = s.openTbybCarrierDropdown === sub.id;
     const acting = !!s.tbybActing[sub.id];
-    const fieldsDisabled = !enabled || locked;
+    const saveDisabled = acting || !carrier || !tracking;
     return {
       carrierLabel: carrier || 'Select carrier',
-      carrierOpacity: fieldsDisabled ? 0.5 : 1,
-      carrierCursor: fieldsDisabled ? 'default' : 'pointer',
+      carrierLabelColor: carrier ? 'var(--aritzia-black)' : 'var(--grey-500)',
+      carrierBorderColor: locked ? 'var(--color-border-input)' : 'var(--aritzia-black)',
+      carrierOpacity: locked ? 0.5 : 1,
+      carrierCursor: locked ? 'default' : 'pointer',
       carrierDropdownOpen: isOpen,
       carrierChevron: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-      toggleCarrier: () => { if (!fieldsDisabled) this.toggleFulfillmentDropdown(sub.id, 'tbybFulfillment', 'openTbybCarrierDropdown'); },
+      toggleCarrier: () => { if (!locked) this.toggleFulfillmentDropdown(sub.id, 'tbybFulfillment', 'openTbybCarrierDropdown'); },
       carrierOptions: this.carrierOptions.map(c => ({
         label: c,
         select: () => this.setFulfillmentField(sub.id, 'tbybFulfillment', 'openTbybCarrierDropdown', 'carrier', c),
         rowStyle: `padding:9px 12px; font-size:13px; cursor:pointer; background:${carrier === c ? accent : 'var(--aritzia-white)'}; color:${carrier === c ? 'var(--aritzia-white)' : 'var(--aritzia-black)'};`
       })),
       tracking,
-      trackingDisabled: fieldsDisabled,
+      trackingDisabled: locked,
       setTracking: (e) => this.setFulfillmentField(sub.id, 'tbybFulfillment', null, 'tracking', e.target.value),
-      showActions: true,
-      showUndo: locked,
-      showSave: !locked,
-      locked,
-      saveDisabled: acting || !enabled || !carrier || !tracking,
       saveLabel: acting ? 'Saving\u2026' : 'Save',
-      undoLabel: acting ? 'Undoing\u2026' : 'Undo',
-      save: () => this.saveTbybFulfillment(sub.id, carrier, tracking),
-      undo: () => this.undoTbybFulfillment(sub.id),
-      summary: (locked && carrier && tracking) ? `${carrier} \u00b7 ${tracking}` : ''
+      saveCursor: saveDisabled ? 'default' : 'pointer',
+      saveOpacity: saveDisabled ? 0.4 : 1,
+      save: () => { if (!saveDisabled) this.saveTbybShipping(sub.id); },
+      summary: (sub.carrier && sub.tracking) ? `${sub.carrier} \u00b7 ${sub.tracking}` : ''
     };
   }
   buildOrderFulfillment(o, accent) {    const s = this.state;
@@ -1605,9 +1945,9 @@ class Component extends DCLogic {
       };
     };
     const navItems = navDefs.map(buildNavItem);
-    const tbybNavItems = [buildNavItem({ key: 'tbyb', label: 'TBYB' })];
+    const tbybNavItems = [buildNavItem({ key: 'tbyb', label: 'TBYB' }), buildNavItem({ key: 'rxorders', label: 'Rx Orders' })];
 
-    const pageTitles = { overview: 'Overview', orders: 'Orders', products: 'Products', categories: 'Categories', analytics: 'Analytics', tbyb: 'TBYB' };
+    const pageTitles = { overview: 'Overview', orders: 'Orders', products: 'Products', categories: 'Categories', analytics: 'Analytics', tbyb: 'TBYB', rxorders: 'Rx Orders' };
 
     const flatCats = [];
     this.flattenCats(brandData.categories, 0, {}, flatCats);
@@ -1739,14 +2079,82 @@ class Component extends DCLogic {
         }),
         saveDisabled: !s.tbybDraftStatus[sub.id] || s.tbybDraftStatus[sub.id] === sub.status,
         saveStatus: () => this.saveTbybStatus(sub.id),
-        showFulfillment: true,
-        fulfillmentEnabled: sub.status === 'Shipped',
         fulfillment: this.buildTbybFulfillment(sub, brandAccent),
         saveButtonColor: brandAccent,
         saveOpacity: (!s.tbybDraftStatus[sub.id] || s.tbybDraftStatus[sub.id] === sub.status) ? '0.4' : '1',
         saveCursor: (!s.tbybDraftStatus[sub.id] || s.tbybDraftStatus[sub.id] === sub.status) ? 'default' : 'pointer',
         statusBorderColor: this.tbybLockedStatuses.includes(sub.status) ? 'var(--color-border)' : 'var(--aritzia-black)',
         statusTextColor: this.tbybLockedStatuses.includes(sub.status) ? 'var(--grey-500)' : 'var(--aritzia-black)'
+      };
+    });
+
+    // ---- Rx Orders ----
+    const rxOrders = s.rxOrders || this.seedRxOrders;
+    const rxStatusCounts = { all: rxOrders.length };
+    this.rxOrderStatuses.forEach(st => { rxStatusCounts[st] = rxOrders.filter(o => o.status === st).length; });
+    const rxLabels = { processing: 'Processing', emailed: 'Emailed', shipped: 'Shipped', delivered: 'Delivered', refunded: 'Refunded', partially_refunded: 'Partial' };
+    const rxFilterDefs = [{ value: 'all', label: `All (${rxStatusCounts.all})` }].concat(
+      this.rxOrderStatuses.map(st => ({ value: st, label: `${rxLabels[st]} (${rxStatusCounts[st]})` }))
+    );
+    const rxFilterOptions = rxFilterDefs.map(opt => {
+      const active = (s.rxFilter || 'all') === opt.value;
+      return {
+        value: opt.value, label: opt.label,
+        select: () => this.setState({ rxFilter: opt.value }),
+        style: `padding:11px 18px; font-size:14px; font-weight:500; letter-spacing:0.02em; cursor:pointer; white-space:nowrap; flex:none; border:1px solid ${active ? brandAccent : 'var(--aritzia-black)'}; background:${active ? brandAccent : 'var(--aritzia-white)'}; color:${active ? 'var(--aritzia-white)' : 'var(--aritzia-black)'};`
+      };
+    });
+    const filteredRx = rxOrders.filter(o => (s.rxFilter || 'all') === 'all' || o.status === (s.rxFilter || 'all'));
+    const coatingList = (o) => [o.ar_coating && 'AR', o.scratch_coating && 'Scratch-resistant', o.mirror_coating && 'Mirror'].filter(Boolean);
+    const rxView = filteredRx.map(o => {
+      const meta = this.rxStatusMeta(o.status, brandAccent);
+      const expanded = s.expandedRx === o.id;
+      const statusDropdownOpen = s.openRxStatusDropdown === o.id;
+      const draftStatus = s.rxDraftStatus[o.id] || o.status;
+      const draftUnchanged = !s.rxDraftStatus[o.id] || s.rxDraftStatus[o.id] === o.status;
+      const coatings = coatingList(o);
+      return {
+        id: o.id, displayId: '#' + (o.uuid || o.id).slice(-8).toUpperCase(), dateDisplay: o.created_at,
+        customerName: o.contact_name || 'None', contactEmail: o.contact_email || 'None', contactPhone: o.contact_phone || 'None',
+        frameName: o.frame_name || 'None', frameColor: o.frame_color || 'None',
+        totalDisplay: this.fmt(o.total_price_cents), stripeChargeDisplay: this.fmt(o.stripe_charge_cents),
+        paymentIntent: o.stripe_payment_intent, refundedDisplay: o.refunded_cents != null ? this.fmt(o.refunded_cents) : '',
+        statusLabel: meta.label, statusColor: meta.color, statusColor2: brandAccent,
+        toggle: () => this.toggleRx(o.id), expanded, chevronTransform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+        visionType: o.vision_type || 'None',
+        odSphere: o.od_sphere || 'None', odCylinder: o.od_cylinder || 'None', odAxis: o.od_axis || 'None',
+        osSphere: o.os_sphere || 'None', osCylinder: o.os_cylinder || 'None', osAxis: o.os_axis || 'None',
+        pdDisplay: o.pd_mode === 'Dual' ? `L ${o.pd_left || 'None'} / R ${o.pd_right || 'None'}` : (o.pd || 'None'),
+        lensMaterial: o.lens_material || 'None',
+        lensColorDisplay: o.lens_color ? `${o.lens_color_category} \u2013 ${o.lens_color}` : (o.lens_color_category || 'None'),
+        arCoatingDisplay: o.ar_coating ? 'Yes' : 'No',
+        scratchCoatingDisplay: o.scratch_coating ? 'Yes' : 'No',
+        mirrorCoatingDisplay: o.mirror_coating ? 'Yes' : 'No',
+        commentsDisplay: o.comments || 'None provided', commentsColor: o.comments ? 'var(--aritzia-black)' : 'var(--grey-400)',
+        prescriptionUrl: o.prescription_url, headshotUrl: o.headshot_url,
+        shippingAddress: o.shipping_address ? {
+          name: o.shipping_address.name, line1: o.shipping_address.line1, line2: o.shipping_address.line2,
+          cityStateZip: `${o.shipping_address.city}, ${o.shipping_address.state} ${o.shipping_address.postal}`,
+          country: o.shipping_address.country
+        } : null,
+        toggleStatusDropdown: () => this.toggleRxStatusDropdown(o.id),
+        statusDropdownOpen, statusChevron: statusDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+        draftStatusLabel: this.rxStatusMeta(draftStatus, brandAccent).label,
+        statusOptions: this.rxOrderEditableStatuses.map(st => {
+          const isActive = draftStatus === st;
+          return {
+            label: this.rxStatusMeta(st, brandAccent).label,
+            description: this.rxStatusDescriptions[st],
+            select: () => this.setRxDraftStatus(o.id, st),
+            rowStyle: `padding:9px 12px; font-size:13px; cursor:pointer; background:${isActive ? brandAccent : 'var(--aritzia-white)'}; color:${isActive ? 'var(--aritzia-white)' : 'var(--aritzia-black)'};`,
+            descColor: isActive ? 'var(--aritzia-white)' : 'var(--grey-500)'
+          };
+        }),
+        saveStatusOpacity: draftUnchanged ? '0.4' : '1', saveStatusCursor: draftUnchanged ? 'default' : 'pointer',
+        saveStatus: () => this.saveRxStatus(o.id),
+        fulfillment: this.buildRxFulfillment(o, brandAccent),
+        statusBorderColor: this.rxOrderLockedStatuses.includes(o.status) ? 'var(--color-border)' : 'var(--aritzia-black)',
+        statusTextColor: this.rxOrderLockedStatuses.includes(o.status) ? 'var(--grey-500)' : 'var(--aritzia-black)'
       };
     });
 
@@ -1870,6 +2278,7 @@ class Component extends DCLogic {
       isOverview: s.page === 'overview',
       isOrders: s.page === 'orders',
       isTbyb: s.page === 'tbyb',
+      isRxOrders: s.page === 'rxorders',
       showProductList: s.page === 'products' && !s.selectedProductId,
       showProductDetail: s.page === 'products' && !!s.selectedProductId,
       isCategories: s.page === 'categories',
@@ -1882,6 +2291,10 @@ class Component extends DCLogic {
       hasTbyb: tbybSubmissions.length > 0,
       tbybFilterOptions,
       tbybView,
+
+      hasRxOrders: rxOrders.length > 0,
+      rxFilterOptions,
+      rxView,
 
       hasOrders: brandData.orders.length > 0,
       orderFilter: s.orderFilter,
