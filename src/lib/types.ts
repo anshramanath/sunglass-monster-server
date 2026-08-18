@@ -173,11 +173,6 @@ export type TbybSubmission = {
 
 export type RxOrder = {
   id: string;
-  createdAt: string;
-  status: string;
-  contactName: string;
-  contactEmail: string;
-  contactPhone: string;
   frameName: string;
   frameSlug: string;
   frameImageSrc: string;
@@ -186,6 +181,7 @@ export type RxOrder = {
   totalPriceCents: number;
   depositUsedCents: number | null;
   stripeChargeCents: number;
+  status: string;
   stripePaymentIntent: string | null;
   refundedCents: number | null;
   shippingAddress: {
@@ -214,9 +210,13 @@ export type RxOrder = {
   arCoating: string;
   scratchCoating: string;
   mirrorCoating: string;
+  carrier: string | null;
+  trackingNumber: string | null;
   comments: string;
   prescriptionUrl: string;
   headshotUrl: string;
-  carrier: string | null;
-  trackingNumber: string | null;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  createdAt: string;
 };
