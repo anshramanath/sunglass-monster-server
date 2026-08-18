@@ -183,7 +183,7 @@ export default function TbybTable({
                       <div style={{ fontSize: 14, lineHeight: 1.6 }}>
                         <div style={{ color: "#737373" }}>{sub.contactName}</div>
                         <div>{sub.contactEmail}</div>
-                        {sub.contactPhone !== "None" && <div style={{ color: "#737373" }}>{sub.contactPhone}</div>}
+                        <div style={{ color: "#737373" }}>{sub.contactPhone === "None" ? "None" : sub.contactPhone}</div>
                       </div>
                     </div>
                     <div>
