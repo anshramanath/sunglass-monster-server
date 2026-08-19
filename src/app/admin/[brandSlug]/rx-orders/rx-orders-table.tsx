@@ -359,7 +359,7 @@ export default function RxOrdersTable({
                     <div style={{ color: "#737373" }}>AR coating</div><div>{order.arCoating}</div>
                     <div style={{ color: "#737373" }}>Lens material</div><div>{order.lensMaterial}</div>
                     <div style={{ color: "#737373" }}>Scratch coating</div><div>{order.scratchCoating}</div>
-                    <div style={{ color: "#737373" }}>Lens colour</div><div>{order.lensColorCategory} · {order.lensColor}</div>
+                    <div style={{ color: "#737373" }}>Lens color</div><div>{order.lensColorCategory} · {order.lensColor}</div>
                     <div style={{ color: "#737373" }}>Mirror coating</div><div>{order.mirrorCoating}</div>
                   </div>
                 </div>
