@@ -152,7 +152,8 @@ export default function TbybTable({
         const saveStatusDisabled = draft.status === sub.status || savingStatus !== null || savingShipping !== null;
         const shippingLocked = sub.status !== "Shipped" || !!(sub.carrier && sub.tracking);
         const isCarrierDropdownOpen = carrierDropdown === sub.id;
-        const saveShippingDisabled = sub.status !== "Shipped" || !draft.carrier || !draft.tracking || savingShipping !== null || savingStatus !== null;
+        const saveFulfillmentDisabled = sub.status !== "Shipped" || !draft.carrier || !draft.tracking || savingShipping !== null || savingStatus !== null;
+        const undoFulfillmentDisabled = savingShipping !== null || savingStatus !== null;
 
         return (
           <div key={sub.id} style={{ borderBottom: "1px solid #e5e5e5" }}>
@@ -297,16 +298,16 @@ export default function TbybTable({
                         {sub.carrier && sub.tracking ? (
                           <button
                             onClick={() => handleShippingUndo(sub.id)}
-                            disabled={saveShippingDisabled}
-                            style={{ height: 38, padding: "0 14px", background: "#ffffff", color: "#000000", border: "1px solid #000000", fontSize: 13, fontWeight: 500, cursor: saveShippingDisabled ? "default" : "pointer", opacity: saveShippingDisabled ? 0.4 : 1, flexShrink: 0 }}
+                            disabled={undoFulfillmentDisabled}
+                            style={{ height: 38, padding: "0 14px", background: "#ffffff", color: "#000000", border: "1px solid #000000", fontSize: 13, fontWeight: 500, cursor: undoFulfillmentDisabled ? "default" : "pointer", opacity: undoFulfillmentDisabled ? 0.4 : 1, flexShrink: 0 }}
                           >
                             {savingShipping === sub.id ? "Undoing…" : "Undo"}
                           </button>
                         ) : (
                           <button
                             onClick={() => handleShippingSave(sub.id)}
-                            disabled={saveShippingDisabled}
-                            style={{ height: 38, padding: "0 14px", background: accent, color: "#ffffff", border: "none", fontSize: 13, fontWeight: 500, cursor: saveShippingDisabled ? "default" : "pointer", opacity: saveShippingDisabled ? 0.4 : 1, flexShrink: 0 }}
+                            disabled={saveFulfillmentDisabled}
+                            style={{ height: 38, padding: "0 14px", background: accent, color: "#ffffff", border: "none", fontSize: 13, fontWeight: 500, cursor: saveFulfillmentDisabled ? "default" : "pointer", opacity: saveFulfillmentDisabled ? 0.4 : 1, flexShrink: 0 }}
                           >
                             {savingShipping === sub.id ? "Saving…" : "Save"}
                           </button>
