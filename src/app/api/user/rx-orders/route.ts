@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   const { data, error } = await supabase
     .from("rx_orders")
     .select(
-      `id, status, frame_name, frame_image_src, frame_color,
+      `id, status, frame_name, frame_image_src, frame_color, frame_price_cents,
       total_price_cents, deposit_used_cents, stripe_charge_cents, refunded_cents,
       carrier, tracking_number,
       vision_type,
@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
     frameName: o.frame_name,
     frameImageSrc: o.frame_image_src,
     frameColor: o.frame_color,
+    framePriceCents: o.frame_price_cents,
     totalPriceCents: o.total_price_cents,
     depositUsedCents: o.deposit_used_cents,
     stripeChargeCents: o.stripe_charge_cents,
