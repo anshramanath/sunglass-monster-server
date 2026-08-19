@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
 
     const available = Math.max(match.deposit_cents - (match.refunded_cents ?? 0), 0);
 
-    if (submission.depositCents !== available) {
+    if (submission.depositCents !== available || submission.depositCents === 0) {
       return err("Deposit amount has changed", 422, { depositCents: available });
     }
 
