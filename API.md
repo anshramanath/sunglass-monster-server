@@ -795,6 +795,76 @@ Stripe collects the shipping address, billing address, and phone number at check
 
 ---
 
+### POST /api/user/rx-orders
+
+Returns the authenticated user's prescription orders for a brand, newest first. Scoped by RLS — only the user's own orders are returned.
+
+**Errors:** `400` missing brandSlug · `401` invalid token · `500` DB failure
+
+**Body**
+```json
+{ "brandSlug": "bikershades" }
+```
+
+**Response `200`**
+```json
+[
+  {
+    "id": "uuid",
+    "status": "Processing",
+    "frameName": "7eye Aspen",
+    "frameImageSrc": "https://...",
+    "frameColor": "Matte Black",
+    "framePriceCents": 11900,
+    "totalPriceCents": 21800,
+    "depositUsedCents": 19900,
+    "stripeChargeCents": 1950,
+    "refundedCents": null,
+    "carrier": null,
+    "trackingNumber": null,
+    "visionType": "Traditional Single Vision (+$99)",
+    "odSphere": "-1.25",
+    "odCylinder": "-0.50",
+    "odAxis": "90",
+    "osSphere": "None",
+    "osCylinder": "None",
+    "osAxis": "None",
+    "pdMode": "single",
+    "pd": "63",
+    "pdLeft": "None",
+    "pdRight": "None",
+    "lensMaterial": "Impact Resistant Polycarbonate",
+    "lensColorCategory": "None",
+    "lensColor": "None",
+    "arCoating": "None",
+    "scratchCoating": "None",
+    "mirrorCoating": "None",
+    "comments": "None",
+    "prescriptionUrl": "None",
+    "headshotUrl": "None",
+    "contactName": "John Smith",
+    "contactEmail": "customer@example.com",
+    "contactPhone": "None",
+    "shippingAddress": {
+      "name": "John Smith",
+      "line1": "123 Main St",
+      "line2": null,
+      "city": "Austin",
+      "state": "TX",
+      "postalCode": "78701",
+      "country": "US"
+    },
+    "createdAt": "2026-07-01T12:00:00.000Z"
+  }
+]
+```
+
+`shippingAddress` is `null` until payment completes — stored by the webhook after checkout. `depositUsedCents` is `null` for non-TBYB orders. `carrier` and `trackingNumber` are `null` until the admin saves shipping info. `refundedCents` is `null` if no refund has occurred. Optional fields (`comments`, `prescriptionUrl`, `headshotUrl`, `contactPhone`, unused PD and lens fields) are `"None"` when not provided.
+
+Status values: `Unpaid`, `Processing`, `Shipped`, `Refunded`. `Unpaid` is set on order creation before payment; `Processing` is set by the webhook after successful payment; `Refunded` is set by the webhook on full refund.
+
+---
+
 ### POST /api/user/checkout
 
 Creates a Stripe checkout session. Returns a redirect URL. Stripe collects the shipping address, billing address, and phone number — no need to collect them on the frontend.
@@ -838,6 +908,19 @@ Prices, name, images, and attributes are pulled from the DB — the frontend onl
 { "success": false, "message": "Cart validation failed", "data": [
   { "productSlug": "sport-sunglasses", "sku": "SKU-BLK", "exists": true, "priceCents": 1800, "priceChanged": true }
 ]}
+```
+
+---
+
+### POST /api/user/delete
+
+Permanently deletes the authenticated user's account from Supabase Auth. Irreversible.
+
+**Errors:** `401` invalid token · `500` deletion failed
+
+**Response `200`**
+```json
+{ "deleted": true }
 ```
 
 ---
