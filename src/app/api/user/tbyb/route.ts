@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
     session = await stripe.checkout.sessions.create({
       mode: "payment",
       client_reference_id: client.user.id,
-      customer_email: sub.email,
+      customer_email: client.user.email,
       metadata: { type: "tbyb", submissionId, brandSlug },
       line_items: [{
         price_data: {

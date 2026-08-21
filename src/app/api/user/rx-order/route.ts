@@ -253,7 +253,7 @@ export async function POST(req: NextRequest) {
         depositLeftCents: String(tbybSub.deposit_left_cents),
       }),
     },
-    customer_email: submission.email,
+    customer_email: client.user.email,
     client_reference_id: user!.id,
     success_url: successUrl,
     cancel_url: cancelUrl,
