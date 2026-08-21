@@ -262,6 +262,9 @@ export async function POST(req: NextRequest) {
     shipping_address_collection: { allowed_countries: ["US"] },
   }, { idempotencyKey: orderId });
 
+  const { error: sessionIdError } = await adminSupabase.from("rx_orders").update({ stripe_session_id: session.id }).eq("id", orderId);
+  if (sessionIdError) return err("Failed to store session", 500);
+
   if (tbybSub) {
     if (session.id !== tbybSub.open_stripe_session_id) {
       if (tbybSub.open_stripe_session_id) {
@@ -277,7 +280,10 @@ export async function POST(req: NextRequest) {
             return err("Failed to expire existing session", 500);
           }
         }
-        
+
+        const { error: deleteOrderError } = await adminSupabase.from("rx_orders").delete().eq("stripe_session_id", tbybSub.open_stripe_session_id).eq("status", "Unpaid");
+        if (deleteOrderError) return err("Failed to delete expired order", 500);
+
         const { error: nullError } = await adminSupabase
           .from("tbyb_submissions")
           .update({ open_stripe_session_id: null })

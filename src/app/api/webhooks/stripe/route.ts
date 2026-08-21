@@ -162,7 +162,8 @@ export async function POST(req: NextRequest) {
                 country: session.collected_information?.shipping_details?.address?.country ?? null,
               },
             })
-            .eq("id", rxOrderId);
+            .eq("id", rxOrderId)
+            .eq("stripe_session_id", session.id);
 
           if (orderError) return new Response("Failed to update rx order", { status: 500 });
 
