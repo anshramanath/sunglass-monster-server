@@ -149,11 +149,12 @@ export async function saveProduct(input: SaveInput): Promise<void> {
   };
 
   if (isNew) {
-    const { error } = await supabase.from("products").insert(productRow);
+    const { error } = await supabase.from("products").insert({ ...productRow, total_sales: isSimple ? 0 : null });
     if (error) throw new Error(error.message);
   } else {
     const { id: _, ...fields } = productRow;
-    const { error } = await supabase.from("products").update(fields).eq("id", productId).eq("brand_slug", brandSlug);
+    const updateFields = isSimple ? fields : { ...fields, total_sales: null };
+    const { error } = await supabase.from("products").update(updateFields).eq("id", productId).eq("brand_slug", brandSlug);
     if (error) throw new Error(error.message);
   }
 
@@ -194,7 +195,14 @@ export async function saveProduct(input: SaveInput): Promise<void> {
   }
 
   if (isSimple) {
-    await supabase.from("variations").delete().eq("product_id", productId);
+    if (!isNew) {
+      const { data: deletedVars, error: deleteVarsError } = await supabase.from("variations").delete().eq("product_id", productId).select("id");
+      if (deleteVarsError) throw new Error(deleteVarsError.message);
+      if (deletedVars.length > 0) {
+        const { error } = await supabase.from("products").update({ total_sales: 0 }).eq("id", productId);
+        if (error) throw new Error(error.message);
+      }
+    }
     return;
   }
 
