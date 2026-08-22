@@ -521,7 +521,7 @@ export function ProductForm({
           {images.map((img, i) => (
             <div key={i} style={{ width: 88 }}>
               <div style={{ width: 88, height: 110, background: "#f5f5f5", overflow: "hidden" }}>
-                <img src={img.src} alt={img.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                <img src={img.src} alt={img.name} style={{ width: "100%", height: "100%", objectFit: "contain", mixBlendMode: "multiply", display: "block" }} />
               </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4 }}>
                 <span onClick={() => removeImage(i)} style={{ cursor: "pointer", fontSize: 15, color: "#737373" }}>×</span>
@@ -553,7 +553,7 @@ export function ProductForm({
           {descImages.map((img, i) => (
             <div key={i} style={{ width: 88 }}>
               <div style={{ width: 88, height: 110, background: "#f5f5f5", overflow: "hidden" }}>
-                <img src={img.src} alt={img.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                <img src={img.src} alt={img.name} style={{ width: "100%", height: "100%", objectFit: "contain", mixBlendMode: "multiply", display: "block" }} />
               </div>
               <div style={{ marginTop: 4 }}>
                 <span onClick={() => removeDescImage(i)} style={{ cursor: "pointer", fontSize: 15, color: "#737373" }}>×</span>
@@ -722,7 +722,7 @@ export function ProductForm({
                     {v.images.map((img, ii) => (
                       <div key={ii} style={{ width: 64 }}>
                         <div style={{ width: 64, height: 80, background: "#f5f5f5", overflow: "hidden" }}>
-                          <img src={img.src} alt={img.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                          <img src={img.src} alt={img.name} style={{ width: "100%", height: "100%", objectFit: "contain", mixBlendMode: "multiply", display: "block" }} />
                         </div>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4 }}>
                           <span onClick={() => removeVarImage(v.id, ii)} style={{ cursor: "pointer", fontSize: 14, color: "#737373" }}>×</span>

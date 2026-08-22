@@ -139,7 +139,9 @@ export default function ProductsList({
       <>
         {products.map((p) => (
             <div key={p.id} onClick={() => { setNavigating(true); router.push(`/admin/${brandSlug}/products/${p.id}`); }} style={{ display: "grid", gridTemplateColumns: GRID, gap: 16, alignItems: "center", padding: "14px 0", borderBottom: "1px solid #e5e5e5", cursor: "pointer" }}>
-              <img src={p.image} alt={p.name} loading="lazy" style={{ width: 44, height: 56, objectFit: "cover", background: "#f5f5f5" }} />
+              <div style={{ width: 44, height: 56, background: "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <img src={p.image} alt={p.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "contain", mixBlendMode: "multiply" }} />
+              </div>
               <div style={{ fontSize: 15 }}>{p.name}</div>
               <div style={{ fontSize: 13, color: "#737373" }}>
                 {p.variable ? "Variable" : "Simple"}

@@ -92,7 +92,9 @@ export default async function OverviewPage({
           recentProducts.map((p) => (
             <div key={p.id} style={{ display: "grid", gridTemplateColumns: "56px 2fr 80px 1.4fr 120px 100px 100px", gap: 16, alignItems: "center", padding: "14px 0", borderBottom: "1px solid #e5e5e5" }}>
               {p.image ? (
-                <img src={p.image} alt={p.name} loading="lazy" style={{ width: 44, height: 56, objectFit: "cover", background: "#f5f5f5" }} />
+                <div style={{ width: 44, height: 56, background: "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <img src={p.image} alt={p.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "contain", mixBlendMode: "multiply" }} />
+              </div>
               ) : (
                 <div style={{ width: 44, height: 56, background: "#f5f5f5" }} />
               )}
