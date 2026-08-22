@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { getCatalogueStats, getOrderStats, getRecentProducts } from "@/lib/admin/overview";
 import { formatPrice } from "@/lib/utils";
 import { getBrandBySlug } from "@/lib/brand";
@@ -93,7 +92,7 @@ export default async function OverviewPage({
           recentProducts.map((p) => (
             <div key={p.id} style={{ display: "grid", gridTemplateColumns: "56px 2fr 80px 1.4fr 120px 100px 100px", gap: 16, alignItems: "center", padding: "14px 0", borderBottom: "1px solid #e5e5e5" }}>
               {p.image ? (
-                <Image src={p.image} alt={p.name} width={44} height={56} style={{ objectFit: "cover", background: "#f5f5f5" }} />
+                <img src={p.image} alt={p.name} loading="lazy" style={{ width: 44, height: 56, objectFit: "cover", background: "#f5f5f5" }} />
               ) : (
                 <div style={{ width: 44, height: 56, background: "#f5f5f5" }} />
               )}

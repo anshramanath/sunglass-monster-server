@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { signIn } from "@/lib/auth";
 import { getAllBrands } from "@/lib/brand";
 
@@ -31,12 +30,10 @@ export default function SignInPage() {
       <div className="w-full max-w-[380px]">
         <div className="flex items-center justify-center gap-3 mb-10">
           {BRANDS.map((brand) => (
-            <Image
+            <img
               key={brand.slug}
               src={brand.logo}
               alt={brand.name}
-              width={80}
-              height={22}
               className="h-[22px] w-auto object-contain"
             />
           ))}

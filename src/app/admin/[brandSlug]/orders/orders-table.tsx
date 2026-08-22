@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { formatPrice } from "@/lib/utils";
 import { saveFulfillment, undoFulfillment } from "@/lib/admin/orders";
 import type { Order } from "@/lib/types";
@@ -251,7 +250,7 @@ export default function OrdersTable({
                     style={{ display: "grid", gridTemplateColumns: "44px 1.25fr 1fr 1fr 0.6fr 1fr", gap: 16, alignItems: "center", padding: "10px 0", borderTop: idx === 0 ? "none" : "1px solid #e5e5e5" }}
                   >
                     {item.imageSrc ? (
-                      <Image src={item.imageSrc} alt={item.name} width={36} height={46} style={{ objectFit: "cover", background: "#f0f0f0", flexShrink: 0 }} />
+                      <img src={item.imageSrc} alt={item.name} loading="lazy" style={{ width: 36, height: 46, objectFit: "cover", background: "#f0f0f0", flexShrink: 0 }} />
                     ) : (
                       <div style={{ width: 36, height: 46, background: "#f0f0f0", flexShrink: 0 }} />
                     )}

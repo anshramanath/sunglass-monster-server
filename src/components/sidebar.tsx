@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import Image from "next/image";
 import type { User } from "@supabase/supabase-js";
 import { signOut } from "@/lib/auth";
 import { getAllBrands } from "@/lib/brand";
@@ -44,11 +43,9 @@ export default function Sidebar({ user }: { user: User }) {
     <aside className="w-[264px] flex-none sticky top-0 h-screen overflow-y-auto bg-white border-r border-[#e5e5e5] flex flex-col px-5 py-7 box-border">
       <NavProgress active={navigating} accent={currentBrand.accent} />
       <div className="h-10 mb-5 flex items-center pl-1">
-        <Image
+        <img
           src={currentBrand.logo}
           alt={currentBrand.name}
-          width={160}
-          height={40}
           className="max-h-10 w-auto object-contain object-left"
         />
       </div>
