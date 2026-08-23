@@ -12,7 +12,6 @@ const BRANDS = getAllBrands();
 const NAV = [
   { label: "Overview", path: "" },
   { label: "Orders", path: "/orders" },
-  { label: "Products", path: "/products" },
   { label: "Categories", path: "/categories" },
   { label: "Analytics", path: "/analytics" },
 ];
