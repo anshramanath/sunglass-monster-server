@@ -130,6 +130,26 @@ returns void language sql as $$
   where slug = p_slug and brand_slug = p_brand_slug;
 $$;
 
+create or replace function set_updated_at()
+returns trigger language plpgsql as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+create trigger categories_set_updated_at
+  before update on categories
+  for each row execute function set_updated_at();
+
+create trigger products_set_updated_at
+  before update on products
+  for each row execute function set_updated_at();
+
+create trigger variations_set_updated_at
+  before update on variations
+  for each row execute function set_updated_at();
+
 -- ============================================================
 -- 002_user_cart_bookmarks.sql
 -- Per-user cart and bookmark tables, scoped per brand
@@ -307,6 +327,10 @@ create trigger orders_decrement_total_sales_on_refund
   after update on orders
   for each row execute function decrement_total_sales_on_refund();
 
+create trigger orders_set_updated_at
+  before update on orders
+  for each row execute function set_updated_at();
+
 -- ============================================================
 -- 004_tbyb.sql
 -- Try Before You Buy: packages + submissions
@@ -379,6 +403,14 @@ grant select on tbyb_submissions to authenticated;
 
 create policy "tbyb_submissions: users read own"
   on tbyb_submissions for select using (auth.uid() = user_id);
+
+create trigger tbyb_packages_set_updated_at
+  before update on tbyb_packages
+  for each row execute function set_updated_at();
+
+create trigger tbyb_submissions_set_updated_at
+  before update on tbyb_submissions
+  for each row execute function set_updated_at();
 
 -- Seed packages (run after inserting the bikershades brand row)
 insert into tbyb_packages (brand_slug, name, slug, price_cents, image_src, pairs_min, pairs_max, brands) values
@@ -467,3 +499,11 @@ grant select on rx_orders to authenticated;
 
 create policy "rx_orders: users read own"
   on rx_orders for select using (auth.uid() = user_id);
+
+create trigger prescription_frames_set_updated_at
+  before update on prescription_frames
+  for each row execute function set_updated_at();
+
+create trigger rx_orders_set_updated_at
+  before update on rx_orders
+  for each row execute function set_updated_at();

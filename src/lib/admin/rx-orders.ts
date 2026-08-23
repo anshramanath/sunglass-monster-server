@@ -80,7 +80,7 @@ export async function updateRxStatus(id: string, status: string) {
 
   const { error } = await supabase
     .from("rx_orders")
-    .update({ status, updated_at: new Date().toISOString() })
+    .update({ status })
     .eq("id", id);
 
   if (error) throw new Error("Failed to update rx order status");
@@ -92,7 +92,7 @@ export async function saveRxFulfillment(id: string, carrier: string, trackingNum
 
   const { error } = await supabase
     .from("rx_orders")
-    .update({ carrier, tracking_number: trackingNumber, updated_at: new Date().toISOString() })
+    .update({ carrier, tracking_number: trackingNumber })
     .eq("id", id);
 
   if (error) throw new Error("Failed to save rx fulfillment");
@@ -104,7 +104,7 @@ export async function undoRxFulfillment(id: string) {
 
   const { error } = await supabase
     .from("rx_orders")
-    .update({ carrier: null, tracking_number: null, updated_at: new Date().toISOString() })
+    .update({ carrier: null, tracking_number: null })
     .eq("id", id);
 
   if (error) throw new Error("Failed to undo rx fulfillment");

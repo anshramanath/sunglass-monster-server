@@ -75,3 +75,11 @@ grant select on rx_orders to authenticated;
 
 create policy "rx_orders: users read own"
   on rx_orders for select using (auth.uid() = user_id);
+
+create trigger prescription_frames_set_updated_at
+  before update on prescription_frames
+  for each row execute function set_updated_at();
+
+create trigger rx_orders_set_updated_at
+  before update on rx_orders
+  for each row execute function set_updated_at();

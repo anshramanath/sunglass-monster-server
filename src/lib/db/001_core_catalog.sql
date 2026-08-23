@@ -129,3 +129,23 @@ returns void language sql as $$
   set view_count = view_count + 1
   where slug = p_slug and brand_slug = p_brand_slug;
 $$;
+
+create or replace function set_updated_at()
+returns trigger language plpgsql as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+create trigger categories_set_updated_at
+  before update on categories
+  for each row execute function set_updated_at();
+
+create trigger products_set_updated_at
+  before update on products
+  for each row execute function set_updated_at();
+
+create trigger variations_set_updated_at
+  before update on variations
+  for each row execute function set_updated_at();

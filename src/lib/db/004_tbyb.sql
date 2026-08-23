@@ -71,6 +71,14 @@ grant select on tbyb_submissions to authenticated;
 create policy "tbyb_submissions: users read own"
   on tbyb_submissions for select using (auth.uid() = user_id);
 
+create trigger tbyb_packages_set_updated_at
+  before update on tbyb_packages
+  for each row execute function set_updated_at();
+
+create trigger tbyb_submissions_set_updated_at
+  before update on tbyb_submissions
+  for each row execute function set_updated_at();
+
 -- Seed packages (run after inserting the bikershades brand row)
 insert into tbyb_packages (brand_slug, name, slug, price_cents, image_src, pairs_min, pairs_max, brands) values
   ('bikershades', 'BikerArmour',                  'bikerarmour',            22900, 'https://zgcekcoatiskqbdruadg.supabase.co/storage/v1/object/public/bikershades/packages/bikerarmour.webp',         3, 5,  array['BikerArmour']),

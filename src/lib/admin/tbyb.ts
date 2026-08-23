@@ -59,7 +59,7 @@ export async function undoTbybShipping(id: string) {
 
   const { error } = await supabase
     .from("tbyb_submissions")
-    .update({ carrier: null, tracking_number: null, updated_at: new Date().toISOString() })
+    .update({ carrier: null, tracking_number: null })
     .eq("id", id);
 
   if (error) throw new Error("Failed to clear TBYB shipping");
@@ -71,7 +71,7 @@ export async function updateTbybShipping(id: string, carrier: string, tracking: 
 
   const { error } = await supabase
     .from("tbyb_submissions")
-    .update({ carrier, tracking_number: tracking, updated_at: new Date().toISOString() })
+    .update({ carrier, tracking_number: tracking })
     .eq("id", id);
 
   if (error) throw new Error("Failed to update TBYB fulfillment");
@@ -83,7 +83,7 @@ export async function updateTbybStatus(id: string, status: string) {
 
   const { error } = await supabase
     .from("tbyb_submissions")
-    .update({ status, updated_at: new Date().toISOString() })
+    .update({ status })
     .eq("id", id);
 
   if (error) throw new Error("Failed to update TBYB status");

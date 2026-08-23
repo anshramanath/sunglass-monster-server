@@ -128,3 +128,7 @@ $$;
 create trigger orders_decrement_total_sales_on_refund
   after update on orders
   for each row execute function decrement_total_sales_on_refund();
+
+create trigger orders_set_updated_at
+  before update on orders
+  for each row execute function set_updated_at();
