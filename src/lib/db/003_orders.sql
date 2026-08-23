@@ -18,7 +18,8 @@ create table orders (
   shipping_address      jsonb       not null,
   veeqo_order_id        text        null,
   veeqo_error           text        null,
-  created_at            timestamptz not null default now()
+  created_at            timestamptz not null default now(),
+  updated_at            timestamptz not null default now()
 );
 
 alter table orders enable row level security;

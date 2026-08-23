@@ -9,6 +9,8 @@ create table brands (
   slug text not null unique
 );
 
+alter table brands enable row level security;
+
 create table categories (
   id uuid primary key default gen_random_uuid(),
   brand_slug text not null references brands(slug) on delete cascade,
@@ -16,8 +18,12 @@ create table categories (
   name text not null,
   slug text not null,
   sort_order int not null,
-  view_count int default null
+  view_count int default null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
+
+alter table categories enable row level security;
 
 create table products (
   id uuid primary key default gen_random_uuid(),
@@ -35,15 +41,21 @@ create table products (
   min_price_cents int not null,
   max_price_cents int not null,
   sale_price_cents int,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
   unique (brand_slug, slug),
   unique (brand_slug, name)
 );
+
+alter table products enable row level security;
 
 create table product_categories (
   product_id uuid not null references products(id) on delete cascade,
   category_id uuid not null references categories(id) on delete cascade,
   primary key (product_id, category_id)
 );
+
+alter table product_categories enable row level security;
 
 create table variations (
   id uuid primary key default gen_random_uuid(),
@@ -53,8 +65,12 @@ create table variations (
   sale boolean not null,
   regular_price_cents int not null,
   sale_price_cents int,
-  total_sales int not null
+  total_sales int not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
+
+alter table variations enable row level security;
 
 create table product_images (
   id uuid primary key default gen_random_uuid(),
@@ -64,6 +80,8 @@ create table product_images (
   sort_order int not null
 );
 
+alter table product_images enable row level security;
+
 create table variation_images (
   id uuid primary key default gen_random_uuid(),
   variation_id uuid not null references variations(id) on delete cascade,
@@ -71,6 +89,8 @@ create table variation_images (
   name text not null,
   sort_order int not null
 );
+
+alter table variation_images enable row level security;
 
 create table description_images (
   id uuid primary key default gen_random_uuid(),
@@ -80,16 +100,21 @@ create table description_images (
   unique (brand_slug, src)
 );
 
+alter table description_images enable row level security;
+
 create table product_description_images (
   product_id uuid not null references products(id) on delete cascade,
   image_id uuid not null references description_images(id) on delete cascade,
   primary key (product_id, image_id)
 );
 
+alter table product_description_images enable row level security;
+
 create table admins (
   user_id uuid primary key references auth.users(id) on delete cascade
 );
 
+alter table admins enable row level security;
 
 create or replace function increment_category_view(p_id uuid, p_brand_slug text)
 returns void language sql as $$
