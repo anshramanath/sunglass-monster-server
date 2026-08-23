@@ -76,7 +76,6 @@ export async function PUT(req: NextRequest) {
       image_src: item.imageSrc,
       price_cents: item.priceCents,
       quantity: item.quantity,
-      updated_at: new Date().toISOString(),
     }));
 
     const { error: insertError } = await supabase.from("cart_items").insert(rows);

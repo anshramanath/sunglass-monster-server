@@ -14,8 +14,7 @@ create table cart_items (
   name          text        not null,
   image_src     text        not null,
   price_cents   int         not null,
-  quantity      int         not null,
-  updated_at    timestamptz not null default now()
+  quantity      int         not null
 );
 
 alter table cart_items enable row level security;
@@ -34,8 +33,7 @@ create table bookmarks (
   product_id    uuid        not null references products(id) on delete cascade,
   product_slug  text        not null,
   name          text        not null,
-  image_src     text        not null,
-  created_at    timestamptz not null default now()
+  image_src     text        not null
 );
 
 alter table bookmarks enable row level security;
