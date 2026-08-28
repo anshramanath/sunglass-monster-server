@@ -13,6 +13,7 @@ const NAV = [
   { label: "Overview", path: "" },
   { label: "Orders", path: "/orders" },
   { label: "Categories", path: "/categories" },
+  { label: "Products", path: "/products" },
   { label: "Analytics", path: "/analytics" },
 ];
 
