@@ -105,9 +105,9 @@ export async function saveProduct(input: SaveInput): Promise<void> {
   await requireAdmin();
   const supabase = createAdminClient();
 
-  const { brandSlug, productId, isNew, variations } = input;
+  const { brandSlug, productId, isNew, variations, name } = input;
   const isSimple = variations.length === 0;
-  const slug = slugify(input.name.trim());
+  const slug = slugify(name.trim());
 
   const { data: slugConflict, error: slugError } = await supabase
     .from("products")
@@ -125,98 +125,34 @@ export async function saveProduct(input: SaveInput): Promise<void> {
     sale = input.sale!;
     salePriceCents = input.salePriceCents;
   } else {
-    const effectivePrices = variations.map((v) => v.sale ? v.salePriceCents! : v.regularPriceCents);
+    const effectivePrices = variations.map((v) => (v.sale ? v.salePriceCents! : v.regularPriceCents));
     minPrice = Math.min(...effectivePrices);
     maxPrice = Math.max(...effectivePrices);
     sale = variations.some((v) => v.sale);
     salePriceCents = null;
   }
 
-  const productRow = {
-    id: productId,
-    brand_slug: brandSlug,
-    name: input.name,
-    slug,
-    sku: input.sku,
-    description: input.description,
-    summary: input.summary,
-    attributes: isSimple ? [] : deriveAttributes(variations),
-    featured: input.featured,
-    sale,
-    min_price_cents: minPrice,
-    max_price_cents: maxPrice,
-    sale_price_cents: salePriceCents,
-  };
-
-  if (isNew) {
-    const { error } = await supabase.from("products").insert({ ...productRow, total_sales: isSimple ? 0 : null });
-    if (error) throw new Error(error.message);
-  } else {
-    const { id: _, ...fields } = productRow;
-    const updateFields = isSimple ? fields : { ...fields, total_sales: null };
-    const { error } = await supabase.from("products").update(updateFields).eq("id", productId).eq("brand_slug", brandSlug);
-    if (error) throw new Error(error.message);
-  }
-
-  // Categories: replace all
-  await supabase.from("product_categories").delete().eq("product_id", productId);
-  if (input.categoryIds.length > 0) {
-    const { error } = await supabase.from("product_categories").insert(
-      input.categoryIds.map((cid) => ({ product_id: productId, category_id: cid }))
-    );
-    if (error) throw new Error(error.message);
-  }
-
-  // Product images: replace all
-  await supabase.from("product_images").delete().eq("product_id", productId);
-  const { error: imgError } = await supabase.from("product_images").insert(
-    input.images.map((img) => ({
-      product_id: productId,
-      src: img.src,
-      name: img.name,
-      sort_order: img.sortOrder,
-    }))
-  );
-  if (imgError) throw new Error(imgError.message);
-
-  // Description images: upsert into shared table, replace junction
-  await supabase.from("product_description_images").delete().eq("product_id", productId);
-  for (const img of input.descriptionImages) {
-    const { data: descImg, error: descErr } = await supabase
-      .from("description_images")
-      .upsert({ brand_slug: brandSlug, src: img.src, name: img.name }, { onConflict: "brand_slug,src" })
-      .select("id")
-      .single();
-    if (descErr) throw new Error(descErr.message);
-    const { error: linkErr } = await supabase
-      .from("product_description_images")
-      .insert({ product_id: productId, image_id: descImg.id });
-    if (linkErr) throw new Error(linkErr.message);
-  }
-
-  if (isSimple) {
-    if (!isNew) {
-      const { data: deletedVars, error: deleteVarsError } = await supabase.from("variations").delete().eq("product_id", productId).select("id");
-      if (deleteVarsError) throw new Error(deleteVarsError.message);
-      if (deletedVars.length > 0) {
-        const { error } = await supabase.from("products").update({ total_sales: 0 }).eq("id", productId);
-        if (error) throw new Error(error.message);
-      }
-    }
-    return;
-  }
-
-  // Delete removed variations (preserve total_sales on kept ones)
-  const keptIds = variations.filter((v) => !v.id.startsWith("new-")).map((v) => v.id);
-  const { data: dbVars } = await supabase.from("variations").select("id").eq("product_id", productId);
-  const toDelete = (dbVars ?? []).filter((v) => !keptIds.includes(v.id)).map((v) => v.id);
-  if (toDelete.length > 0) {
-    await supabase.from("variations").delete().in("id", toDelete);
-  }
-
-  for (const v of variations) {
-    const varRow = {
-      product_id: productId,
+  const { error } = await supabase.rpc("save_product", {
+    p_brand_slug: brandSlug,
+    p_product_id: productId,
+    p_is_new: isNew,
+    p_name: name,
+    p_slug: slug,
+    p_sku: input.sku,
+    p_description: input.description,
+    p_summary: input.summary,
+    p_attributes: isSimple ? [] : deriveAttributes(variations),
+    p_featured: input.featured,
+    p_sale: sale,
+    p_min_price_cents: minPrice,
+    p_max_price_cents: maxPrice,
+    p_sale_price_cents: salePriceCents,
+    p_is_simple: isSimple,
+    p_category_ids: input.categoryIds,
+    p_images: input.images.map((img) => ({ src: img.src, name: img.name, sort_order: img.sortOrder })),
+    p_description_images: input.descriptionImages,
+    p_variations: variations.map((v) => ({
+      id: v.id.startsWith("new-") ? null : v.id,
       sku: v.sku,
       attribute: v.attribute.map((a) => ({
         name: a.name,
@@ -227,39 +163,10 @@ export async function saveProduct(input: SaveInput): Promise<void> {
       sale: v.sale,
       regular_price_cents: v.regularPriceCents,
       sale_price_cents: v.salePriceCents,
-    };
-
-    if (v.id.startsWith("new-")) {
-      const { error } = await supabase.from("variations").insert({ ...varRow, total_sales: 0 });
-      if (error) throw new Error(error.message);
-    } else {
-      const { error } = await supabase.from("variations").update(varRow).eq("id", v.id);
-      if (error) throw new Error(error.message);
-    }
-  }
-
-  // Variation images: replace all, looked up by SKU
-  const { data: savedVars } = await supabase.from("variations").select("id, sku").eq("product_id", productId);
-  const varIdBySku: Record<string, string> = Object.fromEntries((savedVars ?? []).map((v) => [v.sku, v.id]));
-  const allVarIds = (savedVars ?? []).map((v) => v.id);
-
-  if (allVarIds.length > 0) {
-    await supabase.from("variation_images").delete().in("variation_id", allVarIds);
-  }
-
-  for (const v of variations) {
-    const varId = varIdBySku[v.sku];
-    if (!varId || v.images.length === 0) continue;
-    const { error } = await supabase.from("variation_images").insert(
-      v.images.map((img) => ({
-        variation_id: varId,
-        src: img.src,
-        name: img.name,
-        sort_order: img.sortOrder,
-      }))
-    );
-    if (error) throw new Error(error.message);
-  }
+      images: v.images.map((img) => ({ src: img.src, name: img.name, sort_order: img.sortOrder })),
+    })),
+  });
+  if (error) throw new Error(error.message);
 }
 
 export async function deleteProduct(brandSlug: string, productId: string): Promise<void> {

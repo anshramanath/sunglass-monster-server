@@ -27,3 +27,4 @@ drop function if exists decrement_total_sales_on_refund();
 drop function if exists increment_category_view(uuid, text);
 drop function if exists increment_product_view(text, text);
 drop function if exists set_updated_at();
+drop function if exists save_product(text,uuid,boolean,text,text,text,text,text[],jsonb,boolean,boolean,int,int,int,boolean,uuid[],jsonb,jsonb,jsonb);
